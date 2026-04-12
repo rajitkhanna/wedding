@@ -50,20 +50,12 @@ export const faqItems: FAQItem[] = [
     a: "Friday Welcome Dinner: cocktail attire.\n\nSaturday Sikh Ceremony: traditional or cocktail — please cover your head (bring a dupatta, scarf, or bandana). No shoes inside the Gurudwara.\n\nSaturday Sangeet: festive semi-formal — Indian or Western welcome.\n\nSunday Telugu Wedding: bright festive colors encouraged. Indian attire welcome.",
   },
   {
-    q: "Are children welcome?",
-    a: "Details coming soon.",
-  },
-  {
     q: "Will there be vegetarian options?",
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
   },
   {
     q: "Can I take photos during the ceremony?",
     a: "Sikh Ceremony: respectful photography is welcome.\n\nTelugu Wedding: we'll have a professional photographer; please hold phones during the ceremony.",
-  },
-  {
-    q: "How do I get from the Gurudwara to the InterContinental on Saturday?",
-    a: "A shuttle will depart from the Gurudwara after the Sikh ceremony. No need to drive — details are on the Travel page.",
   },
   {
     q: "Where do I park?",

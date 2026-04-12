@@ -1,0 +1,25 @@
+main_branch: main
+base_branch: main
+mode: session
+
+files:
+  copy:
+    - .env
+
+post_create:
+  - bun install
+
+windows:
+  - name: notes
+    panes:
+      - command: cd ~/Dropbox/notes/ && nvim
+  - name: nvim
+    panes:
+      - command: nvim
+        focus: true
+      - command: bun dev
+        split: vertical
+  - name: claude
+    panes:
+      - command: claude
+        focus: true

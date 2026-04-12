@@ -13,7 +13,6 @@ export interface ChapterData {
   prefix: string;
   title: string;
   era: string;
-  caption: string;
   photos: StoryFile[];
 }
 
@@ -62,21 +61,12 @@ export function Chapter({ chapter, isReversed, index }: ChapterProps) {
               {chapter.era}
             </p>
           </div>
-          <p
-            className="text-base leading-relaxed"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            {chapter.caption}
-          </p>
         </div>
       </div>
 
       <div className="flex-1">
         {chapter.photos.length > 0 ? (
-          <TimelinePhoto
-            src={chapter.photos[0].url}
-            alt={chapter.title}
-          />
+          <TimelinePhoto src={chapter.photos[0].url} alt={chapter.title} />
         ) : (
           <div
             className="flex aspect-[4/3] items-center justify-center rounded-lg border-2 border-dashed"

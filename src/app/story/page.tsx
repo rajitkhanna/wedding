@@ -15,26 +15,22 @@ const CHAPTERS = [
   {
     id: "01",
     title: "How It Started",
-    era: "2019",
-    caption: "High school. A chance encounter that changed everything.",
+    era: "June 2019",
   },
   {
     id: "02",
     title: "The Proposal",
-    era: "December 2025",
-    caption: "He got down on one knee. She said yes, without hesitation.",
+    era: "December 13, 2025",
   },
   {
     id: "03",
-    title: "Engagement",
-    era: "San Francisco, 2026",
-    caption: "Golden hour at the Palace of Fine Arts.",
+    title: "Nischitartham",
+    era: "January 4, 2026",
   },
   {
     id: "04",
-    title: "Nischitartham",
-    era: "January 2026",
-    caption: "Two families, one celebration. The sacred thread that binds.",
+    title: "Engagement",
+    era: "March 8, 2026",
   },
 ];
 

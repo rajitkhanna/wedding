@@ -1,6 +1,5 @@
-import { CeremonyGuide } from "@/components/faq/CeremonyGuide";
 import { Accordion } from "@/components/faq/Accordion";
-import { ceremonyGuides, faqItems } from "@/lib/faq-content";
+import { faqItems } from "@/lib/faq-content";
 
 export default function FAQ() {
   return (
@@ -32,24 +31,6 @@ export default function FAQ() {
             style={{ backgroundColor: "var(--color-border-gold)" }}
           />
         </header>
-
-        {/* Ceremony Guides */}
-        <section className="mb-14">
-          <h2
-            className="mb-6 text-xs font-semibold uppercase tracking-[0.25em]"
-            style={{ color: "var(--color-gold)" }}
-          >
-            Ceremony Guides
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            {ceremonyGuides.map((guide) => (
-              <CeremonyGuide key={guide.name} guide={guide} />
-            ))}
-          </div>
-        </section>
-
-        {/* Gold rule */}
-        <hr className="gold-rule mb-14" />
 
         {/* FAQ Accordion */}
         <section>
