@@ -42,6 +42,16 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - Big review: `git --no-pager diff --color=never`.
 - Multi-agent: check `git status/diff` before edits; ship small commits.
 
+## Design Tokens
+
+- All colors via CSS custom properties in `globals.css` — never hardcode hex/rgb values in components or Tailwind classes.
+- Use semantic token names (e.g. `var(--color-surface)`, `bg-surface`) not raw values.
+- Token definitions live exclusively in `globals.css` `:root`.
+
+## Package Manager
+
+- Use `bun` — not npm/yarn/pnpm. `bun install`, `bun add`, `bun run`.
+
 ## Language/Stack Notes
 
 - Swift: use workspace helper/daemon; validate `swift build` + tests; keep concurrency attrs right.

@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+/* ─── Semantic Tokens ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --color-bg:          #120608;   /* near-black deep crimson */
+  --color-surface:     #1e0b0e;   /* card / elevated surfaces */
+  --color-surface-alt: #2a1015;   /* slightly lighter surface */
+
+  /* Brand */
+  --color-red:         #8B1A1A;   /* primary red accent */
+  --color-red-hover:   #a82020;
+
+  /* Gold */
+  --color-gold:        #C9A84C;   /* headings, highlights */
+  --color-gold-light:  #E8C97A;   /* hover, glow */
+  --color-gold-dim:    #8a6f2e;   /* muted gold for borders */
+
+  /* Text */
+  --color-text:        #F5EDD6;   /* primary cream white */
+  --color-text-muted:  #9a7f62;   /* secondary / placeholder */
+  --color-text-dim:    #5c4030;   /* tertiary / disabled */
+
+  /* Borders */
+  --color-border:      #2e1418;
+  --color-border-gold: #4a3820;
+
+  /* Fonts */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body:    "Jost", system-ui, sans-serif;
 }
 
+/* ─── Tailwind Theme Mapping ──────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg:          var(--color-bg);
+  --color-surface:     var(--color-surface);
+  --color-surface-alt: var(--color-surface-alt);
+  --color-red:         var(--color-red);
+  --color-red-hover:   var(--color-red-hover);
+  --color-gold:        var(--color-gold);
+  --color-gold-light:  var(--color-gold-light);
+  --color-gold-dim:    var(--color-gold-dim);
+  --color-text:        var(--color-text);
+  --color-text-muted:  var(--color-text-muted);
+  --color-text-dim:    var(--color-text-dim);
+  --color-border:      var(--color-border);
+  --color-border-gold: var(--color-border-gold);
+  --font-display:      var(--font-display);
+  --font-body:         var(--font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Base ────────────────────────────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-gold);
+  font-weight: 400;
+}
+
+/* ─── Utility Classes ─────────────────────────────────────────────────────── */
+.text-display {
+  font-family: var(--font-display);
+}
+
+.gold-rule {
+  border: none;
+  border-top: 1px solid var(--color-border-gold);
+}
+
+/* ─── Story Timeline ──────────────────────────────────────────────────────── */
+.timeline-chapter.is-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.timeline-photo:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), inset 0 2px 8px rgba(0,0,0,0.3);
 }
