@@ -2,132 +2,169 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
-import {
-  EffectComposer,
-  Bloom,
-  Vignette,
-} from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { Rose } from "./Rose";
 import { GoldParticles } from "./GoldParticles";
 import { HeroPresence } from "@/components/presence/HeroPresence";
+import { useState, useEffect, useRef } from "react";
 
 export function RoseHero() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        const scrollY = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? Math.min(1, scrollY / docHeight) : 0;
+        setScrollProgress(progress);
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const overlayOpacity = Math.min(1, scrollProgress * 2);
+  const roseScale = 1 + scrollProgress * 0.3;
+  const roseY = -0.5 - scrollProgress * 0.5;
+
   return (
     <div
       className="relative w-full"
       style={{
-        height: "100vh",
+        height: "200vh",
         background:
           "linear-gradient(180deg, #0a0508 0%, #150810 40%, #1a0a12 70%, #0d0608 100%)",
       }}
     >
-      <Canvas
-        shadows
-        camera={{ position: [0, 0.5, 5.5], fov: 38 }}
-        gl={{ antialias: true, alpha: true, toneMapping: 1 /* LinearToneMapping */ }}
-      >
-        <fog attach="fog" args={["#0a0508", 6, 18]} />
+      <div className="sticky top-0 h-screen">
+        <Canvas
+          shadows
+          camera={{
+            position: [0, 0.5 + scrollProgress * 0.5, 5.5 - scrollProgress],
+            fov: 38 - scrollProgress * 5,
+          }}
+          gl={{ antialias: true, alpha: true, toneMapping: 1 }}
+        >
+          <fog attach="fog" args={["#0a0508", 6, 18]} />
 
-        <ambientLight intensity={0.6} color="#ffeeee" />
-
-        {/* Key: warm gold from above */}
-        <directionalLight
-          position={[2, 6, 4]}
-          color="#fff5e0"
-          intensity={1.5}
-          castShadow
-          shadow-mapSize={[2048, 2048]}
-        />
-
-        {/* Fill: soft pink from the right */}
-        <directionalLight
-          position={[-3, 2, 3]}
-          color="#ffaaaa"
-          intensity={0.8}
-        />
-
-        {/* Rim: dark crimson from behind */}
-        <directionalLight
-          position={[0, 2, -4]}
-          color="#660011"
-          intensity={0.5}
-        />
-
-        <Rose />
-        <GoldParticles scrollProgress={1} />
-
-        <EffectComposer>
-          <Bloom
-            luminanceThreshold={0.75}
-            luminanceSmoothing={0.9}
-            intensity={0.6}
-            mipmapBlur
-            radius={0.6}
+          <ambientLight
+            intensity={0.4 + scrollProgress * 0.3}
+            color="#ffeeee"
           />
-          <Vignette darkness={0.65} offset={0.25} />
-        </EffectComposer>
 
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate
-          autoRotateSpeed={0.25}
-          maxPolarAngle={Math.PI * 0.55}
-          minPolarAngle={Math.PI * 0.35}
-        />
-      </Canvas>
-
-      {/* Names overlay — always visible */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-center px-6">
-          <h1
-            className="text-7xl md:text-9xl tracking-wider"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-gold)",
-              textShadow:
-                "0 0 80px rgba(201,168,76,0.6), 0 0 160px rgba(201,168,76,0.35)",
-              lineHeight: 1.0,
-            }}
-          >
-            Meghana
-          </h1>
-          <div
-            className="mx-auto my-6 h-px w-40"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, var(--color-gold), transparent)",
-            }}
+          <directionalLight
+            position={[2, 6, 4]}
+            color="#fff5e0"
+            intensity={1.5 + scrollProgress * 0.5}
+            castShadow
+            shadow-mapSize={[2048, 2048]}
           />
-          <h1
-            className="text-7xl md:text-9xl tracking-wider"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-gold)",
-              textShadow:
-                "0 0 80px rgba(201,168,76,0.6), 0 0 160px rgba(201,168,76,0.35)",
-              lineHeight: 1.0,
-            }}
-          >
-            &amp; Rajit
-          </h1>
-          <p
-            className="mt-10 text-xl md:text-2xl tracking-[0.5em] uppercase"
-            style={{
-              color: "var(--color-text-muted)",
-              textShadow: "0 0 30px rgba(255,255,255,0.15)",
-            }}
-          >
-            November 28, 2026
-          </p>
-          <p
-            className="mt-3 text-sm md:text-base tracking-[0.3em]"
-            style={{ color: "var(--color-text-dim)" }}
-          >
-            Boston, Massachusetts
-          </p>
+
+          <directionalLight
+            position={[-3, 2, 3]}
+            color="#ffaaaa"
+            intensity={0.6 + scrollProgress * 0.4}
+          />
+
+          <directionalLight
+            position={[0, 2, -4]}
+            color="#660011"
+            intensity={0.3 + scrollProgress * 0.3}
+          />
+
+          <pointLight
+            position={[0, 3, 2]}
+            color="#ffd700"
+            intensity={scrollProgress * 2}
+            distance={8}
+          />
+
+          <Rose scrollProgress={scrollProgress} />
+          <GoldParticles scrollProgress={scrollProgress} />
+
+          <EffectComposer>
+            <Bloom
+              luminanceThreshold={0.6 - scrollProgress * 0.2}
+              luminanceSmoothing={0.9}
+              intensity={0.6 + scrollProgress * 1.5}
+              mipmapBlur
+              radius={0.6 + scrollProgress * 0.4}
+            />
+            <Vignette darkness={0.65 - scrollProgress * 0.2} offset={0.25} />
+          </EffectComposer>
+
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            autoRotate
+            autoRotateSpeed={0.25 + scrollProgress * 0.1}
+            maxPolarAngle={Math.PI * 0.55}
+            minPolarAngle={Math.PI * 0.35}
+          />
+        </Canvas>
+
+        <div
+          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
+          style={{ opacity: overlayOpacity, transition: "opacity 0.1s" }}
+        >
+          <div className="text-center px-6">
+            <h1
+              className="text-7xl md:text-9xl tracking-wider"
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--color-gold)",
+                textShadow:
+                  "0 0 80px rgba(201,168,76,0.6), 0 0 160px rgba(201,168,76,0.35)",
+                lineHeight: 1.0,
+              }}
+            >
+              Meghana
+            </h1>
+            <div
+              className="mx-auto my-6 h-px w-40"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--color-gold), transparent)",
+              }}
+            />
+            <h1
+              className="text-7xl md:text-9xl tracking-wider"
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--color-gold)",
+                textShadow:
+                  "0 0 80px rgba(201,168,76,0.6), 0 0 160px rgba(201,168,76,0.35)",
+                lineHeight: 1.0,
+              }}
+            >
+              &amp; Rajit
+            </h1>
+            <p
+              className="mt-10 text-xl md:text-2xl tracking-[0.5em] uppercase"
+              style={{
+                color: "var(--color-text-muted)",
+                textShadow: "0 0 30px rgba(255,255,255,0.15)",
+              }}
+            >
+              November 28, 2026
+            </p>
+            <p
+              className="mt-3 text-sm md:text-base tracking-[0.3em]"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              Boston, Massachusetts
+            </p>
+          </div>
+          <HeroPresence />
         </div>
-        <HeroPresence />
       </div>
     </div>
   );
