@@ -1,18 +1,17 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { db } from "@/lib/instant/db";
 
 const mainLinks = [
-  { href: "/story", label: "Our Story" },
-  { href: "/schedule", label: "Schedule" },
+  { href: "#story", label: "Our Story" },
+  { href: "#schedule", label: "Schedule" },
 ];
 
 const moreLinks = [
-  { href: "/travel-stay", label: "Travel & Stay" },
-  { href: "/registry", label: "Registry" },
-  { href: "/faq", label: "FAQ" },
+  { href: "#travel", label: "Travel & Stay" },
+  { href: "#registry", label: "Registry" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 function ChevronIcon({ open }: { open: boolean }) {
@@ -50,54 +49,14 @@ function HamburgerIcon({ open }: { open: boolean }) {
     >
       {open ? (
         <>
-          <line
-            x1="1"
-            y1="1"
-            x2="21"
-            y2="15"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <line
-            x1="21"
-            y1="1"
-            x2="1"
-            y2="15"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
+          <line x1="1" y1="1" x2="21" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="21" y1="1" x2="1" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <line
-            x1="1"
-            y1="2"
-            x2="21"
-            y2="2"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <line
-            x1="1"
-            y1="8"
-            x2="21"
-            y2="8"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <line
-            x1="1"
-            y1="14"
-            x2="21"
-            y2="14"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
+          <line x1="1" y1="2" x2="21" y2="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="1" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="1" y1="14" x2="21" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </>
       )}
     </svg>
@@ -105,19 +64,22 @@ function HamburgerIcon({ open }: { open: boolean }) {
 }
 
 export function Navigation() {
-  const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  useEffect(() => {
+    const update = () => setActiveHash(window.location.hash);
+    window.addEventListener("hashchange", update);
+    update();
+    return () => window.removeEventListener("hashchange", update);
+  }, []);
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
       }
     }
@@ -125,32 +87,25 @@ export function Navigation() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Close drawer on route change
-  useEffect(() => {
-    setDrawerOpen(false);
-    setMoreOpen(false);
-  }, [pathname]);
-
-  const isMoreActive = moreLinks.some((l) => pathname === l.href);
+  const isMoreActive = moreLinks.some((l) => activeHash === l.href);
 
   const linkStyle = (href: string) => ({
-    color: pathname === href ? "var(--color-gold)" : "var(--color-text-muted)",
-    borderBottom:
-      pathname === href
-        ? "2px solid var(--color-gold)"
-        : "2px solid transparent",
+    color: activeHash === href ? "var(--color-gold)" : "var(--color-text-muted)",
+    borderBottom: activeHash === href ? "2px solid var(--color-gold)" : "2px solid transparent",
     paddingBottom: "2px",
     transition: "color 150ms, border-color 150ms",
   });
 
   const moreButtonStyle = {
     color: isMoreActive ? "var(--color-gold)" : "var(--color-text-muted)",
-    borderBottom: isMoreActive
-      ? "2px solid var(--color-gold)"
-      : "2px solid transparent",
+    borderBottom: isMoreActive ? "2px solid var(--color-gold)" : "2px solid transparent",
     paddingBottom: "2px",
     transition: "color 150ms, border-color 150ms",
   };
+
+  async function handleSignOut() {
+    await db.auth.signOut();
+  }
 
   return (
     <>
@@ -165,8 +120,8 @@ export function Navigation() {
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           {/* Logo */}
-          <Link
-            href="/"
+          <a
+            href="#hero"
             className="text-xl tracking-widest hover:opacity-80 transition-opacity"
             style={{
               fontFamily: "var(--font-display)",
@@ -175,31 +130,27 @@ export function Navigation() {
             }}
           >
             M &amp; R
-          </Link>
+          </a>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-8">
             {mainLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 className="text-sm tracking-widest uppercase font-light"
                 style={linkStyle(link.href)}
                 onMouseEnter={(e) => {
-                  if (pathname !== link.href) {
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-gold)";
-                  }
+                  if (activeHash !== link.href)
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  if (pathname !== link.href) {
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--color-text-muted)";
-                  }
+                  if (activeHash !== link.href)
+                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-text-muted)";
                 }}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
 
             {/* More dropdown */}
@@ -209,16 +160,12 @@ export function Navigation() {
                 className="text-sm tracking-widest uppercase font-light flex items-center"
                 style={moreButtonStyle}
                 onMouseEnter={(e) => {
-                  if (!isMoreActive) {
-                    (e.currentTarget as HTMLButtonElement).style.color =
-                      "var(--color-gold)";
-                  }
+                  if (!isMoreActive)
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  if (!isMoreActive) {
-                    (e.currentTarget as HTMLButtonElement).style.color =
-                      "var(--color-text-muted)";
-                  }
+                  if (!isMoreActive)
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text-muted)";
                 }}
                 aria-expanded={moreOpen}
                 aria-haspopup="true"
@@ -236,40 +183,40 @@ export function Navigation() {
                   }}
                 >
                   {moreLinks.map((link) => (
-                    <Link
+                    <a
                       key={link.href}
                       href={link.href}
+                      onClick={() => setMoreOpen(false)}
                       className="block px-4 py-2 text-sm tracking-wider font-light transition-colors"
                       style={{
-                        color:
-                          pathname === link.href
-                            ? "var(--color-gold)"
-                            : "var(--color-text-muted)",
+                        color: activeHash === link.href ? "var(--color-gold)" : "var(--color-text-muted)",
                         fontFamily: "var(--font-body)",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLAnchorElement).style.color =
-                          "var(--color-gold)";
-                        (
-                          e.currentTarget as HTMLAnchorElement
-                        ).style.background = "var(--color-surface-alt)";
+                        (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)";
+                        (e.currentTarget as HTMLAnchorElement).style.background = "var(--color-surface-alt)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLAnchorElement).style.color =
-                          pathname === link.href
-                            ? "var(--color-gold)"
-                            : "var(--color-text-muted)";
-                        (
-                          e.currentTarget as HTMLAnchorElement
-                        ).style.background = "transparent";
+                          activeHash === link.href ? "var(--color-gold)" : "var(--color-text-muted)";
+                        (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
                       }}
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   ))}
                 </div>
               )}
             </div>
+
+            {/* Sign out */}
+            <button
+              onClick={handleSignOut}
+              className="text-xs tracking-widest uppercase font-light transition-opacity hover:opacity-70"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              Sign Out
+            </button>
           </div>
 
           {/* Mobile hamburger */}
@@ -295,29 +242,24 @@ export function Navigation() {
         >
           <div className="px-6 py-4 flex flex-col gap-1">
             {mainLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
+                onClick={() => setDrawerOpen(false)}
                 className="py-3 text-sm tracking-widest uppercase font-light border-b"
                 style={{
-                  color:
-                    pathname === link.href
-                      ? "var(--color-gold)"
-                      : "var(--color-text-muted)",
+                  color: activeHash === link.href ? "var(--color-gold)" : "var(--color-text-muted)",
                   borderColor: "var(--color-border)",
                 }}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
 
-            {/* Mobile More toggle */}
             <button
               className="py-3 text-sm tracking-widest uppercase font-light border-b flex items-center w-full text-left"
               style={{
-                color: isMoreActive
-                  ? "var(--color-gold)"
-                  : "var(--color-text-muted)",
+                color: isMoreActive ? "var(--color-gold)" : "var(--color-text-muted)",
                 borderColor: "var(--color-border)",
               }}
               onClick={() => setMobileMoreOpen((v) => !v)}
@@ -329,23 +271,29 @@ export function Navigation() {
             {mobileMoreOpen && (
               <div className="pl-4 flex flex-col gap-1">
                 {moreLinks.map((link) => (
-                  <Link
+                  <a
                     key={link.href}
                     href={link.href}
+                    onClick={() => { setDrawerOpen(false); setMobileMoreOpen(false); }}
                     className="py-2.5 text-sm tracking-wider font-light border-b"
                     style={{
-                      color:
-                        pathname === link.href
-                          ? "var(--color-gold)"
-                          : "var(--color-text-muted)",
+                      color: activeHash === link.href ? "var(--color-gold)" : "var(--color-text-muted)",
                       borderColor: "var(--color-border)",
                     }}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 ))}
               </div>
             )}
+
+            <button
+              onClick={handleSignOut}
+              className="mt-3 py-3 text-xs tracking-widest uppercase font-light text-left transition-opacity hover:opacity-70"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </nav>

@@ -145,7 +145,7 @@ export function MagicLinkForm() {
           color: "var(--color-text)",
         }}
       >
-        {isSubmitting ? "Sending…" : "Send My Schedule Link"}
+        {isSubmitting ? "Sending…" : "Send Magic Link"}
       </button>
     </form>
   );

@@ -24,13 +24,13 @@ const CHAPTERS = [
   },
   {
     id: "03",
-    title: "Nischitartham",
-    era: "January 4, 2026",
+    title: "Engagement",
+    era: "March 8, 2026",
   },
   {
     id: "04",
-    title: "Engagement",
-    era: "March 8, 2026",
+    title: "Nischitartham",
+    era: "January 4, 2026",
   },
 ];
 
@@ -82,7 +82,7 @@ export default function Story() {
   const storyFiles = files.filter((f) => f.path.startsWith("story/"));
   const chapters = groupPhotosByChapter(storyFiles);
   const heroFile = files.find((f) => f.path === "home/hero-2.jpg");
-  const heroUrl = heroFile?.url ?? "/photos/R5VN8026-3.jpg";
+  const heroUrl = heroFile?.url;
   const hasChapters = chapters.some((c) => c.photos.length > 0);
 
   return (
@@ -98,13 +98,15 @@ export default function Story() {
               "linear-gradient(180deg, rgba(10,5,8,0.3) 0%, rgba(10,5,8,0.9) 100%)",
           }}
         />
-        <Image
-          src={heroUrl}
-          alt="Meghana and Rajit"
-          fill
-          className="object-cover object-center"
-          priority
-        />
+        {heroUrl && (
+          <Image
+            src={heroUrl}
+            alt="Meghana and Rajit"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        )}
         <div className="relative z-10 text-center px-6">
           <p
             className="text-xs tracking-[0.5em] uppercase mb-4"

@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-
 const footerLinks = [
-  { href: "/travel-stay", label: "Travel & Stay" },
-  { href: "/registry", label: "Registry" },
-  { href: "/faq", label: "FAQ" },
+  { href: "#travel", label: "Travel & Stay" },
+  { href: "#registry", label: "Registry" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export function Footer() {
@@ -71,7 +69,7 @@ export function Footer() {
         <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-6">
           {footerLinks.map((link, i) => (
             <li key={link.href} className="flex items-center gap-6">
-              <Link
+              <a
                 href={link.href}
                 className="text-xs tracking-widest uppercase font-light transition-colors"
                 style={{
@@ -88,7 +86,7 @@ export function Footer() {
                 }}
               >
                 {link.label}
-              </Link>
+              </a>
               {i < footerLinks.length - 1 && (
                 <span
                   aria-hidden="true"
@@ -117,34 +115,6 @@ export function Footer() {
         &copy; 2026 &nbsp; All Rights Reserved
       </p>
 
-      {/* 3D model attribution — required by CC BY 4.0 */}
-      <p
-        className="text-center text-xs"
-        style={{
-          color: "var(--color-text-dim)",
-          fontFamily: "var(--font-body)",
-          fontWeight: 300,
-          opacity: 0.5,
-        }}
-      >
-        <a
-          href="https://skfb.ly/o6JPQ"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          &ldquo;Red Rose&rdquo;
-        </a>
-        {" "}by Lassi Kaukonen is licensed under{" "}
-        <a
-          href="http://creativecommons.org/licenses/by/4.0/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "inherit", textDecoration: "underline" }}
-        >
-          CC BY 4.0
-        </a>
-      </p>
     </footer>
   );
 }

@@ -221,6 +221,7 @@ export default function SchedulePage() {
                 dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
                 partySize: guest.partySize as number | undefined,
                 attendingEventIds: guest.attendingEventIds as string | undefined,
+                partyMembers: guest.partyMembers as string | undefined,
               }}
               visibleEvents={guestEvents.map((e) => ({
                 id: e.id,

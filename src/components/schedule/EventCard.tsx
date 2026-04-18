@@ -135,19 +135,6 @@ export function EventCard({ event }: EventCardProps) {
           </p>
         )}
 
-        {/* Group badge */}
-        <div>
-          <span
-            className="inline-block rounded-full px-2.5 py-0.5 text-xs tracking-wide"
-            style={{
-              backgroundColor: "var(--color-bg)",
-              color: "var(--color-text-muted)",
-              border: "1px solid var(--color-border-gold)",
-            }}
-          >
-            {groupLabel}
-          </span>
-        </div>
       </div>
     </div>
   );

@@ -4,7 +4,14 @@ import { useState } from "react";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 
-type MealPref = "veg" | "non-veg" | "vegan" | "pescatarian";
+type MealPref = "veg" | "non-veg" | "vegan" | "pescatarian" | "";
+
+export interface PartyMember {
+  name: string;
+  eventIds: string[];
+  meal: MealPref;
+  dietary: string;
+}
 
 interface ScheduleEvent {
   id: string;
@@ -25,54 +32,88 @@ interface RSVPSectionProps {
     dietaryRestrictions?: string;
     partySize?: number;
     attendingEventIds?: string;
+    partyMembers?: string;
   };
   visibleEvents: ScheduleEvent[];
 }
 
 const DAY_LABEL: Record<string, string> = {
-  friday: "Fri 11/28",
-  saturday: "Sat 11/29",
-  sunday: "Sun 11/30",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday",
 };
 
+const MEAL_OPTIONS: { value: MealPref; label: string }[] = [
+  { value: "", label: "Select…" },
+  { value: "veg", label: "Vegetarian" },
+  { value: "non-veg", label: "Non-Vegetarian" },
+  { value: "vegan", label: "Vegan" },
+  { value: "pescatarian", label: "Pescatarian" },
+];
+
 type SubmitState = "idle" | "submitting" | "success" | "error";
+
+function parseMembers(raw: string | undefined, guestName: string | undefined): PartyMember[] {
+  if (!raw) {
+    return [{ name: guestName ?? "You", eventIds: [], meal: "", dietary: "" }];
+  }
+  try {
+    const parsed = JSON.parse(raw) as Partial<PartyMember>[];
+    return parsed.map((m) => ({
+      name: m.name ?? "Guest",
+      eventIds: m.eventIds ?? [],
+      meal: (m.meal as MealPref) ?? "",
+      dietary: m.dietary ?? "",
+    }));
+  } catch {
+    return [{ name: guestName ?? "You", eventIds: [], meal: "", dietary: "" }];
+  }
+}
 
 export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
   const alreadyRSVPd = !!guest.rsvpStatus;
   const [editing, setEditing] = useState(!alreadyRSVPd);
 
-  // Parse existing attendingEventIds
-  const existingEventIds: string[] = (() => {
-    try {
-      return guest.attendingEventIds ? JSON.parse(guest.attendingEventIds) : [];
-    } catch {
-      return [];
-    }
-  })();
-
+  const initialMembers = parseMembers(guest.partyMembers, guest.name);
+  // If already RSVP'd, members already have their eventIds/meal from DB
   const [rsvpStatus, setRsvpStatus] = useState<"attending" | "not-attending" | "">(
     (guest.rsvpStatus as "attending" | "not-attending") || ""
   );
-  const [partySize, setPartySize] = useState<number>(guest.partySize ?? 1);
-  const [selectedEventIds, setSelectedEventIds] = useState<string[]>(
-    existingEventIds.length > 0
-      ? existingEventIds
-      : visibleEvents.map((e) => e.id)
-  );
-  const [mealPref, setMealPref] = useState<MealPref | "">(
-    (guest.mealPreference as MealPref) || ""
-  );
-  const [dietaryRestrictions, setDietaryRestrictions] = useState(
-    guest.dietaryRestrictions ?? ""
+  const [members, setMembers] = useState<PartyMember[]>(
+    initialMembers.map((m) => ({
+      ...m,
+      eventIds: m.eventIds.length > 0 ? m.eventIds : visibleEvents.map((e) => e.id),
+    }))
   );
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const attending = rsvpStatus === "attending";
 
-  function toggleEvent(id: string) {
-    setSelectedEventIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+  function updateMemberEvent(memberIdx: number, eventId: string, checked: boolean) {
+    setMembers((prev) =>
+      prev.map((m, i) =>
+        i !== memberIdx
+          ? m
+          : {
+              ...m,
+              eventIds: checked
+                ? [...m.eventIds, eventId]
+                : m.eventIds.filter((id) => id !== eventId),
+            }
+      )
+    );
+  }
+
+  function updateMemberMeal(memberIdx: number, meal: MealPref) {
+    setMembers((prev) =>
+      prev.map((m, i) => (i !== memberIdx ? m : { ...m, meal }))
+    );
+  }
+
+  function updateMemberDietary(memberIdx: number, dietary: string) {
+    setMembers((prev) =>
+      prev.map((m, i) => (i !== memberIdx ? m : { ...m, dietary }))
     );
   }
 
@@ -84,14 +125,20 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
     setErrorMessage("");
 
     try {
+      const membersToSave: PartyMember[] = attending
+        ? members
+        : members.map((m) => ({ ...m, eventIds: [], meal: "", dietary: "" }));
+
       await db.transact(
         db.tx.guests[lookup("email", guest.email)].merge({
           rsvpStatus,
-          mealPreference: attending ? mealPref || undefined : undefined,
-          dietaryRestrictions: attending ? dietaryRestrictions || undefined : undefined,
-          partySize: attending ? partySize : undefined,
+          partyMembers: JSON.stringify(membersToSave),
+          partySize: attending ? members.length : undefined,
+          // Keep legacy fields populated from first member for backwards compat
+          mealPreference: attending ? members[0]?.meal || undefined : undefined,
+          dietaryRestrictions: attending ? members[0]?.dietary || undefined : undefined,
           attendingEventIds: attending
-            ? JSON.stringify(selectedEventIds)
+            ? JSON.stringify([...new Set(members.flatMap((m) => m.eventIds))])
             : undefined,
           rsvpSubmittedAt: Date.now(),
         })
@@ -107,9 +154,7 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
 
   // ── Read-only summary ────────────────────────────────────────────────────────
   if (!editing) {
-    const attendingEvents = visibleEvents.filter((e) =>
-      existingEventIds.includes(e.id)
-    );
+    const savedMembers = parseMembers(guest.partyMembers, guest.name);
     return (
       <div
         className="rounded-lg px-8 py-8"
@@ -118,40 +163,17 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
           borderTop: "3px solid var(--color-gold)",
         }}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              className="text-2xl"
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "var(--color-gold)",
-                fontWeight: 400,
-              }}
-            >
-              {guest.rsvpStatus === "attending" ? "You're coming! 🎉" : "We'll miss you."}
-            </h2>
-            {guest.rsvpStatus === "attending" && (
-              <div className="mt-4 flex flex-col gap-1 text-sm" style={{ color: "var(--color-text-muted)" }}>
-                <p>
-                  <span style={{ color: "var(--color-text)" }}>Party size:</span>{" "}
-                  {guest.partySize ?? 1}{" "}
-                  {(guest.partySize ?? 1) === 1 ? "person" : "people"}
-                </p>
-                {attendingEvents.length > 0 && (
-                  <p>
-                    <span style={{ color: "var(--color-text)" }}>Events:</span>{" "}
-                    {attendingEvents.map((e) => e.title).join(", ")}
-                  </p>
-                )}
-                {guest.mealPreference && (
-                  <p>
-                    <span style={{ color: "var(--color-text)" }}>Meal:</span>{" "}
-                    {guest.mealPreference}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+        <div className="flex items-start justify-between gap-4 mb-5">
+          <h2
+            className="text-2xl"
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--color-gold)",
+              fontWeight: 400,
+            }}
+          >
+            {guest.rsvpStatus === "attending" ? "You're coming! 🎉" : "We'll miss you."}
+          </h2>
           <button
             type="button"
             onClick={() => setEditing(true)}
@@ -164,12 +186,55 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
             Edit
           </button>
         </div>
+
+        {guest.rsvpStatus === "attending" && savedMembers.length > 0 && (
+          <div className="flex flex-col gap-4">
+            {savedMembers.map((m) => {
+              const mEvents = visibleEvents.filter((e) => m.eventIds.includes(e.id));
+              return (
+                <div
+                  key={m.name}
+                  className="rounded px-5 py-4"
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid var(--color-border)" }}
+                >
+                  <p
+                    className="text-sm font-medium mb-1"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    {m.name}
+                  </p>
+                  {mEvents.length > 0 && (
+                    <p className="text-xs mb-1" style={{ color: "var(--color-text-muted)" }}>
+                      {mEvents.map((e) => e.title).join(", ")}
+                    </p>
+                  )}
+                  {m.meal && (
+                    <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>
+                      {MEAL_OPTIONS.find((o) => o.value === m.meal)?.label ?? m.meal}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
 
   // ── Form ─────────────────────────────────────────────────────────────────────
   const isSubmitting = submitState === "submitting";
+
+  // Group events by day for the event grid
+  const eventsByDay = visibleEvents.reduce<Record<string, ScheduleEvent[]>>((acc, e) => {
+    const day = e.day ?? "other";
+    if (!acc[day]) acc[day] = [];
+    acc[day].push(e);
+    return acc;
+  }, {});
+  const orderedDays = ["friday", "saturday", "sunday"].filter((d) => eventsByDay[d]?.length);
+
+  const isSingleMember = members.length === 1;
 
   return (
     <div
@@ -189,13 +254,23 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
         }}
       >
         RSVP
+        {!isSingleMember && (
+          <span
+            className="ml-3 text-sm font-light tracking-widest uppercase"
+            style={{ color: "var(--color-text-muted)", fontFamily: "inherit" }}
+          >
+            {members.length} guests
+          </span>
+        )}
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
         {/* ── Attendance ──────────────────────────────────────────────── */}
         <div className="mb-6">
           <fieldset>
-            <legend className="rsvp-label">Will you be attending?</legend>
+            <legend className="rsvp-label">
+              Will {isSingleMember ? "you" : "your party"} be attending?
+            </legend>
             <div className="mt-2 flex flex-col gap-3">
               {(
                 [
@@ -225,102 +300,149 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
           <>
             <hr className="gold-rule my-6" />
 
-            {/* ── Party size ──────────────────────────────────────────── */}
-            <div className="mb-6">
-              <label className="rsvp-label" htmlFor="rsvp-party-size">
-                How many people from your party are attending?
-              </label>
-              <input
-                id="rsvp-party-size"
-                type="number"
-                min={1}
-                max={10}
-                value={partySize}
-                onChange={(e) => setPartySize(Math.max(1, parseInt(e.target.value) || 1))}
-                className="rsvp-input"
-                style={{ maxWidth: "6rem" }}
-                disabled={isSubmitting}
-              />
-            </div>
-
-            {/* ── Events ──────────────────────────────────────────────── */}
+            {/* ── Event attendance per member ────────────────────────── */}
             {visibleEvents.length > 0 && (
-              <div className="mb-6">
-                <fieldset>
-                  <legend className="rsvp-label">Which events will you be joining us for?</legend>
-                  <div className="mt-3 flex flex-col gap-3">
-                    {visibleEvents.map((event) => (
-                      <label key={event.id} className="rsvp-checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={selectedEventIds.includes(event.id)}
-                          onChange={() => toggleEvent(event.id)}
-                          className="rsvp-checkbox"
-                          disabled={isSubmitting}
-                        />
-                        <span className="rsvp-checkbox-custom" aria-hidden="true" />
-                        <span style={{ color: "var(--color-text)" }}>
-                          {event.title}
-                          <span
-                            className="ml-2 text-xs"
-                            style={{ color: "var(--color-text-muted)" }}
+              <div className="mb-8">
+                <p className="rsvp-label mb-4">
+                  {isSingleMember
+                    ? "Which events will you attend?"
+                    : "Which events will each guest attend?"}
+                </p>
+
+                <div className="flex flex-col gap-5">
+                  {orderedDays.map((day) => (
+                    <div key={day}>
+                      <p
+                        className="text-xs tracking-widest uppercase mb-3"
+                        style={{ color: "var(--color-gold-dim)" }}
+                      >
+                        {DAY_LABEL[day] ?? day}
+                      </p>
+                      <div className="flex flex-col gap-3">
+                        {eventsByDay[day].map((event) => (
+                          <div
+                            key={event.id}
+                            className="rounded-lg px-5 py-4"
+                            style={{
+                              backgroundColor: "var(--color-bg)",
+                              border: "1px solid var(--color-border)",
+                            }}
                           >
-                            {DAY_LABEL[event.day] ?? event.day}
-                            {event.startTime ? ` · ${event.startTime}` : ""}
-                          </span>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
+                            <p
+                              className="text-sm font-medium mb-3"
+                              style={{ color: "var(--color-text)" }}
+                            >
+                              {event.title}
+                              {event.startTime && (
+                                <span
+                                  className="ml-2 font-light text-xs"
+                                  style={{ color: "var(--color-text-muted)" }}
+                                >
+                                  · {event.startTime}
+                                </span>
+                              )}
+                            </p>
+
+                            {isSingleMember ? (
+                              <label className="rsvp-checkbox-label">
+                                <input
+                                  type="checkbox"
+                                  checked={members[0].eventIds.includes(event.id)}
+                                  onChange={(e) =>
+                                    updateMemberEvent(0, event.id, e.target.checked)
+                                  }
+                                  className="rsvp-checkbox"
+                                  disabled={isSubmitting}
+                                />
+                                <span className="rsvp-checkbox-custom" aria-hidden="true" />
+                                <span style={{ color: "var(--color-text)" }}>
+                                  I'll be there
+                                </span>
+                              </label>
+                            ) : (
+                              <div className="flex flex-wrap gap-3">
+                                {members.map((member, idx) => (
+                                  <label
+                                    key={member.name}
+                                    className="rsvp-checkbox-label"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={member.eventIds.includes(event.id)}
+                                      onChange={(e) =>
+                                        updateMemberEvent(idx, event.id, e.target.checked)
+                                      }
+                                      className="rsvp-checkbox"
+                                      disabled={isSubmitting}
+                                    />
+                                    <span className="rsvp-checkbox-custom" aria-hidden="true" />
+                                    <span style={{ color: "var(--color-text)" }}>
+                                      {member.name}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* ── Meal preference ─────────────────────────────────────── */}
-            <div className="mb-6">
-              <label className="rsvp-label" htmlFor="rsvp-meal">
-                Meal Preference
-              </label>
-              <div className="rsvp-select-wrapper">
-                <select
-                  id="rsvp-meal"
-                  value={mealPref}
-                  onChange={(e) => setMealPref(e.target.value as MealPref)}
-                  className="rsvp-select"
-                  disabled={isSubmitting}
-                >
-                  <option value="">Select a preference</option>
-                  <option value="veg">Vegetarian</option>
-                  <option value="non-veg">Non-Vegetarian</option>
-                  <option value="vegan">Vegan</option>
-                  <option value="pescatarian">Pescatarian</option>
-                </select>
-                <span className="rsvp-select-arrow" aria-hidden="true">▾</span>
-              </div>
-            </div>
+            <hr className="gold-rule my-6" />
 
-            {/* ── Dietary restrictions ─────────────────────────────────── */}
+            {/* ── Meal preferences per member ─────────────────────────── */}
             <div className="mb-6">
-              <label className="rsvp-label" htmlFor="rsvp-diet">
-                Dietary Restrictions{" "}
-                <span style={{ color: "var(--color-text-dim)", fontWeight: 300 }}>
-                  (optional)
-                </span>
-              </label>
-              <textarea
-                id="rsvp-diet"
-                rows={3}
-                placeholder="Allergies, intolerances, or other notes…"
-                value={dietaryRestrictions}
-                onChange={(e) => setDietaryRestrictions(e.target.value)}
-                className="rsvp-input rsvp-textarea"
-                disabled={isSubmitting}
-              />
+              <p className="rsvp-label mb-4">
+                {isSingleMember ? "Meal preference" : "Meal preferences"}
+              </p>
+
+              <div className="flex flex-col gap-5">
+                {members.map((member, idx) => (
+                  <div key={member.name}>
+                    {!isSingleMember && (
+                      <p
+                        className="text-sm mb-2"
+                        style={{ color: "var(--color-text)" }}
+                      >
+                        {member.name}
+                      </p>
+                    )}
+                    <div className="rsvp-select-wrapper mb-2">
+                      <select
+                        value={member.meal}
+                        onChange={(e) => updateMemberMeal(idx, e.target.value as MealPref)}
+                        className="rsvp-select"
+                        disabled={isSubmitting}
+                      >
+                        {MEAL_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="rsvp-select-arrow" aria-hidden="true">▾</span>
+                    </div>
+                    <textarea
+                      rows={2}
+                      placeholder={`Dietary restrictions or allergies${isSingleMember ? "" : ` for ${member.name}`} (optional)`}
+                      value={member.dietary}
+                      onChange={(e) => updateMemberDietary(idx, e.target.value)}
+                      className="rsvp-input rsvp-textarea"
+                      disabled={isSubmitting}
+                      style={{ fontSize: "0.8125rem" }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}
 
-        {/* ── Error ───────────────────────────────────────────────────── */}
+        {/* ── Error ─────────────────────────────────────────────────── */}
         {submitState === "error" && errorMessage && (
           <p
             className="mb-5 rounded px-4 py-3 text-sm"
@@ -335,7 +457,7 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
           </p>
         )}
 
-        {/* ── Actions ─────────────────────────────────────────────────── */}
+        {/* ── Actions ───────────────────────────────────────────────── */}
         <div className="flex items-center gap-4">
           <button
             type="submit"

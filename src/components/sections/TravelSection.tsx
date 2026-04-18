@@ -1,3 +1,4 @@
+import { SectionBanner } from "@/components/SectionBanner";
 import { VenueCard } from "@/components/travel/VenueCard";
 import { HotelCard } from "@/components/travel/HotelCard";
 import { InfoCard } from "@/components/travel/InfoCard";
@@ -9,12 +10,10 @@ import {
   bostonFavorites,
 } from "@/lib/travel-content";
 
-// ── Reusable section header ──────────────────────────────────────────────────
-
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6">
-      <h2
+      <h3
         className="text-sm font-medium tracking-[0.25em] uppercase"
         style={{
           fontFamily: "var(--font-body)",
@@ -23,25 +22,24 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         }}
       >
         {children}
-      </h2>
+      </h3>
       <hr className="gold-rule mt-2" />
     </div>
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
-
-export default function TravelStay() {
+export function TravelSection() {
   const ic = venues.intercontinental;
   const gurdwara = venues.gurudwara;
 
   return (
-    <div
-      className="min-h-screen w-full pt-24 pb-20"
-      style={{ backgroundColor: "var(--color-bg)" }}
+    <section
+      id="travel"
+      className="w-full pt-0 pb-24 px-6"
+      style={{ backgroundColor: "var(--color-bg)", scrollMarginTop: "64px" }}
     >
-      <div className="mx-auto max-w-4xl px-6">
-        {/* ── Page Header ─────────────────────────────────────────────── */}
+      <SectionBanner match="palace" fallbackMatch="venue/" height="26vh" />
+      <div className="mx-auto max-w-4xl px-6 pt-16 pb-24">
         <header className="mb-16 text-center">
           <p
             className="mb-3 text-xs tracking-[0.3em] uppercase"
@@ -49,7 +47,7 @@ export default function TravelStay() {
           >
             Boston, Massachusetts
           </p>
-          <h1
+          <h2
             className="text-5xl md:text-6xl"
             style={{
               fontFamily: "var(--font-display)",
@@ -57,8 +55,8 @@ export default function TravelStay() {
               fontWeight: 400,
             }}
           >
-            Travel & Stay
-          </h1>
+            Travel &amp; Stay
+          </h2>
           <div
             className="mx-auto mt-5 h-px w-24"
             style={{ backgroundColor: "var(--color-border-gold)" }}
@@ -71,12 +69,10 @@ export default function TravelStay() {
           </p>
         </header>
 
-        {/* ── Getting Here ─────────────────────────────────────────────── */}
-        <section className="mb-16">
+        {/* Getting Here */}
+        <div className="mb-16">
           <SectionHeader>Getting Here</SectionHeader>
-
           <div className="flex flex-col gap-4 sm:flex-row">
-            {/* Flying */}
             <InfoCard icon="✈️" title="Flying In">
               <p className="mb-3">
                 <span style={{ color: "var(--color-gold-light)" }}>BOS</span>{" "}
@@ -102,8 +98,6 @@ export default function TravelStay() {
                   ))}
               </ul>
             </InfoCard>
-
-            {/* Driving */}
             <InfoCard icon="🚗" title="Driving">
               <p>
                 Take{" "}
@@ -114,27 +108,21 @@ export default function TravelStay() {
                 InterContinental Boston.
               </p>
             </InfoCard>
-
-            {/* Train */}
             <InfoCard icon="🚆" title="Train">
               <p>
                 Amtrak&apos;s{" "}
-                <span style={{ color: "var(--color-text)" }}>
-                  South Station
-                </span>{" "}
-                is a 5-minute walk from InterContinental Boston, with
-                connections from New York, Providence, and beyond.
+                <span style={{ color: "var(--color-text)" }}>South Station</span>{" "}
+                is a 5-minute walk from InterContinental Boston, with connections
+                from New York, Providence, and beyond.
               </p>
             </InfoCard>
           </div>
-        </section>
+        </div>
 
-        {/* ── Where to Stay ────────────────────────────────────────────── */}
-        <section className="mb-16">
+        {/* Where to Stay */}
+        <div className="mb-16">
           <SectionHeader>Where to Stay</SectionHeader>
-
           <div className="space-y-4">
-            {/* Preferred hotel first */}
             {hotels
               .filter((h) => h.preferred)
               .map((h) => (
@@ -147,8 +135,6 @@ export default function TravelStay() {
                   preferred={h.preferred}
                 />
               ))}
-
-            {/* Nearby alternatives */}
             <div
               className="rounded-lg p-5"
               style={{ backgroundColor: "var(--color-surface)" }}
@@ -193,12 +179,11 @@ export default function TravelStay() {
               </ul>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* ── The Two Venues ───────────────────────────────────────────── */}
-        <section className="mb-16">
+        {/* The Two Venues */}
+        <div className="mb-16">
           <SectionHeader>The Two Venues</SectionHeader>
-
           <div className="flex flex-col gap-4 sm:flex-row">
             <VenueCard
               name={ic.name}
@@ -213,12 +198,11 @@ export default function TravelStay() {
               events={gurdwara.events}
             />
           </div>
-        </section>
+        </div>
 
-        {/* ── Getting Around Boston ────────────────────────────────────── */}
-        <section className="mb-16">
+        {/* Getting Around */}
+        <div className="mb-16">
           <SectionHeader>Getting Around Boston</SectionHeader>
-
           <div className="flex flex-col gap-4 sm:flex-row">
             {gettingAround.map((item) => (
               <InfoCard key={item.label} icon={item.icon} title={item.label}>
@@ -226,12 +210,11 @@ export default function TravelStay() {
               </InfoCard>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* ── While You're in Boston ───────────────────────────────────── */}
-        <section className="mb-16">
+        {/* While You're in Boston */}
+        <div className="mb-16">
           <SectionHeader>While You&apos;re in Boston</SectionHeader>
-
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {bostonFavorites.map((fav, i) => (
               <div
@@ -252,22 +235,18 @@ export default function TravelStay() {
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* ── Footer rule ──────────────────────────────────────────────── */}
-        <div className="mt-4 text-center">
+        <div className="text-center">
           <div
             className="mx-auto mb-6 h-px w-24"
             style={{ backgroundColor: "var(--color-border-gold)" }}
           />
-          <p
-            className="text-sm font-light"
-            style={{ color: "var(--color-text-dim)" }}
-          >
+          <p className="text-sm font-light" style={{ color: "var(--color-text-dim)" }}>
             More details will be added as the date approaches.
           </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

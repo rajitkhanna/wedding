@@ -25,6 +25,7 @@ const _schema = i.schema({
       email: i.string().unique().indexed(),
       mealPreference: i.string().optional(),
       name: i.string(),
+      partyMembers: i.string().optional(),
       partySize: i.number().optional(),
       rsvpStatus: i.string().optional(),
       rsvpSubmittedAt: i.number().optional(),

@@ -2,6 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
+import * as THREE from "three";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { Rose } from "./Rose";
 import { GoldParticles } from "./GoldParticles";
@@ -47,56 +48,55 @@ export function RoseHero() {
       <div className="sticky top-0 h-screen">
         <Canvas
           shadows
-          camera={{
-            position: [0, 0.5 + scrollProgress * 0.5, 5.5 - scrollProgress],
-            fov: 38 - scrollProgress * 5,
-          }}
-          gl={{ antialias: true, alpha: true, toneMapping: 1 }}
+          camera={{ position: [0, 0.6, 4.8], fov: 42 }}
+          gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.7 }}
         >
           <fog attach="fog" args={["#0a0508", 6, 18]} />
 
           <ambientLight
-            intensity={0.4 + scrollProgress * 0.3}
-            color="#ffeeee"
+            intensity={0.12 + scrollProgress * 0.08}
+            color="#ffdddd"
           />
 
           <directionalLight
             position={[2, 6, 4]}
             color="#fff5e0"
-            intensity={1.5 + scrollProgress * 0.5}
+            intensity={0.7 + scrollProgress * 0.2}
             castShadow
             shadow-mapSize={[2048, 2048]}
           />
 
           <directionalLight
             position={[-3, 2, 3]}
-            color="#ffaaaa"
-            intensity={0.6 + scrollProgress * 0.4}
+            color="#ffcccc"
+            intensity={0.2 + scrollProgress * 0.1}
           />
 
           <directionalLight
             position={[0, 2, -4]}
             color="#660011"
-            intensity={0.3 + scrollProgress * 0.3}
+            intensity={0.1 + scrollProgress * 0.1}
           />
 
           <pointLight
             position={[0, 3, 2]}
             color="#ffd700"
-            intensity={scrollProgress * 2}
+            intensity={scrollProgress * 0.6}
             distance={8}
           />
+
+          <Environment preset="sunset" backgroundBlurriness={1} backgroundIntensity={0} environmentIntensity={0.35} />
 
           <Rose scrollProgress={scrollProgress} />
           <GoldParticles scrollProgress={scrollProgress} />
 
           <EffectComposer>
             <Bloom
-              luminanceThreshold={0.6 - scrollProgress * 0.2}
+              luminanceThreshold={0.8}
               luminanceSmoothing={0.9}
-              intensity={0.6 + scrollProgress * 1.5}
+              intensity={0.3 + scrollProgress * 0.6}
               mipmapBlur
-              radius={0.6 + scrollProgress * 0.4}
+              radius={0.4 + scrollProgress * 0.2}
             />
             <Vignette darkness={0.65 - scrollProgress * 0.2} offset={0.25} />
           </EffectComposer>
@@ -112,7 +112,7 @@ export function RoseHero() {
         </Canvas>
 
         <div
-          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
+          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end pb-24"
           style={{ opacity: overlayOpacity, transition: "opacity 0.1s" }}
         >
           <div className="text-center px-6">

@@ -95,7 +95,7 @@ export function HotelCard({
                 el.style.color = "var(--color-gold)";
               }}
             >
-              Book Room Block →
+              Book Hotel →
             </a>
           ) : (
             <span

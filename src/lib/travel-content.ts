@@ -11,14 +11,12 @@ export const venues = {
       "Sangeet & Reception (Sat)",
       "Telugu Wedding (Sun)",
     ],
-    blockCode: "TBD",
-    bookingUrl: "TBD",
     preferred: true,
   },
   gurudwara: {
-    name: "Westborough Gurudwara",
-    address: "TBD — address coming soon",
-    mapsUrl: "TBD",
+    name: "Westborough Gurudwara Sahib",
+    address: "168 Flanders Rd, Westborough, MA 01581",
+    mapsUrl: "https://maps.google.com/maps?q=168+Flanders+Rd,+Westborough,+MA+01581",
     events: ["Sikh Ceremony (Sat morning)"],
     preferred: false,
   },
@@ -59,8 +57,8 @@ export const hotels = [
   {
     name: "InterContinental Boston",
     distance: null,
-    note: "Room block available — code TBD. All Friday, Saturday, and Sunday events are held here.",
-    bookingUrl: "TBD",
+    note: "All Friday, Saturday, and Sunday events are held here — staying at the IC means you're steps from everything.",
+    bookingUrl: "https://www.intercontinentalboston.com/",
     preferred: true,
   },
   {

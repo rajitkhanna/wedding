@@ -4,29 +4,54 @@ import { useState } from "react";
 import Image from "next/image";
 import { db } from "@/lib/instant/db";
 
-const GALLERY_CONFIG = [
-  { path: "R5VN7937.jpg",      alt: "Meghana and Rajit",  span: "col-span-2 row-span-2", localSrc: "/photos/R5VN7937.jpg" },
-  { path: "R6VN9843.jpg",      alt: "Strolling together",  span: "",                      localSrc: "/photos/R6VN9843.jpg" },
-  { path: "RJF-08032.jpg",     alt: "Ceremony moment",    span: "",                      localSrc: "/photos/RJF-08032.jpg" },
-  { path: "RJF-08390.jpg",     alt: "Couple portrait",    span: "",                      localSrc: "/photos/RJF-08390.jpg" },
-  { path: "R5VN7788 copy.jpg", alt: "Elegant pose",       span: "col-span-2",            localSrc: "/photos/R5VN7788 copy.jpg" },
-  { path: "R6VN9828.jpg",      alt: "Joyful moment",      span: "",                      localSrc: "/photos/R6VN9828.jpg" },
-  { path: "R6VN0568.jpg",      alt: "Romantic portrait",  span: "row-span-2",            localSrc: "/photos/R6VN0568.jpg" },
-  { path: "RJF-03982.jpg",     alt: "Wedding day",        span: "",                      localSrc: "/photos/RJF-03982.jpg" },
-];
+interface PhotoItem {
+  path: string;
+  url: string;
+  alt: string;
+  span: string;
+}
+
+function getSpanClass(index: number): string {
+  if (index === 0) return "col-span-2 row-span-2";
+  if (index === 4) return "col-span-2";
+  if (index === 7) return "row-span-2";
+  return "";
+}
+
+function getAltFromPath(path: string): string {
+  const name = path.replace(/\.[^.]+$/, "").replace(/[_-]/g, " ");
+  if (name.includes("RJF")) return "Wedding moment";
+  if (name.includes("R5VN")) return "Couple portrait";
+  if (name.includes("R6VN")) return "Romantic moment";
+  if (name.includes("hero")) return "Wedding photo";
+  return name;
+}
 
 export function PhotoGallery() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const { data } = db.useQuery({ $files: {} });
 
-  const urlMap = new Map<string, string>(
-    (data?.$files ?? []).map((f: { path: string; url: string }) => [f.path, f.url])
-  );
+  const allFiles: PhotoItem[] = (data?.$files ?? [])
+    .filter(
+      (f: { path: string }) =>
+        !f.path.startsWith("story/") && !f.path.startsWith("home/"),
+    )
+    .map((f: { path: string; url: string }, i: number) => ({
+      path: f.path,
+      url: f.url,
+      alt: getAltFromPath(f.path),
+      span: getSpanClass(i),
+    }))
+    .sort((a: PhotoItem, b: PhotoItem) => {
+      const aHero = a.path.includes("hero") ? 0 : 1;
+      const bHero = b.path.includes("hero") ? 0 : 1;
+      if (aHero !== bHero) return aHero - bHero;
+      return a.path.localeCompare(b.path);
+    });
 
-  const photos = GALLERY_CONFIG.map((item) => ({
-    ...item,
-    src: urlMap.get(item.path) ?? item.localSrc,
-  }));
+  if (allFiles.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-24 px-4 md:px-8">
@@ -55,9 +80,9 @@ export function PhotoGallery() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {photos.map((photo, index) => (
+          {allFiles.map((photo, index) => (
             <button
-              key={photo.src}
+              key={photo.path}
               onClick={() => setSelectedIndex(index)}
               className={`relative overflow-hidden rounded-lg group cursor-pointer ${photo.span}`}
               style={{
@@ -68,7 +93,7 @@ export function PhotoGallery() {
               }}
             >
               <Image
-                src={photo.src}
+                src={photo.url}
                 alt={photo.alt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -140,7 +165,7 @@ export function PhotoGallery() {
               </button>
             )}
 
-            {selectedIndex < photos.length - 1 && (
+            {selectedIndex < allFiles.length - 1 && (
               <button
                 className="absolute right-4 p-3 rounded-full transition-opacity hover:opacity-70"
                 style={{ color: "var(--color-gold)" }}
@@ -171,8 +196,8 @@ export function PhotoGallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={photos[selectedIndex].src}
-                alt={photos[selectedIndex].alt}
+                src={allFiles[selectedIndex].url}
+                alt={allFiles[selectedIndex].alt}
                 width={1200}
                 height={800}
                 className="object-contain rounded-lg"
@@ -182,7 +207,7 @@ export function PhotoGallery() {
                 className="text-center mt-4 text-sm"
                 style={{ color: "var(--color-text-muted)" }}
               >
-                {photos[selectedIndex].alt}
+                {allFiles[selectedIndex].alt}
               </p>
             </div>
           </div>
@@ -190,7 +215,7 @@ export function PhotoGallery() {
 
         <div className="text-center mt-12">
           <a
-            href="/story"
+            href="#story"
             className="inline-flex items-center gap-2 text-sm tracking-widest uppercase transition-all hover:gap-4"
             style={{ color: "var(--color-gold)" }}
           >

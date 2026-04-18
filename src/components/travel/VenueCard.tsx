@@ -1,13 +1,13 @@
 interface VenueCardProps {
   name: string;
   address: string;
-  mapsUrl: string;
+  mapsUrl: string | null;
   events: readonly string[];
 }
 
 export function VenueCard({ name, address, mapsUrl, events }: VenueCardProps) {
-  const mapAvailable = mapsUrl !== "TBD";
-  const addressAvailable = !address.startsWith("TBD");
+  const mapAvailable = !!mapsUrl && mapsUrl !== "TBD";
+  const addressAvailable = !address.startsWith("TBD") && !address.startsWith("Address will");
 
   return (
     <div

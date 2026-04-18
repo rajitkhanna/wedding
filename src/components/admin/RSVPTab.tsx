@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 
 interface Guest {
@@ -8,50 +10,104 @@ interface Guest {
   email: string;
   rsvpStatus?: string;
   mealPreference?: string;
-  plusOneName?: string;
+  partyMembers?: string;
   rsvpSubmittedAt?: number;
+  scheduleGroup?: string;
 }
+
+const MEAL_LABELS: Record<string, string> = {
+  veg: "Vegetarian",
+  "non-veg": "Non-Veg",
+  vegan: "Vegan",
+  pescatarian: "Pescatarian",
+};
 
 export function RSVPTab() {
   const { isLoading, data } = db.useQuery({ guests: {} });
   const guests: Guest[] = data?.guests ?? [];
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNames, setEditNames] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const attending = guests.filter((g) => g.rsvpStatus === "attending");
   const declined = guests.filter((g) => g.rsvpStatus === "not-attending");
   const noResponse = guests.filter((g) => !g.rsvpStatus || g.rsvpStatus === "");
 
-  const mealCounts = attending.reduce(
-    (acc, g) => {
-      const meal = g.mealPreference ?? "none";
-      acc[meal] = (acc[meal] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  // Count total people across all party members
+  function countPeople(guests: Guest[]) {
+    return guests.reduce((sum, g) => {
+      try {
+        const members = g.partyMembers ? JSON.parse(g.partyMembers) : null;
+        return sum + (Array.isArray(members) ? members.length : 1);
+      } catch {
+        return sum + 1;
+      }
+    }, 0);
+  }
 
-  const totalPlusOnes = attending.filter((g) => g.plusOneName).length;
-  const totalAttending = attending.length + totalPlusOnes;
+  const totalAttending = countPeople(attending);
+
+  function getPartyNames(guest: Guest): string {
+    try {
+      const members = guest.partyMembers ? JSON.parse(guest.partyMembers) : null;
+      if (!Array.isArray(members) || members.length === 0) return guest.name;
+      return members.map((m: { name: string }) => m.name).join(", ");
+    } catch {
+      return guest.name;
+    }
+  }
+
+  function startEdit(guest: Guest) {
+    setEditingId(guest.id);
+    setEditNames(getPartyNames(guest));
+  }
+
+  async function savePartyMembers(guest: Guest) {
+    setSaving(true);
+    const names = editNames
+      .split(",")
+      .map((n) => n.trim())
+      .filter(Boolean);
+    if (names.length === 0) {
+      setSaving(false);
+      return;
+    }
+    // Merge new names with any existing RSVP data per member
+    let existing: { name: string; eventIds?: string[]; meal?: string; dietary?: string }[] = [];
+    try {
+      existing = guest.partyMembers ? JSON.parse(guest.partyMembers) : [];
+    } catch {
+      existing = [];
+    }
+    const existingByName = Object.fromEntries(existing.map((m) => [m.name, m]));
+    const updated = names.map((name) => {
+      const { name: _n, ...rest } = existingByName[name] ?? {};
+      return { name, ...rest };
+    });
+    try {
+      await db.transact(
+        db.tx.guests[lookup("email", guest.email)].merge({
+          partyMembers: JSON.stringify(updated),
+          partySize: updated.length,
+        })
+      );
+      setEditingId(null);
+    } catch (err) {
+      console.error(err);
+    }
+    setSaving(false);
+  }
 
   function exportCSV() {
-    const headers = [
-      "Name",
-      "Email",
-      "RSVP Status",
-      "Meal Preference",
-      "Plus One",
-      "Submitted At",
-    ];
+    const headers = ["Name", "Email", "Party Members", "RSVP Status", "Schedule Group", "Submitted At"];
     const rows = guests.map((g) => [
       g.name,
       g.email,
+      getPartyNames(g),
       g.rsvpStatus ?? "No response",
-      g.mealPreference ?? "-",
-      g.plusOneName ?? "-",
-      g.rsvpSubmittedAt
-        ? new Date(g.rsvpSubmittedAt).toLocaleDateString()
-        : "-",
+      g.scheduleGroup ?? "-",
+      g.rsvpSubmittedAt ? new Date(g.rsvpSubmittedAt).toLocaleDateString() : "-",
     ]);
-
     const csv = [
       headers.join(","),
       ...rows.map((r) => r.map((c) => `"${c}"`).join(",")),
@@ -68,10 +124,7 @@ export function RSVPTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <p
-          className="text-sm tracking-widest uppercase"
-          style={{ color: "var(--color-text-muted)" }}
-        >
+        <p className="text-sm tracking-widest uppercase" style={{ color: "var(--color-text-muted)" }}>
           Loading…
         </p>
       </div>
@@ -83,120 +136,53 @@ export function RSVPTab() {
       <div className="flex items-center justify-between mb-8">
         <h2
           className="text-3xl"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--color-gold)",
-            fontWeight: 400,
-          }}
+          style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 400 }}
         >
           RSVP Overview
         </h2>
         <button
           onClick={exportCSV}
           className="rounded px-4 py-2 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
-          style={{
-            backgroundColor: "var(--color-gold)",
-            color: "var(--color-bg)",
-          }}
+          style={{ backgroundColor: "var(--color-gold)", color: "var(--color-bg)" }}
         >
           Export CSV
         </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <StatCard
-          label="Attending"
-          value={totalAttending}
-          color="var(--color-gold)"
-        />
-        <StatCard
-          label="Declined"
-          value={declined.length}
-          color="var(--color-red)"
-        />
-        <StatCard
-          label="No Response"
-          value={noResponse.length}
-          color="var(--color-text-muted)"
-        />
-      </div>
-
-      <div className="mb-8">
-        <h3
-          className="text-xl mb-4"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--color-gold)",
-            fontWeight: 400,
-          }}
-        >
-          Meal Breakdown
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          {Object.entries(mealCounts).map(([meal, count]) => (
-            <span
-              key={meal}
-              className="rounded-full px-4 py-2 text-sm"
-              style={{
-                backgroundColor: "var(--color-surface)",
-                border: "1px solid var(--color-border-gold)",
-                color: "var(--color-text)",
-              }}
-            >
-              {MEAL_LABELS[meal] ?? meal}:{" "}
-              <strong style={{ color: "var(--color-gold)" }}>{count}</strong>
-            </span>
-          ))}
-        </div>
+        <StatCard label="Attending (people)" value={totalAttending} color="var(--color-gold)" />
+        <StatCard label="Declined (parties)" value={declined.length} color="var(--color-red)" />
+        <StatCard label="No Response" value={noResponse.length} color="var(--color-text-muted)" />
       </div>
 
       <div>
         <h3
           className="text-xl mb-4"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--color-gold)",
-            fontWeight: 400,
-          }}
+          style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 400 }}
         >
-          Guest List ({guests.length})
+          Guest List ({guests.length} parties)
         </h3>
-        <div
-          className="rounded-lg overflow-hidden"
-          style={{ border: "1px solid var(--color-border-gold)" }}
-        >
+        <p className="text-xs mb-4" style={{ color: "var(--color-text-dim)" }}>
+          Party Members — comma-separated names. The magic link holder RSVPs for everyone listed.
+        </p>
+        <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--color-border-gold)" }}>
           <table className="w-full text-sm">
             <thead>
               <tr style={{ backgroundColor: "var(--color-surface)" }}>
-                <th
-                  className="text-left p-3 font-medium"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  Name
+                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
+                  Account Name
                 </th>
-                <th
-                  className="text-left p-3 font-medium hidden md:table-cell"
-                  style={{ color: "var(--color-gold)" }}
-                >
+                <th className="text-left p-3 font-medium hidden md:table-cell" style={{ color: "var(--color-gold)" }}>
                   Email
                 </th>
-                <th
-                  className="text-left p-3 font-medium"
-                  style={{ color: "var(--color-gold)" }}
-                >
+                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
+                  Party Members
+                </th>
+                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
                   RSVP
                 </th>
-                <th
-                  className="text-left p-3 font-medium"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  Meal
-                </th>
-                <th
-                  className="text-left p-3 font-medium hidden lg:table-cell"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  Plus One
+                <th className="text-left p-3 font-medium hidden md:table-cell" style={{ color: "var(--color-gold)" }}>
+                  Group
                 </th>
               </tr>
             </thead>
@@ -205,38 +191,68 @@ export function RSVPTab() {
                 <tr
                   key={guest.id}
                   style={{
-                    backgroundColor:
-                      i % 2 === 0
-                        ? "var(--color-surface)"
-                        : "var(--color-surface-alt)",
+                    backgroundColor: i % 2 === 0 ? "var(--color-surface)" : "var(--color-surface-alt)",
                   }}
                 >
                   <td className="p-3" style={{ color: "var(--color-text)" }}>
                     {guest.name}
                   </td>
-                  <td
-                    className="p-3 hidden md:table-cell"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
+                  <td className="p-3 hidden md:table-cell" style={{ color: "var(--color-text-muted)" }}>
                     {guest.email}
+                  </td>
+                  <td className="p-3">
+                    {editingId === guest.id ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editNames}
+                          onChange={(e) => setEditNames(e.target.value)}
+                          placeholder="Name1, Name2, …"
+                          className="rsvp-input"
+                          style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem", minWidth: "180px" }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") { e.preventDefault(); savePartyMembers(guest); }
+                            if (e.key === "Escape") setEditingId(null);
+                          }}
+                          disabled={saving}
+                        />
+                        <button
+                          onClick={() => savePartyMembers(guest)}
+                          disabled={saving}
+                          className="text-xs px-2 py-1 rounded transition-opacity hover:opacity-70"
+                          style={{ color: "var(--color-gold)", border: "1px solid var(--color-gold)" }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="text-xs transition-opacity hover:opacity-70"
+                          style={{ color: "var(--color-text-muted)" }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => startEdit(guest)}
+                        className="text-left transition-opacity hover:opacity-70 group"
+                        style={{ color: "var(--color-text-muted)" }}
+                      >
+                        <span>{getPartyNames(guest)}</span>
+                        <span
+                          className="ml-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ color: "var(--color-gold)" }}
+                        >
+                          edit
+                        </span>
+                      </button>
+                    )}
                   </td>
                   <td className="p-3">
                     <StatusBadge status={guest.rsvpStatus} />
                   </td>
-                  <td
-                    className="p-3"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    {guest.mealPreference
-                      ? (MEAL_LABELS[guest.mealPreference] ??
-                        guest.mealPreference)
-                      : "-"}
-                  </td>
-                  <td
-                    className="p-3 hidden lg:table-cell"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    {guest.plusOneName ?? "-"}
+                  <td className="p-3 hidden md:table-cell" style={{ color: "var(--color-text-muted)" }}>
+                    {guest.scheduleGroup ?? "-"}
                   </td>
                 </tr>
               ))}
@@ -248,40 +264,16 @@ export function RSVPTab() {
   );
 }
 
-const MEAL_LABELS: Record<string, string> = {
-  veg: "Vegetarian",
-  "non-veg": "Non-Veg",
-  vegan: "Vegan",
-  pescatarian: "Pescatarian",
-};
-
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
+function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div
       className="rounded-lg p-5"
-      style={{
-        backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border-gold)",
-      }}
+      style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border-gold)" }}
     >
-      <p
-        className="text-xs tracking-widest uppercase mb-1"
-        style={{ color: "var(--color-text-muted)" }}
-      >
+      <p className="text-xs tracking-widest uppercase mb-1" style={{ color: "var(--color-text-muted)" }}>
         {label}
       </p>
-      <p
-        className="text-3xl"
-        style={{ fontFamily: "var(--font-display)", color, fontWeight: 400 }}
-      >
+      <p className="text-3xl" style={{ fontFamily: "var(--font-display)", color, fontWeight: 400 }}>
         {value}
       </p>
     </div>
@@ -294,9 +286,7 @@ function StatusBadge({ status }: { status?: string }) {
     "not-attending": { label: "Declined", color: "var(--color-red)" },
   };
   const config = configs[status ?? ""];
-  if (!config)
-    return <span style={{ color: "var(--color-text-dim)" }}>Pending</span>;
-
+  if (!config) return <span style={{ color: "var(--color-text-dim)" }}>Pending</span>;
   return (
     <span
       className="inline-block rounded-full px-2.5 py-0.5 text-xs"
