@@ -2,24 +2,20 @@
 
 import { useEffect } from "react";
 import { db } from "@/lib/instant/db";
-import { HeroSimpleRSVPForm } from "@/components/rsvp/HeroSimpleRSVPForm";
-
-const VISIBLE_GROUPS: Record<string, string[]> = {
-  "wedding-party": ["all", "family", "wedding-party"],
-  family: ["all", "family"],
-  general: ["all"],
-  admin: ["all", "family", "wedding-party"],
-};
+import { getVisibleGroups } from "@/lib/schedule/visibleGroups";
+import { RSVPSection } from "@/components/schedule/RSVPSection";
 
 export function HeroRSVPModal({
   open,
   onClose,
   onAfterSubmit,
+  startEditing = false,
   allowSubmit = true,
 }: {
   open: boolean;
   onClose: () => void;
   onAfterSubmit?: () => void;
+  startEditing?: boolean;
   /** When false (after RSVP deadline), form is read-only. */
   allowSubmit?: boolean;
 }) {
@@ -35,7 +31,7 @@ export function HeroRSVPModal({
 
   const guest = guestData?.guests?.[0];
   const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = VISIBLE_GROUPS[scheduleGroup] ?? ["all"];
+  const visibleGroups = getVisibleGroups(scheduleGroup);
 
   const allEvents = eventsData?.scheduleEvents ?? [];
   const guestEvents = allEvents.filter((e) =>
@@ -77,7 +73,7 @@ export function HeroRSVPModal({
         onClick={onClose}
       />
       <div
-        className="relative z-10 max-h-[min(90vh,900px)] w-full max-w-lg overflow-y-auto rounded-lg"
+        className="relative z-10 max-h-[min(90vh,900px)] w-full max-w-2xl overflow-y-auto rounded-lg"
         style={{
           backgroundColor: "var(--color-bg)",
           border: "1px solid var(--color-border-gold)",
@@ -126,17 +122,29 @@ export function HeroRSVPModal({
               please reach out to the couple.
             </p>
           ) : (
-            <HeroSimpleRSVPForm
-              guestEmail={guest.email as string}
-              attendingEventIds={guest.attendingEventIds as string | undefined}
-              rsvpStatus={guest.rsvpStatus as string | undefined}
+            <RSVPSection
+              startEditing={startEditing}
+              rsvpLocked={!allowSubmit}
+              guest={{
+                id: guest.id as string,
+                email: guest.email as string,
+                name: guest.name as string | undefined,
+                rsvpStatus: guest.rsvpStatus as string | undefined,
+                mealPreference: guest.mealPreference as string | undefined,
+                dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
+                partySize: guest.partySize as number | undefined,
+                attendingEventIds: guest.attendingEventIds as string | undefined,
+                partyMembers: guest.partyMembers as string | undefined,
+              }}
               visibleEvents={guestEvents.map((e) => ({
                 id: e.id,
                 title: e.title as string,
                 day: e.day as string,
                 startTime: e.startTime as string,
+                location: e.location as string | undefined,
+                group: e.group as string,
               }))}
-              allowSubmit={allowSubmit}
+              onScheduleClick={onClose}
               onSubmitted={() => {
                 onAfterSubmit?.();
                 onClose();

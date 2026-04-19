@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HeroRSVPModal } from "@/components/rsvp/HeroRSVPModal";
 import { JourneySection } from "@/components/sections/JourneySection";
@@ -28,19 +28,40 @@ function scrollToSchedule() {
 
 export default function Home() {
   const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
+  const [rsvpModalStartEditing, setRsvpModalStartEditing] = useState(false);
   const rsvpOpen = isRsvpOpen();
+
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+
+    if (window.sessionStorage.getItem("scroll-to-schedule") !== "true") return;
+    window.sessionStorage.removeItem("scroll-to-schedule");
+    document.getElementById("schedule")?.scrollIntoView({ behavior: "smooth" });
+    window.history.replaceState(null, "", "/");
+  }, []);
 
   return (
     <main style={{ backgroundColor: "var(--color-bg)" }}>
       <HeroRSVPModal
         open={rsvpModalOpen}
-        onClose={() => setRsvpModalOpen(false)}
+        onClose={() => {
+          setRsvpModalOpen(false);
+          setRsvpModalStartEditing(false);
+        }}
         onAfterSubmit={scrollToSchedule}
+        startEditing={rsvpModalStartEditing}
         allowSubmit={rsvpOpen}
       />
 
       {/* 1. Big photo + RSVP */}
-      <HeroSection onRSVPClick={() => setRsvpModalOpen(true)} />
+      <HeroSection
+        onRSVPClick={() => {
+          setRsvpModalStartEditing(false);
+          setRsvpModalOpen(true);
+        }}
+      />
 
       {/* 2. Our Story carousel */}
       <JourneySection />
@@ -53,7 +74,12 @@ export default function Home() {
       <Divider />
 
       {/* 4. Schedule (tailored to the guest) */}
-      <ScheduleSection />
+      <ScheduleSection
+        onEditRsvp={() => {
+          setRsvpModalStartEditing(true);
+          setRsvpModalOpen(true);
+        }}
+      />
 
       <Divider />
 
