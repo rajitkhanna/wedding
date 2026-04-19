@@ -1,0 +1,22 @@
+# Ignore everything by default
+*
+
+# Allow subdirectory traversal
+!.gitignore
+!prom/
+!proposal/
+!nischitartham/
+!engagement/
+
+# Ignore all files in those subdirs, then un-ignore only the carousel photos
+prom/*
+proposal/*
+nischitartham/*
+engagement/*
+
+!prom/prom-2019.jpeg
+!proposal/proposal-kneeling.jpeg
+!proposal/proposal-after-showing-ring.jpeg
+!nischitartham/couple-with-garlands.jpg
+!engagement/under-the-arch-walking.jpg
+!engagement/close-portrait-wall.jpg
