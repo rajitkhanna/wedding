@@ -107,18 +107,6 @@ export function Navigation() {
     await db.auth.signOut();
   }
 
-  function toggleSageSurfaces() {
-    const root = document.documentElement;
-    const next = root.dataset.surface === "sage" ? "" : "sage";
-    if (next) {
-      root.dataset.surface = next;
-      window.localStorage.setItem("surface-mode", next);
-    } else {
-      delete root.dataset.surface;
-      window.localStorage.removeItem("surface-mode");
-    }
-  }
-
   return (
     <>
       <nav
@@ -223,13 +211,6 @@ export function Navigation() {
 
             {/* Sign out */}
             <button
-              onClick={toggleSageSurfaces}
-              className="text-xs tracking-widest uppercase font-light transition-opacity hover:opacity-70"
-              style={{ color: "var(--color-text-dim)" }}
-            >
-              Sage Preview
-            </button>
-            <button
               onClick={handleSignOut}
               className="text-xs tracking-widest uppercase font-light transition-opacity hover:opacity-70"
               style={{ color: "var(--color-text-dim)" }}
@@ -274,17 +255,6 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
-
-            <button
-              onClick={() => { toggleSageSurfaces(); setDrawerOpen(false); }}
-              className="py-3 text-sm tracking-widest uppercase font-light border-b flex items-center w-full text-left"
-              style={{
-                color: "var(--color-text-muted)",
-                borderColor: "var(--color-border)",
-              }}
-            >
-              Sage Preview
-            </button>
 
             <button
               className="py-3 text-sm tracking-widest uppercase font-light border-b flex items-center w-full text-left"
