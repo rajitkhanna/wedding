@@ -58,77 +58,28 @@ Two parts on one page:
 │                                                     │
 │  ── Ceremony Guides ───────────────────────────     │  ← gold section header
 │                                                     │
-│  ┌──────────────────────┐  ┌──────────────────────┐ │
-│  │  Anand Karaj         │  │  Telugu Wedding      │ │
-│  │  Sikh Ceremony       │  │  Sunday Ceremony     │ │
-│  │  Saturday            │  │                      │ │
-│  │  ─────────────────   │  │  ─────────────────   │ │
-│  │  The Anand Karaj     │  │  The Telugu wedding  │ │
-│  │  ("blissful union")  │  │  begins at 6am —     │ │
-│  │  is a Sikh wedding   │  │  an auspicious       │ │
-│  │  ceremony…           │  │  muhurat time…       │ │
-│  │                      │  │                      │ │
-│  │  What to know:       │  │  What to know:       │ │
-│  │  • Cover your head   │  │  • Arrive by 5:45am  │ │
-│  │  • Remove shoes      │  │  • Bright colors     │ │
-│  │  • Sit on floor      │  │    encouraged        │ │
-│  │  • ~1.5 hr ceremony  │  │  • ~3 hr ceremony    │ │
-│  └──────────────────────┘  └──────────────────────┘ │
+│  ── Our Venue ────────────────────────────────     │
+│                                                     │
+│  The wedding celebration will be held at          │
+│  InterContinental Boston in downtown Boston.        │
 │                                                     │
 │  ── Questions ─────────────────────────────────     │
 │                                                     │
-│  ▼  What is the dress code?                         │
-│     Friday Welcome Dinner: cocktail attire.         │
-│     Saturday Sikh Ceremony: traditional or          │
-│     cocktail — please cover your head (bring a      │
-│     dupatta, scarf, or bandana). No shoes inside    │
-│     the Gurudwara.                                  │
-│     Saturday Sangeet/Reception: festive, semi-      │
-│     formal — Indian or Western welcome.             │
-│     Sunday Telugu Wedding: bright festive colors    │
-│     encouraged. Indian attire welcome.              │
-│                                                     │
 │  ▶  Are children welcome?                           │
 │  ▶  Will there be vegetarian options?               │
-│  ▶  Can I take photos during the ceremony?          │
-│  ▶  How do I get from the Gurudwara to the          │
-│     InterContinental on Saturday?                   │
 │  ▶  Where do I park?                                │
 │  ▶  What time should I arrive?                      │
 │  ▶  I have a dietary restriction not on the RSVP.   │
-│  ▶  Who do I contact with questions?                │
+│  ▶  Who can I contact with questions?          │
+│     Email Rajesh (khannaspb@gmail.com, Rajit's    │
+│     dad) or Venkat (vavvaru@gmail.com,          │
+│     Meghana's dad)                              │
 │                                                     │
-└─────────────────────────────────────────────────────┘
+│  ▶  Website not working?                     │
+│     Text Rajit immediately: 603-921-8190          │
+│                                                     │
+│  └─────────────────────────────────────────────────────┘
 ```
-
----
-
-## Ceremony Guide Content
-
-### Anand Karaj (Sikh Ceremony) — Saturday
-- **What it means:** "Blissful union" — a Sikh wedding ceremony conducted in the Gurudwara
-- **Duration:** ~1.5 hours
-- **What to expect:** The couple circles the Guru Granth Sahib (holy scripture) four times
-  as hymns are sung. Family and guests sit together on the floor.
-- **What to know:**
-  - Cover your head — bring a dupatta, scarf, or bandana (extras available at the Gurudwara)
-  - Remove shoes before entering the main hall
-  - Sit on the floor (seating by gender is traditional but guests may sit together)
-  - A langar (community meal) follows the ceremony
-
-### Telugu Wedding — Sunday
-- **What it means:** A Hindu Brahmin ceremony with ancient Vedic rituals
-- **Start time:** 10:00 AM — ceremony runs 10:00–11:30 AM
-- **Preceded by:** Breakfast buffet at 8:00 AM (all guests welcome)
-- **Followed by:** Lunch at 12:00 PM, wraps up ~2:00 PM
-- **What to expect:** Rituals include Kashi Yatra, Jeelakarra Bellam, Talambralu
-  (showering rice on the couple), and Saptapadi (seven steps). A priest conducts
-  in Telugu and Sanskrit.
-- **What to know:**
-  - Arrive by 9:45 AM — ceremony starts promptly
-  - Bright, festive colors encouraged (the more color the better!)
-  - Indian attire warmly welcomed, Western semi-formal also great
-  - The ceremony is seated; comfortable shoes recommended
 
 ---
 
@@ -136,15 +87,14 @@ Two parts on one page:
 
 | # | Question | Key answer points |
 |---|----------|-------------------|
-| 1 | Dress code? | Per-event breakdown (see above); Gurudwara head covering required |
-| 2 | Are children welcome? | TBD — fill in |
-| 3 | Vegetarian options? | Yes — both South Indian and Punjabi cuisine will have full veg options |
-| 4 | Photos during ceremony? | Sikh: respectful photography ok. Telugu: designated photographer, please hold phones |
-| 5 | Saturday shuttle? | Yes — shuttle from Gurudwara to InterContinental after ceremony (details on Travel page) |
-| 6 | Parking? | InterContinental has valet + self-parking. Gurudwara has free lot. |
-| 7 | When to arrive? | 30 min early for all events. Sunday: arrive 5:45am sharp. |
-| 8 | Dietary restrictions? | Call or text Rajit at 603-921-8190 |
-| 9 | Contact? | Call or text Rajit: 603-921-8190 |
+| 1 | Are children welcome? | TBD — fill in |
+| 2 | Vegetarian options? | Yes |
+| 3 | Photos during ceremony? | Designated photographer — please enjoy the moment |
+| 4 | Parking? | Valet + self-parking available |
+| 5 | When to arrive? | 30 min early for all events |
+| 6 | Dietary restrictions? | Email Rajesh or Venkat |
+| 7 | Contact? | Email Rajesh (khannaspb@gmail.com) or Venkat (vavvaru@gmail.com) |
+| 8 | Website issues? | Text Rajit immediately: 603-921-8190 |
 
 ---
 
@@ -152,33 +102,14 @@ Two parts on one page:
 
 ```ts
 // src/lib/faq-content.ts
-export const ceremonyGuides = [
-  {
-    name: "Anand Karaj",
-    subtitle: "Sikh Ceremony · Saturday",
-    description: "...",
-    bullets: [
-      "Cover your head — bring a dupatta, scarf, or bandana",
-      "Remove shoes before entering",
-      "Sit on the floor",
-      "~1.5 hour ceremony",
-    ],
-  },
-  {
-    name: "Telugu Wedding",
-    subtitle: "Hindu Ceremony · Sunday",
-    description: "...",
-    bullets: [
-      "Arrive by 5:45 AM — ceremony starts promptly at 6",
-      "Bright festive colors encouraged",
-      "~3 hour ceremony",
-    ],
-  },
-]
-
 export const faqItems = [
-  { q: "What is the dress code?", a: "..." },
-  // ...
+  { q: "Are children welcome?", a: "TBD" },
+  { q: "Vegetarian options?", a: "Yes" },
+  { q: "Photos during ceremony?", a: "Designated photographer — please enjoy the moment" },
+  { q: "Parking?", a: "Valet + self-parking available" },
+  { q: "When to arrive?", a: "30 min early for all events" },
+  { q: "Dietary restrictions?", a: "Call or text Rajit: 603-921-8190" },
+  { q: "Contact?", a: "Call or text Rajit: 603-921-8190" },
 ]
 ```
 

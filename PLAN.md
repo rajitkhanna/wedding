@@ -47,7 +47,6 @@ opening a wedding invitation.
 - Guests access via a magic link you send them (e.g. `/day?t=abc123`)
 - 3 schedule groups: **Wedding Party**, **Family**, **General Guests**
 - Each sees only their relevant events + times
-- Below the schedule: Travel & Stay section (hotels, directions, airport info)
 - 2 photos: venue + one couple shot
 
 ### `/rsvp` — RSVP
@@ -59,7 +58,7 @@ opening a wedding invitation.
 
 ### `/more` — Registry & FAQ
 - Registry: cards linking to external registries (Zola, Amazon, etc.) + honeymoon fund note
-- FAQ accordion: dress code, parking, kids, ceremony length, gifts, etc.
+- FAQ accordion: parking, kids, ceremony length, gifts, etc.
 - 2 photos as section breaks
 
 ---
@@ -94,8 +93,8 @@ opening a wedding invitation.
   public/photos/misc/        (remaining for other pages)
   ```
 - [ ] Registry URLs (Zola, Amazon, etc.)
-- [ ] Hotel recommendations + any room block info
-- [ ] FAQ answers (dress code, parking, kids policy, etc.)
+- [ ] Hotel recommendations
+- [ ] FAQ answers (parking, kids policy, etc.)
 - [ ] List of guests + which schedule group they're in
 
 ---

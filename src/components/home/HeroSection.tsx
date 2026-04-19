@@ -13,7 +13,7 @@ export function HeroSection() {
         alt="Meghana and Rajit"
         fill
         className="object-cover"
-        style={{ objectPosition: "center 55%" }}
+        style={{ objectPosition: "center 50%" }}
         priority
       />
       <div
@@ -38,13 +38,19 @@ export function HeroSection() {
         </h1>
         <p
           className="mt-5 t-label"
-          style={{ color: "var(--color-text-muted)", letterSpacing: "var(--ls-caps)" }}
+          style={{
+            color: "var(--color-text-muted)",
+            letterSpacing: "var(--ls-caps)",
+          }}
         >
-          Nov 28, 2026
+          Nov 27 to 29, 2026
         </p>
         <p
           className="mt-2 t-label"
-          style={{ color: "var(--color-text-dim)", letterSpacing: "var(--ls-caps)" }}
+          style={{
+            color: "var(--color-text-dim)",
+            letterSpacing: "var(--ls-caps)",
+          }}
         >
           Boston, MA
         </p>
