@@ -96,9 +96,7 @@ All events at InterContinental Boston unless noted.
 | Sunday 11/29 | 12:00 PM | Lunch | Rose Kennedy Ballroom | all |
 
 Notes:
-- Sunday 6am items (setup, dressing rooms) are private — not shown to guests
 - Saturday Sikh ceremony time TBD (confirm with Gurudwara)
-- Afternoon Tea on Fri/Sat visible to wedding-party + family only (intimate pre-event)
 
 ---
 

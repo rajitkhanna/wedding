@@ -294,6 +294,14 @@ h1, h2, h3, h4 {
   opacity: 1;
 }
 
+.rsvp-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-gold);
+  border-top: 3px solid var(--color-gold);
+  border-radius: 4px;
+  padding: clamp(1.75rem, 5vw, 2.75rem);
+}
+
 .rsvp-submit-btn {
   display: block;
   width: 100%;
@@ -307,9 +315,9 @@ h1, h2, h3, h4 {
   letter-spacing: var(--ls-caps);
   text-transform: uppercase;
   text-align: center;
-  transition: opacity 150ms;
-  background-color: var(--color-red);
-  color: var(--color-text);
+  transition: background-color 150ms, opacity 150ms;
+  background-color: var(--color-gold);
+  color: var(--color-bg);
 }
 
 .rsvp-submit-btn:disabled {
@@ -318,7 +326,7 @@ h1, h2, h3, h4 {
 }
 
 .rsvp-submit-btn:not(:disabled):hover {
-  opacity: 0.85;
+  background-color: var(--color-gold-light);
 }
 
 .rsvp-spinner {

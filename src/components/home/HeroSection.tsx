@@ -13,7 +13,7 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
         alt="Meghana and Rajit"
         fill
         className="object-cover"
-        style={{ objectPosition: "center 55%" }}
+        style={{ objectPosition: "center 65%" }}
         priority
       />
       <div
@@ -23,7 +23,7 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
             "linear-gradient(to bottom, rgba(18,6,8,0.05) 0%, rgba(18,6,8,0.2) 40%, rgba(18,6,8,0.88) 100%)",
         }}
       />
-      <div className="relative z-10 pb-20 px-6 text-center">
+      <div className="relative z-10 pb-6 px-6 text-center">
         <h1
           style={{
             fontFamily: "var(--font-display)",
@@ -38,13 +38,19 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
         </h1>
         <p
           className="mt-5 t-label"
-          style={{ color: "var(--color-text-muted)", letterSpacing: "var(--ls-caps)" }}
+          style={{
+            color: "var(--color-text-muted)",
+            letterSpacing: "var(--ls-caps)",
+          }}
         >
-          Nov 28, 2026
+          Nov 27 to 29, 2026
         </p>
         <p
           className="mt-2 t-label"
-          style={{ color: "var(--color-text-dim)", letterSpacing: "var(--ls-caps)" }}
+          style={{
+            color: "var(--color-text-dim)",
+            letterSpacing: "var(--ls-caps)",
+          }}
         >
           Boston, MA
         </p>
