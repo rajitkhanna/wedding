@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
+import { RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 
 type MealPref = "veg" | "non-veg" | "vegan" | "pescatarian" | "";
 
@@ -35,6 +36,10 @@ interface RSVPSectionProps {
     partyMembers?: string;
   };
   visibleEvents: ScheduleEvent[];
+  /** Called after RSVP is saved successfully (e.g. close modal). */
+  onSubmitted?: () => void;
+  /** When true (e.g. after public RSVP deadline), editing and submit are disabled. */
+  rsvpLocked?: boolean;
 }
 
 const DAY_LABEL: Record<string, string> = {
@@ -70,9 +75,9 @@ function parseMembers(raw: string | undefined, guestName: string | undefined): P
   }
 }
 
-export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
+export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = false }: RSVPSectionProps) {
   const alreadyRSVPd = !!guest.rsvpStatus;
-  const [editing, setEditing] = useState(!alreadyRSVPd);
+  const [editing, setEditing] = useState(() => !alreadyRSVPd && !rsvpLocked);
 
   const initialMembers = parseMembers(guest.partyMembers, guest.name);
   // If already RSVP'd, members already have their eventIds/meal from DB
@@ -87,6 +92,10 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
   );
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (rsvpLocked) setEditing(false);
+  }, [rsvpLocked]);
 
   const attending = rsvpStatus === "attending";
 
@@ -119,6 +128,7 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (rsvpLocked) return;
     if (!rsvpStatus) return;
 
     setSubmitState("submitting");
@@ -143,6 +153,10 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
           rsvpSubmittedAt: Date.now(),
         })
       );
+      if (onSubmitted) {
+        onSubmitted();
+        return;
+      }
       setSubmitState("success");
       setEditing(false);
     } catch (err) {
@@ -150,6 +164,23 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
       setErrorMessage("Something went wrong. Please try again.");
       setSubmitState("error");
     }
+  }
+
+  if (rsvpLocked && !alreadyRSVPd) {
+    return (
+      <div
+        className="rounded-lg px-8 py-8 text-center"
+        style={{
+          background: "var(--color-surface)",
+          borderTop: "3px solid var(--color-gold)",
+        }}
+      >
+        <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          RSVP closed on {RSVP_DEADLINE_DISPLAY}. If you need help, please contact the couple
+          directly.
+        </p>
+      </div>
+    );
   }
 
   // ── Read-only summary ────────────────────────────────────────────────────────
@@ -174,17 +205,19 @@ export function RSVPSection({ guest, visibleEvents }: RSVPSectionProps) {
           >
             {guest.rsvpStatus === "attending" ? "You're coming! 🎉" : "We'll miss you."}
           </h2>
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="shrink-0 rounded px-3 py-1.5 text-xs tracking-widest uppercase transition-opacity hover:opacity-70"
-            style={{
-              color: "var(--color-text-muted)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
-            Edit
-          </button>
+          {!rsvpLocked ? (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="shrink-0 rounded px-3 py-1.5 text-xs tracking-widest uppercase transition-opacity hover:opacity-70"
+              style={{
+                color: "var(--color-text-muted)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              Edit
+            </button>
+          ) : null}
         </div>
 
         {guest.rsvpStatus === "attending" && savedMembers.length > 0 && (

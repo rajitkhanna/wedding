@@ -1,17 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { db } from "@/lib/instant/db";
 import { DayTabs, type DayKey } from "@/components/schedule/DayTabs";
 import { EventCard } from "@/components/schedule/EventCard";
 import { SectionBanner } from "@/components/SectionBanner";
-
-const VISIBLE_GROUPS: Record<string, string[]> = {
-  "wedding-party": ["all", "family", "wedding-party"],
-  family: ["all", "family"],
-  general: ["all"],
-  admin: ["all", "family", "wedding-party"],
-};
+import { personalizeScheduleEvents } from "@/lib/schedule/personalizeScheduleEvents";
 
 const DAY_FULL_LABELS: Record<DayKey, string> = {
   friday: "Friday, November 27",
@@ -30,7 +24,6 @@ export function ScheduleSection() {
 
   const guest = guestData?.guests?.[0];
   const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = VISIBLE_GROUPS[scheduleGroup] ?? ["all"];
 
   const {
     isLoading: eventsLoading,
@@ -39,20 +32,22 @@ export function ScheduleSection() {
   } = db.useQuery(user ? { scheduleEvents: {} } : null);
 
   const allEvents = eventsData?.scheduleEvents ?? [];
-  const guestEvents = allEvents.filter((e) =>
-    visibleGroups.includes(e.group ?? "all"),
+
+  const personalizedEvents = useMemo(
+    () => personalizeScheduleEvents(allEvents, guest, scheduleGroup),
+    [allEvents, guest, scheduleGroup],
   );
 
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<
-    Record<DayKey, typeof guestEvents>
+    Record<DayKey, typeof personalizedEvents>
   >(
     (acc, day) => {
-      acc[day] = guestEvents
+      acc[day] = personalizedEvents
         .filter((e) => e.day === day)
         .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
       return acc;
     },
-    {} as Record<DayKey, typeof guestEvents>,
+    {} as Record<DayKey, typeof personalizedEvents>,
   );
 
   const eventCounts = {
@@ -63,6 +58,16 @@ export function ScheduleSection() {
 
   const activeDayEvents = byDay[activeDay];
   const guestName = guest?.name ?? user?.email ?? "Guest";
+
+  const hasRsvp = Boolean(guest?.rsvpStatus);
+  const scheduleIntro = (() => {
+    if (guestLoading) return "Loading your schedule…";
+    if (!guest) return "Your personalized itinerary will appear here once your invitation is on file.";
+    if (!hasRsvp) return `Welcome, ${guestName}! Complete your RSVP above to choose which events you're attending.`;
+    if (guest.rsvpStatus === "not-attending")
+      return "You've let us know you can't join us in Boston. We'll miss you!";
+    return `Welcome, ${guestName}! Here's your weekend.`;
+  })();
 
   return (
     <section
@@ -93,45 +98,20 @@ export function ScheduleSection() {
             className="mx-auto mt-5 h-px w-24"
             style={{ backgroundColor: "var(--color-border-gold)" }}
           />
-          {(guestLoading || guest) && (
-            <p
-              className="mt-5 text-sm font-light"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              {guestLoading
-                ? "Loading your schedule…"
-                : `Welcome, ${guestName}! Here's your weekend.`}
-            </p>
-          )}
+          <p
+            className="mt-5 text-sm font-light max-w-md mx-auto leading-relaxed"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {scheduleIntro}
+          </p>
         </header>
 
-        <div className="mb-8">
-          <DayTabs
-            activeDay={activeDay}
-            onChange={setActiveDay}
-            eventCounts={eventCounts}
-          />
-        </div>
-
-        <div className="mb-6 flex items-center gap-4">
-          <h3
-            className="text-2xl"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-gold)",
-              fontWeight: 400,
-            }}
-          >
-            {DAY_FULL_LABELS[activeDay]}
-          </h3>
-        </div>
-
-        {eventsLoading ? (
+        {eventsLoading || guestLoading ? (
           <p
             className="text-sm text-center py-12"
             style={{ color: "var(--color-text-muted)" }}
           >
-            Loading events…
+            {eventsLoading ? "Loading events…" : "Loading…"}
           </p>
         ) : eventsError ? (
           <p
@@ -140,21 +120,81 @@ export function ScheduleSection() {
           >
             Could not load schedule. Please refresh.
           </p>
-        ) : activeDayEvents.length === 0 ? (
+        ) : guest && !hasRsvp ? (
           <div
-            className="rounded-lg px-6 py-12 text-center"
-            style={{ backgroundColor: "var(--color-surface)" }}
+            className="rounded-lg px-6 py-14 text-center"
+            style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
           >
-            <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-              No events scheduled for this day.
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+              Your itinerary is built from the events you select in your RSVP. Tap{" "}
+              <span style={{ color: "var(--color-gold-dim)" }}>RSVP</span> in the hero when
+              you&apos;re ready.
+            </p>
+          </div>
+        ) : guest?.rsvpStatus === "not-attending" ? (
+          <div
+            className="rounded-lg px-6 py-14 text-center"
+            style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+          >
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+              There are no events on your schedule. If your plans change, you can update your RSVP
+              from the navigation or contact us.
+            </p>
+          </div>
+        ) : guest?.rsvpStatus === "attending" && personalizedEvents.length === 0 ? (
+          <div
+            className="rounded-lg px-6 py-14 text-center"
+            style={{
+              color: "var(--color-text-muted)",
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            <p className="text-sm leading-relaxed">
+              You haven&apos;t selected any events yet. Open your RSVP and pick the events
+              you&apos;ll join.
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {activeDayEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+          <>
+            <div className="mb-8">
+              <DayTabs
+                activeDay={activeDay}
+                onChange={setActiveDay}
+                eventCounts={eventCounts}
+              />
+            </div>
+
+            <div className="mb-6 flex items-center gap-4">
+              <h3
+                className="text-2xl"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  color: "var(--color-gold)",
+                  fontWeight: 400,
+                }}
+              >
+                {DAY_FULL_LABELS[activeDay]}
+              </h3>
+            </div>
+
+            {activeDayEvents.length === 0 ? (
+              <div
+                className="rounded-lg px-6 py-12 text-center"
+                style={{ backgroundColor: "var(--color-surface)" }}
+              >
+                <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                  No events on your schedule for this day.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {activeDayEvents.map((event: (typeof personalizedEvents)[number]) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         <div

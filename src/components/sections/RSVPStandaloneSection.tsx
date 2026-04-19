@@ -1,6 +1,7 @@
 "use client";
 
 import { db } from "@/lib/instant/db";
+import { isRsvpOpen } from "@/lib/rsvp/rsvpDeadline";
 import { RSVPSection } from "@/components/schedule/RSVPSection";
 import { SectionBanner } from "@/components/SectionBanner";
 
@@ -71,6 +72,7 @@ export function RSVPStandaloneSection() {
         </header>
 
         <RSVPSection
+          rsvpLocked={!isRsvpOpen()}
           guest={{
             id: guest.id as string,
             email: guest.email as string,

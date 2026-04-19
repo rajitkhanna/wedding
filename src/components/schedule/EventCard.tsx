@@ -46,14 +46,14 @@ export function EventCard({ event }: EventCardProps) {
               fontWeight: 400,
             }}
           >
-            {event.startTime}
+            <span>{event.startTime}</span>
             {event.endTime ? (
-              <span
-                className="text-base ml-2"
-                style={{ color: "var(--color-gold-dim)" }}
-              >
-                – {event.endTime}
-              </span>
+              <>
+                <span aria-hidden="true" className="mx-2">
+                  –
+                </span>
+                <span>{event.endTime}</span>
+              </>
             ) : null}
           </p>
         ) : (

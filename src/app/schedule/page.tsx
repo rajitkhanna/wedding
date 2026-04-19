@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { db } from "@/lib/instant/db";
+import { isRsvpOpen } from "@/lib/rsvp/rsvpDeadline";
+import { personalizeScheduleEvents } from "@/lib/schedule/personalizeScheduleEvents";
 import { AuthGate } from "@/components/schedule/AuthGate";
 import { DayTabs, type DayKey } from "@/components/schedule/DayTabs";
 import { EventCard } from "@/components/schedule/EventCard";
@@ -85,22 +87,26 @@ export default function SchedulePage() {
   // ── Authenticated ───────────────────────────────────────────────────────────
   const allEvents = eventsData?.scheduleEvents ?? [];
 
-  // Filter by this guest's tier
-  const guestEvents = allEvents.filter((e) =>
+  const tierEvents = allEvents.filter((e) =>
     visibleGroups.includes(e.group ?? "all"),
   );
 
-  // Group by day
+  const displayEvents = useMemo(
+    () => personalizeScheduleEvents(allEvents, guest, scheduleGroup),
+    [allEvents, guest, scheduleGroup],
+  );
+
+  // Group by day (personalized itinerary)
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<
-    Record<DayKey, typeof guestEvents>
+    Record<DayKey, typeof displayEvents>
   >(
     (acc, day) => {
-      acc[day] = guestEvents
+      acc[day] = displayEvents
         .filter((e) => e.day === day)
         .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
       return acc;
     },
-    {} as Record<DayKey, typeof guestEvents>,
+    {} as Record<DayKey, typeof displayEvents>,
   );
 
   const eventCounts = {
@@ -128,7 +134,7 @@ export default function SchedulePage() {
             className="mb-3 text-xs tracking-[0.3em] uppercase"
             style={{ color: "var(--color-text-muted)" }}
           >
-            November 27 – 29, 2025
+            November 27 – 29, 2026
           </p>
           <h1
             className="text-5xl md:text-6xl"
@@ -212,6 +218,7 @@ export default function SchedulePage() {
               style={{ backgroundColor: "var(--color-border-gold)" }}
             />
             <RSVPSection
+              rsvpLocked={!isRsvpOpen()}
               guest={{
                 id: guest.id as string,
                 email: guest.email as string,
@@ -223,7 +230,7 @@ export default function SchedulePage() {
                 attendingEventIds: guest.attendingEventIds as string | undefined,
                 partyMembers: guest.partyMembers as string | undefined,
               }}
-              visibleEvents={guestEvents.map((e) => ({
+              visibleEvents={tierEvents.map((e) => ({
                 id: e.id,
                 title: e.title as string,
                 day: e.day as string,
