@@ -18,9 +18,9 @@ Below the rose: names, date, and a nav to all sections.
 
 ### 2. Quick Nav Cards
 - 4 cards in a 2×2 grid (mobile) / row (desktop):
-  Our Story · Schedule · RSVP · Travel & Stay
+  Our Story · Schedule · RSVP · FAQ
 - Each card: gold border, hover lifts with glow
-- Registry + FAQ in footer instead
+- Registry / Travel & Stay in footer instead
 
 ### 3. Footer
 - Small gold ornament divider

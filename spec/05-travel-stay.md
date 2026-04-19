@@ -1,21 +1,8 @@
 # Page: Travel & Stay (`/travel-stay`)
 
 ## Goal
-Help out-of-town guests navigate a 4-day wedding across two venues in the
-Boston area. Clear info on airports, hotels, the two venues, and the Saturday
-shuttle between them.
-
----
-
-## Venues
-
-| Venue | Events | Address |
-|-------|--------|---------|
-| **InterContinental Boston** | Welcome Dinner (Fri), Sangeet/Reception (Sat), Telugu Wedding (Sun) | 510 Atlantic Ave, Boston, MA 02210 |
-| **Westborough Gurudwara** | Sikh Ceremony (Sat morning) | TBD — fill in address |
-
-These are ~40 min apart. Guests need to get from the Gurudwara back to the
-InterContinental on Saturday — shuttle details below.
+Help out-of-town guests navigate getting to Boston for our wedding weekend.
+Clear info on airports, hotels, and getting around the city.
 
 ---
 
@@ -50,9 +37,9 @@ InterContinental on Saturday — shuttle details below.
 │                                                     │
 │  ┌──────────────────────────────────────────┐       │
 │  │  🏨  Nearby Alternatives                 │       │
-│  │  • Marriott Long Wharf — 0.3 mi          │       │
-│  │  • Westin Boston Seaport — 0.5 mi        │       │
-│  │  • Omni Boston Hotel — 0.7 mi            │       │
+│  │  • [Marriott Long Wharf](https://www.marriott.com/hotels/travel/boslw-marriott-long-wharf-boston/) — 0.3 mi          │       │
+│  │  • [Westin Boston Seaport](https://www.marriott.com/hotels/travel/bosws-the-westin-boston-seaport/) — 0.5 mi        │       │
+│  │  • [Omni Boston Hotel](https://www.omnihotels.com/hotels/boston-ma/) — 0.7 mi            │       │
 │  └──────────────────────────────────────────┘       │
 │                                                     │
 │  ── The Two Venues ────────────────────────────     │
@@ -81,15 +68,6 @@ InterContinental on Saturday — shuttle details below.
 │  The T (Green/Red Line) stops near IC.              │
 │  Parking at InterContinental (valet + self).        │
 │                                                     │
-│  ── While You're in Boston ────────────────────     │
-│                                                     │
-│  ┌──────────────────────────────────────────┐       │
-│  │  Our favorites                           │       │
-│  │  • [Restaurant] — [why we love it]       │       │
-│  │  • [Restaurant] — [why we love it]       │       │
-│  │  • [Attraction]                          │       │
-│  └──────────────────────────────────────────┘       │
-│                                                     │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -104,27 +82,12 @@ InterContinental on Saturday — shuttle details below.
 - **Train:** Amtrak South Station is a 5-min walk from InterContinental.
 
 ### Where to Stay
-- **InterContinental Boston** — preferred, room block TBD (fill in code + cutoff date)
+- **InterContinental Boston** — preferred
 - Nearby alternatives with distance (Marriott Long Wharf, Westin Seaport, Omni)
-
-### The Two Venues
-Two cards side by side with name, events, address, and Google Maps link:
-- InterContinental Boston — Friday Welcome Dinner, Saturday Sangeet/Reception, Sunday Telugu Wedding
-- Westborough Gurudwara — Saturday Sikh Ceremony (morning only)
-
-### Saturday Shuttle
-Dedicated callout card. After the Sikh ceremony ends (~2:30–3pm), a shuttle runs
-guests from the Gurudwara back to the InterContinental for the evening Sangeet.
-Fill in departure time once confirmed.
 
 ### Getting Around
 - Rideshare note
-- MBTA (The T) mention — IC is near South Station
-- Parking info
-
-### While You're in Boston (fun section)
-4–6 recs from Meghana & Rajit. Fill in favorites — North End for Italian, Seaport
-for brunch, Fenway area, etc.
+- MBTA (The T) mention
 
 ---
 
