@@ -85,7 +85,7 @@ export function JourneySection() {
           <button
             onClick={prev}
             className="absolute -left-5 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "rgba(18,6,8,0.6)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
+            style={{ backgroundColor: "rgba(251, 245, 238, 0.88)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
             aria-label="Previous photo"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -96,7 +96,7 @@ export function JourneySection() {
           <button
             onClick={next}
             className="absolute -right-5 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "rgba(18,6,8,0.6)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
+            style={{ backgroundColor: "rgba(251, 245, 238, 0.88)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
             aria-label="Next photo"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

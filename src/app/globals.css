@@ -3,27 +3,39 @@
 /* ─── Semantic Tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Backgrounds */
-  --color-bg:          #120608;   /* near-black deep crimson */
-  --color-surface:     #1e0b0e;   /* card / elevated surfaces */
-  --color-surface-alt: #2a1015;   /* slightly lighter surface */
+  --color-bg:          #f4efe8;   /* warm bridal ivory */
+  --color-surface:     #fbf5ee;   /* soft porcelain */
+  --color-surface-alt: #f0dfca;   /* warm champagne */
 
   /* Brand */
-  --color-red:         #8B1A1A;   /* primary red accent */
-  --color-red-hover:   #a82020;
+  --color-red:         #c46e58;   /* terracotta rose */
+  --color-red-hover:   #b86b30;   /* burnt amber */
 
   /* Gold */
-  --color-gold:        #C9A84C;   /* headings, highlights */
-  --color-gold-light:  #E8C97A;   /* hover, glow */
-  --color-gold-dim:    #8a6f2e;   /* muted gold for borders */
+  --color-gold:        #b86b30;   /* spiced amber */
+  --color-gold-light:  #cba979;   /* honey beige */
+  --color-gold-dim:    #b38a67;   /* muted caramel */
 
-  /* Text — contrast ratios measured against --color-bg (#120608) */
-  --color-text:        #F5EDD6;   /* primary cream     — 16:1  */
-  --color-text-muted:  #c8a87a;   /* secondary         —  8:1  */
-  --color-text-dim:    #8a6e50;   /* tertiary / labels —  4:1  */
+  /* Text */
+  --color-text:        #4d4033;   /* warm bark brown */
+  --color-text-muted:  #8c6c58;   /* rosy taupe */
+  --color-text-dim:    #b09784;   /* pale clay */
 
   /* Borders */
-  --color-border:      #2e1418;
-  --color-border-gold: #4a3820;
+  --color-border:      #e5d6c8;
+  --color-border-gold: #d1b08d;
+
+  /* Overlays */
+  --color-overlay-soft:   rgba(240, 223, 202, 0.18);
+  --color-overlay-medium: rgba(176, 151, 132, 0.28);
+  --color-overlay-strong: rgba(77, 64, 51, 0.18);
+  --color-overlay-nav:    rgba(244, 239, 232, 0.86);
+  --color-shadow-soft:    rgba(77, 64, 51, 0.18);
+  --color-shadow-strong:  rgba(77, 64, 51, 0.28);
+  --color-hero-text:      #fff8f1;
+  --color-hero-muted:     rgba(255, 248, 241, 0.86);
+  --color-hero-dim:       rgba(255, 248, 241, 0.72);
+  --color-hero-button:    rgba(255, 248, 241, 0.92);
 
   /* ── Fonts ──────────────────────────────────────────────────────────── */
   --font-display: "Cormorant Garamond", Georgia, serif;
@@ -54,6 +66,17 @@
   --lh-snug:     1.3;
   --lh-base:     1.55;
   --lh-relaxed:  1.75;
+}
+
+/* Preview: light sage surfaces (non-white background sections) */
+:root[data-surface="sage"] {
+  --color-surface:     #eef4ee;
+  --color-surface-alt: #dde9dd;
+  --color-border:      #cfdccf;
+  --color-border-gold: #b7c7b0;
+  --color-overlay-nav: rgba(238, 244, 238, 0.86);
+  --color-text-muted:  #5f6b58;
+  --color-text-dim:    #7a8672;
 }
 
 /* ─── Tailwind Theme Mapping ──────────────────────────────────────────────── */
@@ -157,6 +180,22 @@ h1, h2, h3, h4 {
 .gold-rule {
   border: none;
   border-top: 1px solid var(--color-border-gold);
+}
+
+.hero-filmstrip {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  animation: hero-filmstrip-scroll 55s linear infinite;
+}
+
+.hero-filmstrip-frame {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
 }
 
 /* ─── RSVP Form ───────────────────────────────────────────────────────────── */
@@ -341,6 +380,11 @@ h1, h2, h3, h4 {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes hero-filmstrip-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 /* ─── Journey Carousel ────────────────────────────────────────────────────── */

@@ -314,7 +314,7 @@ export function RSVPSection({
       style={{
         background: "var(--color-surface)",
         borderTop: "3px solid var(--color-gold)",
-        boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+        boxShadow: "0 8px 40px var(--color-shadow-soft)",
       }}
     >
       <h2
@@ -465,7 +465,7 @@ export function RSVPSection({
           <p
             className="mb-5 rounded px-4 py-3 text-sm"
             style={{
-              background: "rgba(139, 26, 26, 0.18)",
+              background: "var(--color-overlay-soft)",
               border: "1px solid var(--color-red)",
               color: "var(--color-text)",
             }}

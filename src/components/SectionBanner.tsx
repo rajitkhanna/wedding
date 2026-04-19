@@ -42,13 +42,6 @@ export function SectionBanner({
         className="object-cover object-center"
         sizes="100vw"
       />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(18,6,8,0.15) 0%, rgba(18,6,8,0.65) 100%)",
-        }}
-      />
     </div>
   );
 }

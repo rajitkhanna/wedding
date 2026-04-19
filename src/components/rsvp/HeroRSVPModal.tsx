@@ -68,7 +68,7 @@ export function HeroRSVPModal({
       <button
         type="button"
         className="absolute inset-0 cursor-default"
-        style={{ backgroundColor: "rgba(18, 6, 8, 0.82)" }}
+        style={{ backgroundColor: "var(--color-overlay-strong)" }}
         aria-label="Close RSVP dialog"
         onClick={onClose}
       />
@@ -77,7 +77,7 @@ export function HeroRSVPModal({
         style={{
           backgroundColor: "var(--color-bg)",
           border: "1px solid var(--color-border-gold)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.55)",
+          boxShadow: "0 24px 80px var(--color-shadow-strong)",
         }}
       >
         <div

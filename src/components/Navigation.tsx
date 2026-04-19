@@ -107,12 +107,24 @@ export function Navigation() {
     await db.auth.signOut();
   }
 
+  function toggleSageSurfaces() {
+    const root = document.documentElement;
+    const next = root.dataset.surface === "sage" ? "" : "sage";
+    if (next) {
+      root.dataset.surface = next;
+      window.localStorage.setItem("surface-mode", next);
+    } else {
+      delete root.dataset.surface;
+      window.localStorage.removeItem("surface-mode");
+    }
+  }
+
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50"
+        className="absolute top-0 left-0 right-0 z-50"
         style={{
-          backgroundColor: "rgba(18, 6, 8, 0.85)",
+          backgroundColor: "var(--color-overlay-nav)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid var(--color-border)",
@@ -211,6 +223,13 @@ export function Navigation() {
 
             {/* Sign out */}
             <button
+              onClick={toggleSageSurfaces}
+              className="text-xs tracking-widest uppercase font-light transition-opacity hover:opacity-70"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              Sage Preview
+            </button>
+            <button
               onClick={handleSignOut}
               className="text-xs tracking-widest uppercase font-light transition-opacity hover:opacity-70"
               style={{ color: "var(--color-text-dim)" }}
@@ -255,6 +274,17 @@ export function Navigation() {
                 {link.label}
               </a>
             ))}
+
+            <button
+              onClick={() => { toggleSageSurfaces(); setDrawerOpen(false); }}
+              className="py-3 text-sm tracking-widest uppercase font-light border-b flex items-center w-full text-left"
+              style={{
+                color: "var(--color-text-muted)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              Sage Preview
+            </button>
 
             <button
               className="py-3 text-sm tracking-widest uppercase font-light border-b flex items-center w-full text-left"

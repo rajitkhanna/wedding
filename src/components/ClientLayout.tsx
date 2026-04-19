@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { GlobalAuthGate } from "@/components/auth/GlobalAuthGate";
@@ -9,6 +10,11 @@ import { usePathname } from "next/navigation";
 const PUBLIC_PATHS = ["/rsvp"];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const mode = window.localStorage.getItem("surface-mode");
+    if (mode) document.documentElement.dataset.surface = mode;
+  }, []);
+
   const pathname = usePathname();
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
