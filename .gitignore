@@ -39,5 +39,5 @@ bun.lockb
 # instant
 instant.perms.ts
 
-# local photos (upload to InstantDB Storage instead)
-photos/
+# local photos — only specific carousel photos are committed; the rest are ignored
+# See public/photos/.gitignore for per-file rules
