@@ -1,21 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { db } from "@/lib/instant/db";
 import { isRsvpOpen } from "@/lib/rsvp/rsvpDeadline";
 import { personalizeScheduleEvents } from "@/lib/schedule/personalizeScheduleEvents";
-import { AuthGate } from "@/components/schedule/AuthGate";
+import { getVisibleGroups } from "@/lib/schedule/visibleGroups";
 import { DayTabs, type DayKey } from "@/components/schedule/DayTabs";
 import { EventCard } from "@/components/schedule/EventCard";
 import { RSVPSection } from "@/components/schedule/RSVPSection";
-
-// Which event groups each schedule tier can see
-const VISIBLE_GROUPS: Record<string, string[]> = {
-  "wedding-party": ["all", "family", "wedding-party"],
-  family: ["all", "family"],
-  general: ["all"],
-  admin: ["all", "family", "wedding-party"],
-};
 
 const DAY_FULL_LABELS: Record<DayKey, string> = {
   friday: "Friday, November 27",
@@ -36,7 +28,7 @@ export default function SchedulePage() {
 
   const guest = guestData?.guests?.[0];
   const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = VISIBLE_GROUPS[scheduleGroup] ?? ["all"];
+  const visibleGroups = getVisibleGroups(scheduleGroup);
 
   // ── Events ──────────────────────────────────────────────────────────────────
   const {
@@ -62,10 +54,7 @@ export default function SchedulePage() {
     );
   }
 
-  // ── Unauthenticated ─────────────────────────────────────────────────────────
-  if (!user) {
-    return <AuthGate />;
-  }
+  if (!user) return null;
 
   // ── Error ───────────────────────────────────────────────────────────────────
   if (eventsError) {
@@ -91,10 +80,7 @@ export default function SchedulePage() {
     visibleGroups.includes(e.group ?? "all"),
   );
 
-  const displayEvents = useMemo(
-    () => personalizeScheduleEvents(allEvents, guest, scheduleGroup),
-    [allEvents, guest, scheduleGroup],
-  );
+  const displayEvents = personalizeScheduleEvents(allEvents, guest, scheduleGroup);
 
   // Group by day (personalized itinerary)
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<

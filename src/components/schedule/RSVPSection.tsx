@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { lookup } from "@instantdb/react";
+import { usePathname, useRouter } from "next/navigation";
 import { db } from "@/lib/instant/db";
 import { RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 
@@ -38,6 +39,10 @@ interface RSVPSectionProps {
   visibleEvents: ScheduleEvent[];
   /** Called after RSVP is saved successfully (e.g. close modal). */
   onSubmitted?: () => void;
+  /** Called when the user jumps from the RSVP summary to the schedule view. */
+  onScheduleClick?: () => void;
+  /** When true, open directly into the editable form instead of the summary view. */
+  startEditing?: boolean;
   /** When true (e.g. after public RSVP deadline), editing and submit are disabled. */
   rsvpLocked?: boolean;
 }
@@ -47,14 +52,6 @@ const DAY_LABEL: Record<string, string> = {
   saturday: "Saturday",
   sunday: "Sunday",
 };
-
-const MEAL_OPTIONS: { value: MealPref; label: string }[] = [
-  { value: "", label: "Select…" },
-  { value: "veg", label: "Vegetarian" },
-  { value: "non-veg", label: "Non-Vegetarian" },
-  { value: "vegan", label: "Vegan" },
-  { value: "pescatarian", label: "Pescatarian" },
-];
 
 type SubmitState = "idle" | "submitting" | "success" | "error";
 
@@ -75,55 +72,85 @@ function parseMembers(raw: string | undefined, guestName: string | undefined): P
   }
 }
 
-export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = false }: RSVPSectionProps) {
+function buildEventCounts(events: ScheduleEvent[], members: PartyMember[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const event of events) counts[event.id] = 0;
+  for (const member of members) {
+    for (const eventId of member.eventIds) {
+      if (eventId in counts) counts[eventId] += 1;
+    }
+  }
+  return counts;
+}
+
+function applyEventCountsToMembers(
+  members: PartyMember[],
+  eventCounts: Record<string, number>,
+): PartyMember[] {
+  return members.map((member, memberIdx) => {
+    const nextEventIds = Object.entries(eventCounts)
+      .filter(([, count]) => count > memberIdx)
+      .map(([eventId]) => eventId);
+    return { ...member, eventIds: nextEventIds };
+  });
+}
+
+export function RSVPSection({
+  guest,
+  visibleEvents,
+  onSubmitted,
+  onScheduleClick,
+  startEditing = false,
+  rsvpLocked = false,
+}: RSVPSectionProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const alreadyRSVPd = !!guest.rsvpStatus;
-  const [editing, setEditing] = useState(() => !alreadyRSVPd && !rsvpLocked);
+  const [editing, setEditing] = useState(
+    () => (!alreadyRSVPd || startEditing) && !rsvpLocked,
+  );
 
   const initialMembers = parseMembers(guest.partyMembers, guest.name);
   // If already RSVP'd, members already have their eventIds/meal from DB
   const [rsvpStatus, setRsvpStatus] = useState<"attending" | "not-attending" | "">(
     (guest.rsvpStatus as "attending" | "not-attending") || ""
   );
-  const [members, setMembers] = useState<PartyMember[]>(
+  const [members] = useState<PartyMember[]>(
     initialMembers.map((m) => ({
       ...m,
       eventIds: m.eventIds.length > 0 ? m.eventIds : visibleEvents.map((e) => e.id),
     }))
   );
+  const [eventCounts, setEventCounts] = useState<Record<string, number>>(() =>
+    buildEventCounts(
+      visibleEvents,
+      initialMembers.map((m) => ({
+        ...m,
+        eventIds: m.eventIds.length > 0 ? m.eventIds : visibleEvents.map((e) => e.id),
+      })),
+    ),
+  );
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    if (rsvpLocked) setEditing(false);
-  }, [rsvpLocked]);
+  const isEditing = editing && !rsvpLocked;
 
   const attending = rsvpStatus === "attending";
 
-  function updateMemberEvent(memberIdx: number, eventId: string, checked: boolean) {
-    setMembers((prev) =>
-      prev.map((m, i) =>
-        i !== memberIdx
-          ? m
-          : {
-              ...m,
-              eventIds: checked
-                ? [...m.eventIds, eventId]
-                : m.eventIds.filter((id) => id !== eventId),
-            }
-      )
-    );
+  function updateEventCount(eventId: string, count: number) {
+    setEventCounts((prev) => ({ ...prev, [eventId]: count }));
   }
 
-  function updateMemberMeal(memberIdx: number, meal: MealPref) {
-    setMembers((prev) =>
-      prev.map((m, i) => (i !== memberIdx ? m : { ...m, meal }))
-    );
-  }
+  function handleScheduleNavigation() {
+    onScheduleClick?.();
 
-  function updateMemberDietary(memberIdx: number, dietary: string) {
-    setMembers((prev) =>
-      prev.map((m, i) => (i !== memberIdx ? m : { ...m, dietary }))
-    );
+    if (pathname === "/") {
+      document.getElementById("schedule")?.scrollIntoView({ behavior: "smooth" });
+      window.history.replaceState(null, "", "/");
+      return;
+    }
+
+    window.sessionStorage.setItem("scroll-to-schedule", "true");
+    router.push("/");
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,20 +162,25 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
     setErrorMessage("");
 
     try {
+      const membersWithEvents = applyEventCountsToMembers(members, eventCounts);
       const membersToSave: PartyMember[] = attending
-        ? members
-        : members.map((m) => ({ ...m, eventIds: [], meal: "", dietary: "" }));
+        ? membersWithEvents
+        : membersWithEvents.map((m) => ({ ...m, eventIds: [], meal: "", dietary: "" }));
 
       await db.transact(
         db.tx.guests[lookup("email", guest.email)].merge({
           rsvpStatus,
           partyMembers: JSON.stringify(membersToSave),
-          partySize: attending ? members.length : undefined,
+          partySize: attending ? membersWithEvents.length : undefined,
           // Keep legacy fields populated from first member for backwards compat
-          mealPreference: attending ? members[0]?.meal || undefined : undefined,
-          dietaryRestrictions: attending ? members[0]?.dietary || undefined : undefined,
+          mealPreference: attending ? membersWithEvents[0]?.meal || undefined : undefined,
+          dietaryRestrictions: attending ? membersWithEvents[0]?.dietary || undefined : undefined,
           attendingEventIds: attending
-            ? JSON.stringify([...new Set(members.flatMap((m) => m.eventIds))])
+            ? JSON.stringify(
+              Object.entries(eventCounts)
+                .filter(([, count]) => count > 0)
+                .map(([eventId]) => eventId),
+            )
             : undefined,
           rsvpSubmittedAt: Date.now(),
         })
@@ -184,8 +216,10 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
   }
 
   // ── Read-only summary ────────────────────────────────────────────────────────
-  if (!editing) {
+  if (!isEditing) {
     const savedMembers = parseMembers(guest.partyMembers, guest.name);
+    const primaryGuestName = guest.name ?? savedMembers[0]?.name ?? "Guest";
+    const partySize = guest.partySize ?? savedMembers.length;
     return (
       <div
         className="rounded-lg px-8 py-8"
@@ -220,35 +254,40 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
           ) : null}
         </div>
 
-        {guest.rsvpStatus === "attending" && savedMembers.length > 0 && (
+        {guest.rsvpStatus === "attending" && (
+          <div
+            className="mb-6 rounded-lg px-5 py-4"
+            style={{
+              backgroundColor: "var(--color-bg)",
+              border: "1px solid var(--color-border-gold)",
+            }}
+          >
+            <p
+              className="text-xl leading-relaxed"
+              style={{
+                color: "var(--color-text)",
+                fontFamily: "var(--font-display)",
+                fontWeight: 400,
+              }}
+            >
+              {primaryGuestName} - party of {partySize}
+            </p>
+          </div>
+        )}
+
+        {guest.rsvpStatus === "attending" && (
           <div className="flex flex-col gap-4">
-            {savedMembers.map((m) => {
-              const mEvents = visibleEvents.filter((e) => m.eventIds.includes(e.id));
-              return (
-                <div
-                  key={m.name}
-                  className="rounded px-5 py-4"
-                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid var(--color-border)" }}
-                >
-                  <p
-                    className="text-sm font-medium mb-1"
-                    style={{ color: "var(--color-text)" }}
-                  >
-                    {m.name}
-                  </p>
-                  {mEvents.length > 0 && (
-                    <p className="text-xs mb-1" style={{ color: "var(--color-text-muted)" }}>
-                      {mEvents.map((e) => e.title).join(", ")}
-                    </p>
-                  )}
-                  {m.meal && (
-                    <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>
-                      {MEAL_OPTIONS.find((o) => o.value === m.meal)?.label ?? m.meal}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+            <button
+              type="button"
+              onClick={handleScheduleNavigation}
+              className="inline-flex items-center justify-center rounded px-4 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: "var(--color-gold)",
+                color: "var(--color-bg)",
+              }}
+            >
+              Go To Schedule
+            </button>
           </div>
         )}
       </div>
@@ -339,7 +378,7 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
                 <p className="rsvp-label mb-4">
                   {isSingleMember
                     ? "Which events will you attend?"
-                    : "Which events will each guest attend?"}
+                    : "How many guests from your party will attend each event?"}
                 </p>
 
                 <div className="flex flex-col gap-5">
@@ -376,46 +415,38 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
                               )}
                             </p>
 
-                            {isSingleMember ? (
-                              <label className="rsvp-checkbox-label">
-                                <input
-                                  type="checkbox"
-                                  checked={members[0].eventIds.includes(event.id)}
-                                  onChange={(e) =>
-                                    updateMemberEvent(0, event.id, e.target.checked)
-                                  }
-                                  className="rsvp-checkbox"
-                                  disabled={isSubmitting}
-                                />
-                                <span className="rsvp-checkbox-custom" aria-hidden="true" />
-                                <span style={{ color: "var(--color-text)" }}>
-                                  I'll be there
-                                </span>
+                            <div className="flex items-center gap-3">
+                              <label
+                                htmlFor={`event-count-${event.id}`}
+                                className="text-xs tracking-widest uppercase"
+                                style={{ color: "var(--color-text-muted)" }}
+                              >
+                                {isSingleMember ? "Attending" : "Guest count"}
                               </label>
-                            ) : (
-                              <div className="flex flex-wrap gap-3">
-                                {members.map((member, idx) => (
-                                  <label
-                                    key={member.name}
-                                    className="rsvp-checkbox-label"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={member.eventIds.includes(event.id)}
-                                      onChange={(e) =>
-                                        updateMemberEvent(idx, event.id, e.target.checked)
-                                      }
-                                      className="rsvp-checkbox"
-                                      disabled={isSubmitting}
-                                    />
-                                    <span className="rsvp-checkbox-custom" aria-hidden="true" />
-                                    <span style={{ color: "var(--color-text)" }}>
-                                      {member.name}
-                                    </span>
-                                  </label>
-                                ))}
+                              <div className="rsvp-select-wrapper w-28">
+                                <select
+                                  id={`event-count-${event.id}`}
+                                  value={eventCounts[event.id] ?? 0}
+                                  onChange={(e) =>
+                                    updateEventCount(event.id, Number(e.target.value))
+                                  }
+                                  className="rsvp-select"
+                                  disabled={isSubmitting}
+                                >
+                                  {Array.from({ length: members.length + 1 }, (_, idx) => (
+                                    <option key={idx} value={idx}>
+                                      {idx}
+                                    </option>
+                                  ))}
+                                </select>
+                                <span className="rsvp-select-arrow" aria-hidden="true">▾</span>
                               </div>
-                            )}
+                              {!isSingleMember && (
+                                <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>
+                                  of {members.length}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -426,52 +457,6 @@ export function RSVPSection({ guest, visibleEvents, onSubmitted, rsvpLocked = fa
             )}
 
             <hr className="gold-rule my-6" />
-
-            {/* ── Meal preferences per member ─────────────────────────── */}
-            <div className="mb-6">
-              <p className="rsvp-label mb-4">
-                {isSingleMember ? "Meal preference" : "Meal preferences"}
-              </p>
-
-              <div className="flex flex-col gap-5">
-                {members.map((member, idx) => (
-                  <div key={member.name}>
-                    {!isSingleMember && (
-                      <p
-                        className="text-sm mb-2"
-                        style={{ color: "var(--color-text)" }}
-                      >
-                        {member.name}
-                      </p>
-                    )}
-                    <div className="rsvp-select-wrapper mb-2">
-                      <select
-                        value={member.meal}
-                        onChange={(e) => updateMemberMeal(idx, e.target.value as MealPref)}
-                        className="rsvp-select"
-                        disabled={isSubmitting}
-                      >
-                        {MEAL_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                      <span className="rsvp-select-arrow" aria-hidden="true">▾</span>
-                    </div>
-                    <textarea
-                      rows={2}
-                      placeholder={`Dietary restrictions or allergies${isSingleMember ? "" : ` for ${member.name}`} (optional)`}
-                      value={member.dietary}
-                      onChange={(e) => updateMemberDietary(idx, e.target.value)}
-                      className="rsvp-input rsvp-textarea"
-                      disabled={isSubmitting}
-                      style={{ fontSize: "0.8125rem" }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
           </>
         )}
 

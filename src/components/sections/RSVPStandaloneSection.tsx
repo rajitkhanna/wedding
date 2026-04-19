@@ -2,15 +2,9 @@
 
 import { db } from "@/lib/instant/db";
 import { isRsvpOpen } from "@/lib/rsvp/rsvpDeadline";
+import { getVisibleGroups } from "@/lib/schedule/visibleGroups";
 import { RSVPSection } from "@/components/schedule/RSVPSection";
 import { SectionBanner } from "@/components/SectionBanner";
-
-const VISIBLE_GROUPS: Record<string, string[]> = {
-  "wedding-party": ["all", "family", "wedding-party"],
-  family: ["all", "family"],
-  general: ["all"],
-  admin: ["all", "family", "wedding-party"],
-};
 
 export function RSVPStandaloneSection() {
   const { user } = db.useAuth();
@@ -25,7 +19,7 @@ export function RSVPStandaloneSection() {
 
   const guest = guestData?.guests?.[0];
   const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = VISIBLE_GROUPS[scheduleGroup] ?? ["all"];
+  const visibleGroups = getVisibleGroups(scheduleGroup);
 
   const allEvents = eventsData?.scheduleEvents ?? [];
   const guestEvents = allEvents.filter((e) =>
@@ -82,6 +76,7 @@ export function RSVPStandaloneSection() {
             dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
             partySize: guest.partySize as number | undefined,
             attendingEventIds: guest.attendingEventIds as string | undefined,
+            partyMembers: guest.partyMembers as string | undefined,
           }}
           visibleEvents={guestEvents.map((e) => ({
             id: e.id,

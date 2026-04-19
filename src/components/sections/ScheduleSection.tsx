@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { db } from "@/lib/instant/db";
 import { DayTabs, type DayKey } from "@/components/schedule/DayTabs";
 import { EventCard } from "@/components/schedule/EventCard";
@@ -13,7 +13,7 @@ const DAY_FULL_LABELS: Record<DayKey, string> = {
   sunday: "Sunday, November 29",
 };
 
-export function ScheduleSection() {
+export function ScheduleSection({ onEditRsvp }: { onEditRsvp?: () => void }) {
   const [activeDay, setActiveDay] = useState<DayKey>("friday");
 
   const { user } = db.useAuth();
@@ -31,11 +31,10 @@ export function ScheduleSection() {
     data: eventsData,
   } = db.useQuery(user ? { scheduleEvents: {} } : null);
 
-  const allEvents = eventsData?.scheduleEvents ?? [];
-
-  const personalizedEvents = useMemo(
-    () => personalizeScheduleEvents(allEvents, guest, scheduleGroup),
-    [allEvents, guest, scheduleGroup],
+  const personalizedEvents = personalizeScheduleEvents(
+    eventsData?.scheduleEvents ?? [],
+    guest,
+    scheduleGroup,
   );
 
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<
@@ -201,6 +200,24 @@ export function ScheduleSection() {
           className="mx-auto mt-16 mb-6 h-px w-24"
           style={{ backgroundColor: "var(--color-border-gold)" }}
         />
+
+        {guest && (
+          <div className="mb-8 flex justify-center">
+            <button
+              type="button"
+              onClick={onEditRsvp}
+              className="rounded px-4 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                color: "var(--color-text)",
+                border: "1px solid var(--color-border-gold)",
+              }}
+            >
+              Edit RSVP
+            </button>
+          </div>
+        )}
+
         <p
           className="text-center text-xs font-light"
           style={{ color: "var(--color-text-dim)" }}
