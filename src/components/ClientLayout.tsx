@@ -6,19 +6,15 @@ import { GlobalAuthGate } from "@/components/auth/GlobalAuthGate";
 import { db } from "@/lib/instant/db";
 import { usePathname } from "next/navigation";
 
-const TEST_PATHS = ["/test-rsvp", "/test-login"];
 const PUBLIC_PATHS = ["/rsvp"];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isTestPath =
-    process.env.NEXT_PUBLIC_ENABLE_TEST_LOGIN === "true" &&
-    TEST_PATHS.some((p) => pathname.startsWith(p));
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
   const { isLoading, user } = db.useAuth();
 
-  if (!isTestPath && !isPublicPath && isLoading) {
+  if (!isPublicPath && isLoading) {
     return (
       <div
         className="fixed inset-0 flex items-center justify-center"
@@ -35,7 +31,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isTestPath && !isPublicPath && !user) {
+  if (!isPublicPath && !user) {
     return <GlobalAuthGate />;
   }
 

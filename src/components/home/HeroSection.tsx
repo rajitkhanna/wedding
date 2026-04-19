@@ -13,7 +13,7 @@ export function HeroSection() {
         alt="Meghana and Rajit"
         fill
         className="object-cover"
-        style={{ objectPosition: "center 50%" }}
+        style={{ objectPosition: "center 65%" }}
         priority
       />
       <div
@@ -23,7 +23,7 @@ export function HeroSection() {
             "linear-gradient(to bottom, rgba(18,6,8,0.05) 0%, rgba(18,6,8,0.2) 40%, rgba(18,6,8,0.88) 100%)",
         }}
       />
-      <div className="relative z-10 pb-20 px-6 text-center">
+      <div className="relative z-10 pb-6 px-6 text-center">
         <h1
           style={{
             fontFamily: "var(--font-display)",
