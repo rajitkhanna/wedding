@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-export function HeroSection() {
+export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
   return (
     <section
       id="hero"
@@ -49,16 +49,17 @@ export function HeroSection() {
           Boston, MA
         </p>
         <div className="mt-8">
-          <a
-            href="#rsvp"
-            className="inline-block px-10 py-3 text-xs tracking-[0.25em] uppercase transition-all hover:opacity-80"
+          <button
+            type="button"
+            onClick={onRSVPClick}
+            className="inline-block cursor-pointer px-10 py-3 text-xs tracking-[0.25em] uppercase transition-all hover:opacity-80"
             style={{
               border: "1px solid var(--color-gold)",
               color: "var(--color-gold)",
             }}
           >
             RSVP
-          </a>
+          </button>
         </div>
       </div>
     </section>
