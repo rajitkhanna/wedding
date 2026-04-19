@@ -61,7 +61,7 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
             }}
           >
             Meghana and Rajit
-          </h1>
+          </h1 >
           <p
             className="mt-5 t-label"
             style={{
@@ -96,8 +96,8 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
               RSVP
             </button>
           </div>
-        </div>
-      </div>
-    </section>
+        </div >
+      </div >
+    </section >
   );
 }

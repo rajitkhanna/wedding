@@ -111,9 +111,11 @@ export function TravelSection() {
             <InfoCard icon="🚆" title="Train">
               <p>
                 Amtrak&apos;s{" "}
-                <span style={{ color: "var(--color-text)" }}>South Station</span>{" "}
-                is a 5-minute walk from InterContinental Boston, with connections
-                from New York, Providence, and beyond.
+                <span style={{ color: "var(--color-text)" }}>
+                  South Station
+                </span>{" "}
+                is a 5-minute walk from InterContinental Boston, with
+                connections from New York, Providence, and beyond.
               </p>
             </InfoCard>
           </div>
@@ -210,41 +212,6 @@ export function TravelSection() {
               </InfoCard>
             ))}
           </div>
-        </div>
-
-        {/* While You're in Boston */}
-        <div className="mb-16">
-          <SectionHeader>While You&apos;re in Boston</SectionHeader>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {bostonFavorites.map((fav, i) => (
-              <div
-                key={i}
-                className="rounded-lg p-5"
-                style={{
-                  backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                  opacity: 0.6,
-                }}
-              >
-                <p
-                  className="text-sm italic"
-                  style={{ color: "var(--color-text-dim)" }}
-                >
-                  {fav.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-center">
-          <div
-            className="mx-auto mb-6 h-px w-24"
-            style={{ backgroundColor: "var(--color-border-gold)" }}
-          />
-          <p className="text-sm font-light" style={{ color: "var(--color-text-dim)" }}>
-            More details will be added as the date approaches.
-          </p>
         </div>
       </div>
     </section>
