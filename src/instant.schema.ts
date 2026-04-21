@@ -7,7 +7,6 @@ const _schema = i.schema({
     invitees: i.entity({
       name: i.string(),
       sortOrder: i.number(),
-      attendingEventIds: i.string().optional(),
     }),
     $files: i.entity({
       path: i.string().unique().indexed(),
@@ -96,6 +95,18 @@ const _schema = i.schema({
         on: "scheduleEvents",
         has: "many",
         label: "invitedGuests",
+      },
+    },
+    inviteeAttendance: {
+      forward: {
+        on: "invitees",
+        has: "many",
+        label: "attendingEvents",
+      },
+      reverse: {
+        on: "scheduleEvents",
+        has: "many",
+        label: "attendingInvitees",
       },
     },
   },
