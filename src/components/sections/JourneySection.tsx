@@ -1,32 +1,51 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Image from "next/image";
+import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
 
-const SLIDES = [
-  "/photos/prom/prom-2019.jpeg",
-  "/photos/proposal/proposal-kneeling.jpeg",
-  "/photos/proposal/proposal-after-showing-ring.jpeg",
-  "/photos/nischitartham/couple-with-garlands.jpg",
-  "/photos/engagement/under-the-arch-walking.jpg",
-  "/photos/engagement/close-portrait-wall.jpg",
+const SLIDE_PATTERNS = [
+  "prom-2019",
+  "proposal-kneeling",
+  "proposal-after-showing-ring",
+  "couple-with-garlands",
+  "under-the-arch-walking",
+  "close-portrait-wall",
 ];
 
 export function JourneySection() {
+  const { data } = db.useQuery({ $files: {} });
+  const files = data?.$files ?? [];
+
+  const slides = useMemo(() => {
+    return SLIDE_PATTERNS.map((pattern) =>
+      files.find((f) => f.path.toLowerCase().includes(pattern)),
+    )
+      .filter(Boolean)
+      .map((f) => cld(f!.url)) as string[];
+  }, [files]);
+
+  if (!slides.length) return null;
+
   const [current, setCurrent] = useState(0);
   const [opacity, setOpacity] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
   const indexRef = useRef(0);
 
-  const goTo = useCallback((raw: number) => {
-    const next = ((raw % SLIDES.length) + SLIDES.length) % SLIDES.length;
-    setOpacity(0);
-    setTimeout(() => {
-      setCurrent(next);
-      indexRef.current = next;
-      setOpacity(1);
-    }, 180);
-  }, []);
+  const goTo = useCallback(
+    (raw: number) => {
+      if (!slides.length) return;
+      const next = ((raw % slides.length) + slides.length) % slides.length;
+      setOpacity(0);
+      setTimeout(() => {
+        setCurrent(next);
+        indexRef.current = next;
+        setOpacity(1);
+      }, 180);
+    },
+    [slides.length],
+  );
 
   const next = useCallback(() => goTo(indexRef.current + 1), [goTo]);
   const prev = useCallback(() => goTo(indexRef.current - 1), [goTo]);
@@ -57,23 +76,50 @@ export function JourneySection() {
       <div className="mx-auto" style={{ maxWidth: "480px" }}>
         {/* Section header */}
         <header className="mb-14 text-center">
-          <p className="mb-3 t-label" style={{ color: "var(--color-text-muted)", letterSpacing: "var(--ls-caps)" }}>
+          <p
+            className="mb-3 t-label"
+            style={{
+              color: "var(--color-text-muted)",
+              letterSpacing: "var(--ls-caps)",
+            }}
+          >
             Our Story
           </p>
-          <h2 style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontSize: "var(--text-3xl)", fontWeight: 400 }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--color-gold)",
+              fontSize: "var(--text-3xl)",
+              fontWeight: 400,
+            }}
+          >
             Every Chapter
           </h2>
-          <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-border-gold)" }} />
+          <div
+            className="mx-auto mt-5 h-px w-24"
+            style={{ backgroundColor: "var(--color-border-gold)" }}
+          />
         </header>
 
         {/* Carousel */}
         <div className="relative select-none">
-          <div className="relative overflow-hidden rounded-xl" style={{ aspectRatio: "4 / 5" }}>
-            <div style={{ position: "absolute", inset: 0, opacity, transition: "opacity 0.35s ease" }}>
+          <div
+            className="relative overflow-hidden rounded-xl"
+            style={{ aspectRatio: "4 / 5" }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity,
+                transition: "opacity 0.35s ease",
+              }}
+            >
               <Image
-                src={SLIDES[current]}
+                src={slides[current]}
                 alt="Our story"
                 fill
+                unoptimized
                 className="object-cover"
                 style={{ objectPosition: "center 20%" }}
                 priority={current === 0}
@@ -85,29 +131,61 @@ export function JourneySection() {
           <button
             onClick={prev}
             className="absolute -left-5 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "rgba(251, 245, 238, 0.88)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
+            style={{
+              backgroundColor: "rgba(251, 245, 238, 0.88)",
+              color: "var(--color-text)",
+              backdropFilter: "blur(4px)",
+              border: "1px solid var(--color-border-gold)",
+            }}
             aria-label="Previous photo"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path
+                d="M15 18l-6-6 6-6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
 
           <button
             onClick={next}
             className="absolute -right-5 top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "rgba(251, 245, 238, 0.88)", color: "var(--color-text)", backdropFilter: "blur(4px)", border: "1px solid var(--color-border-gold)" }}
+            style={{
+              backgroundColor: "rgba(251, 245, 238, 0.88)",
+              color: "var(--color-text)",
+              backdropFilter: "blur(4px)",
+              border: "1px solid var(--color-border-gold)",
+            }}
             aria-label="Next photo"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path
+                d="M9 18l6-6-6-6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
 
         {/* Dots */}
         <div className="flex items-center justify-center gap-2 mt-8">
-          {SLIDES.map((_, i) => (
+          {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
@@ -117,7 +195,10 @@ export function JourneySection() {
                 width: i === current ? "28px" : "8px",
                 height: "8px",
                 borderRadius: "4px",
-                backgroundColor: i === current ? "var(--color-gold)" : "var(--color-border-gold)",
+                backgroundColor:
+                  i === current
+                    ? "var(--color-gold)"
+                    : "var(--color-border-gold)",
               }}
             />
           ))}

@@ -1,27 +1,52 @@
 "use client";
 
-const HERO_SLIDES = [
-  "/hero.jpg",
-  "/close-portrait-wall.jpg",
-  "/prom-2019.jpeg",
-  "/proposal-after-showing-ring.jpeg",
-  "/couple-with-garlands.jpg",
-  "/under-the-arch-walking.jpg",
+import { useMemo } from "react";
+import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
+
+const HERO_IMAGE_PATTERNS = [
+  "colonnade-smiling-cover",
+  "close-portrait-wall",
+  "prom-2019",
+  "proposal-after-showing-ring",
+  "couple-with-garlands",
+  "under-the-arch-walking",
 ];
 
-const HERO_IMAGE_OFFSETS: Partial<Record<(typeof HERO_SLIDES)[number], string>> = {
-  "/proposal-after-showing-ring.jpeg": "translateY(4%)",
+const HERO_IMAGE_OFFSETS: Record<string, string> = {
+  "proposal-after-showing-ring": "translateY(4%)",
 };
 
-const LOOPED_SLIDES = [...HERO_SLIDES, ...HERO_SLIDES];
-
 export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
+  const { data } = db.useQuery({ $files: {} });
+  const files = data?.$files ?? [];
+
+  const heroSlides = useMemo(() => {
+    const matched = HERO_IMAGE_PATTERNS.map((pattern) =>
+      files.find((f) => f.path.toLowerCase().includes(pattern)),
+    ).filter(Boolean) as { path: string; url: string }[];
+
+    return matched.map((f) => cld(f.url));
+  }, [files]);
+
+  const heroOffsets = useMemo(() => {
+    const offsets: Record<string, string> = {};
+    HERO_IMAGE_PATTERNS.forEach((pattern) => {
+      const file = files.find((f) => f.path.toLowerCase().includes(pattern));
+      if (file && HERO_IMAGE_OFFSETS[pattern]) {
+        offsets[cld(file.url)] = HERO_IMAGE_OFFSETS[pattern];
+      }
+    });
+    return offsets;
+  }, [files]);
+
+  if (!heroSlides.length) return null;
+
+  const LOOPED_SLIDES = [...heroSlides, ...heroSlides];
+
   return (
     <section id="hero" style={{ backgroundColor: "var(--color-bg)" }}>
-      <div
-        className="relative overflow-hidden"
-        style={{ minHeight: "86vh" }}
-      >
+      <div className="relative overflow-hidden" style={{ minHeight: "86vh" }}>
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-filmstrip h-full">
             {LOOPED_SLIDES.map((src, idx) => (
@@ -31,9 +56,9 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
                 src={src}
                 alt="Meghana and Rajit"
                 className="hero-filmstrip-frame"
-                loading={idx < HERO_SLIDES.length ? "eager" : "lazy"}
+                loading={idx < heroSlides.length ? "eager" : "lazy"}
                 style={{
-                  transform: HERO_IMAGE_OFFSETS[src] ?? "none",
+                  transform: heroOffsets[src] ?? "none",
                 }}
               />
             ))}
@@ -61,7 +86,7 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
             }}
           >
             Meghana and Rajit
-          </h1 >
+          </h1>
           <p
             className="mt-5 t-label"
             style={{
@@ -96,8 +121,8 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
               RSVP
             </button>
           </div>
-        </div >
-      </div >
-    </section >
+        </div>
+      </div>
+    </section>
   );
 }

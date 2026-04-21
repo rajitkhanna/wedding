@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
 
 interface SectionBannerProps {
   /** Path substring to match — e.g. "palace", "venue/", "ceremony/" */
@@ -36,11 +37,12 @@ export function SectionBanner({
       aria-hidden="true"
     >
       <Image
-        src={photo.url}
+        src={cld(photo.url)}
         alt=""
         fill
         className="object-cover object-center"
         sizes="100vw"
+        unoptimized
       />
     </div>
   );

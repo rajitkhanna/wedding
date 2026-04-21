@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: "files.instantdb.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "imagedelivery.net",
+        pathname: "/**",
+      },
     ],
   },
 };
