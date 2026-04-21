@@ -4,6 +4,13 @@ import { i } from "@instantdb/react";
 
 const _schema = i.schema({
   entities: {
+    invitees: i.entity({
+      name: i.string(),
+      sortOrder: i.number(),
+      meal: i.string().optional(),
+      dietary: i.string().optional(),
+      attendingEventIds: i.string().optional(),
+    }),
     $files: i.entity({
       path: i.string().unique().indexed(),
       url: i.string(),
@@ -20,16 +27,16 @@ const _schema = i.schema({
       type: i.string().optional(),
     }),
     guests: i.entity({
-      attendingEventIds: i.string().optional(),
-      dietaryRestrictions: i.string().optional(),
+      code: i.string().unique().indexed().optional(),
       email: i.string().unique().indexed(),
-      mealPreference: i.string().optional(),
       name: i.string(),
-      partyMembers: i.string().optional(),
-      partySize: i.number().optional(),
       rsvpStatus: i.string().optional(),
       rsvpSubmittedAt: i.number().optional(),
       scheduleGroup: i.string(),
+    }),
+    groups: i.entity({
+      code: i.string().unique().indexed().optional(),
+      name: i.string(),
     }),
     scheduleEvents: i.entity({
       day: i.string(),
@@ -72,6 +79,55 @@ const _schema = i.schema({
         on: "$users",
         has: "many",
         label: "linkedGuestUsers",
+      },
+    },
+    guestInvitees: {
+      forward: {
+        on: "guests",
+        has: "many",
+        label: "invitees",
+      },
+      reverse: {
+        on: "invitees",
+        has: "one",
+        label: "guest",
+        onDelete: "cascade",
+      },
+    },
+    guestEvents: {
+      forward: {
+        on: "guests",
+        has: "many",
+        label: "invitedEvents",
+      },
+      reverse: {
+        on: "scheduleEvents",
+        has: "many",
+        label: "invitedGuests",
+      },
+    },
+    groupMembers: {
+      forward: {
+        on: "guests",
+        has: "one",
+        label: "group",
+      },
+      reverse: {
+        on: "groups",
+        has: "many",
+        label: "members",
+      },
+    },
+    groupEvents: {
+      forward: {
+        on: "scheduleEvents",
+        has: "one",
+        label: "eventGroup",
+      },
+      reverse: {
+        on: "groups",
+        has: "many",
+        label: "scheduleEvents",
       },
     },
   },
