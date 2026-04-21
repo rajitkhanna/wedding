@@ -1,10 +1,6 @@
 "use client";
 
-const footerLinks = [
-  { href: "#travel", label: "Travel & Stay" },
-  { href: "#registry", label: "Registry" },
-  { href: "#faq", label: "FAQ" },
-];
+const footerLinks = [{ href: "/rsvp", label: "RSVP" }];
 
 export function Footer() {
   return (
@@ -61,7 +57,7 @@ export function Footer() {
           fontWeight: 300,
         }}
       >
-        November 28, 2026 &middot; Boston
+        Boston
       </p>
 
       {/* Footer links */}
@@ -114,7 +110,6 @@ export function Footer() {
       >
         &copy; 2026 &nbsp; All Rights Reserved
       </p>
-
     </footer>
   );
 }
