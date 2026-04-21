@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "push": "bunx instant-cli@latest push"
   },
   "dependencies": {
     "@instantdb/admin": "^1.0.1",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.183.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",

@@ -2,13 +2,7 @@ import { SectionBanner } from "@/components/SectionBanner";
 import { VenueCard } from "@/components/travel/VenueCard";
 import { HotelCard } from "@/components/travel/HotelCard";
 import { InfoCard } from "@/components/travel/InfoCard";
-import {
-  venues,
-  airports,
-  hotels,
-  gettingAround,
-  bostonFavorites,
-} from "@/lib/travel-content";
+import { venues, airports, hotels, gettingAround } from "@/lib/travel-content";
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (

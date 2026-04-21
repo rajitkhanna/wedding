@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HeroRSVPModal } from "@/components/rsvp/HeroRSVPModal";
-import { JourneySection } from "@/components/sections/JourneySection";
 import { VenuesSection } from "@/components/sections/VenuesSection";
 import { ScheduleSection } from "@/components/sections/ScheduleSection";
 import { TravelSection } from "@/components/sections/TravelSection";
@@ -33,7 +32,11 @@ export default function Home() {
 
   useEffect(() => {
     if (window.location.hash) {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
     }
 
     if (window.sessionStorage.getItem("scroll-to-schedule") !== "true") return;
@@ -62,9 +65,6 @@ export default function Home() {
           setRsvpModalOpen(true);
         }}
       />
-
-      {/* 2. Our Story carousel */}
-      <JourneySection />
 
       <Divider />
 

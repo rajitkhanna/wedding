@@ -1,111 +1,116 @@
 "use client";
 
 import { useState } from "react";
-import { lookup } from "@instantdb/react";
+import { id } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
+
+interface Invitee {
+  id: string;
+  name: string;
+  sortOrder: number;
+  attendingEventIds?: string;
+}
+
+interface ScheduleEvent {
+  id: string;
+  title: string;
+  day: string;
+  startTime: string;
+}
 
 interface Guest {
   id: string;
   name: string;
   email: string;
   rsvpStatus?: string;
-  mealPreference?: string;
-  partyMembers?: string;
   rsvpSubmittedAt?: number;
-  scheduleGroup?: string;
+  invitees: Invitee[];
+  invitedEvents: ScheduleEvent[];
 }
 
-const MEAL_LABELS: Record<string, string> = {
-  veg: "Vegetarian",
-  "non-veg": "Non-Veg",
-  vegan: "Vegan",
-  pescatarian: "Pescatarian",
-};
-
 export function RSVPTab() {
-  const { isLoading, data } = db.useQuery({ guests: {} });
-  const guests: Guest[] = data?.guests ?? [];
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editNames, setEditNames] = useState("");
+  const { isLoading, data } = db.useQuery({ guests: { invitees: {}, invitedEvents: {} } });
+  const { data: eventsData } = db.useQuery({ scheduleEvents: {} });
+
+  const guests: Guest[] = (data?.guests ?? []).map((g) => ({
+    id: g.id,
+    name: g.name as string,
+    email: g.email as string,
+    rsvpStatus: g.rsvpStatus as string | undefined,
+    rsvpSubmittedAt: g.rsvpSubmittedAt as number | undefined,
+    invitees: ((g.invitees ?? []) as Invitee[]).sort((a, b) => a.sortOrder - b.sortOrder),
+    invitedEvents: (g.invitedEvents ?? []) as ScheduleEvent[],
+  }));
+
+  const allEvents: ScheduleEvent[] = (eventsData?.scheduleEvents ?? [])
+    .map((e) => ({
+      id: e.id,
+      title: e.title as string,
+      day: e.day as string,
+      startTime: e.startTime as string,
+    }))
+    .sort((a, b) => {
+      const dayOrder = { friday: 0, saturday: 1, sunday: 2 };
+      return (dayOrder[a.day as keyof typeof dayOrder] ?? 3) - (dayOrder[b.day as keyof typeof dayOrder] ?? 3);
+    });
+
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
 
   const attending = guests.filter((g) => g.rsvpStatus === "attending");
   const declined = guests.filter((g) => g.rsvpStatus === "not-attending");
-  const noResponse = guests.filter((g) => !g.rsvpStatus || g.rsvpStatus === "");
+  const noResponse = guests.filter((g) => !g.rsvpStatus);
 
-  // Count total people across all party members
-  function countPeople(guests: Guest[]) {
-    return guests.reduce((sum, g) => {
-      try {
-        const members = g.partyMembers ? JSON.parse(g.partyMembers) : null;
-        return sum + (Array.isArray(members) ? members.length : 1);
-      } catch {
-        return sum + 1;
-      }
-    }, 0);
-  }
+  const totalAttending = attending.reduce((sum, g) => sum + (g.invitees.length || 1), 0);
 
-  const totalAttending = countPeople(attending);
-
-  function getPartyNames(guest: Guest): string {
-    try {
-      const members = guest.partyMembers ? JSON.parse(guest.partyMembers) : null;
-      if (!Array.isArray(members) || members.length === 0) return guest.name;
-      return members.map((m: { name: string }) => m.name).join(", ");
-    } catch {
-      return guest.name;
-    }
-  }
-
-  function startEdit(guest: Guest) {
-    setEditingId(guest.id);
-    setEditNames(getPartyNames(guest));
-  }
-
-  async function savePartyMembers(guest: Guest) {
+  async function addInvitee(guest: Guest) {
+    const name = newName.trim();
+    if (!name) return;
     setSaving(true);
-    const names = editNames
-      .split(",")
-      .map((n) => n.trim())
-      .filter(Boolean);
-    if (names.length === 0) {
-      setSaving(false);
-      return;
-    }
-    // Merge new names with any existing RSVP data per member
-    let existing: { name: string; eventIds?: string[]; meal?: string; dietary?: string }[] = [];
     try {
-      existing = guest.partyMembers ? JSON.parse(guest.partyMembers) : [];
-    } catch {
-      existing = [];
-    }
-    const existingByName = Object.fromEntries(existing.map((m) => [m.name, m]));
-    const updated = names.map((name) => {
-      const { name: _n, ...rest } = existingByName[name] ?? {};
-      return { name, ...rest };
-    });
-    try {
+      const newId = id();
       await db.transact(
-        db.tx.guests[lookup("email", guest.email)].merge({
-          partyMembers: JSON.stringify(updated),
-          partySize: updated.length,
-        })
+        db.tx.invitees[newId]
+          .update({ name, sortOrder: guest.invitees.length })
+          .link({ guest: guest.id }),
       );
-      setEditingId(null);
+      setNewName("");
     } catch (err) {
       console.error(err);
     }
     setSaving(false);
   }
 
+  async function removeInvitee(inviteeId: string) {
+    setSaving(true);
+    try {
+      await db.transact(db.tx.invitees[inviteeId].delete());
+    } catch (err) {
+      console.error(err);
+    }
+    setSaving(false);
+  }
+
+  async function toggleEvent(guest: Guest, eventId: string, linked: boolean) {
+    try {
+      if (linked) {
+        await db.transact(db.tx.guests[guest.id].unlink({ invitedEvents: eventId }));
+      } else {
+        await db.transact(db.tx.guests[guest.id].link({ invitedEvents: eventId }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   function exportCSV() {
-    const headers = ["Name", "Email", "Party Members", "RSVP Status", "Schedule Group", "Submitted At"];
+    const headers = ["Name", "Email", "Party Members", "RSVP Status", "Submitted At"];
     const rows = guests.map((g) => [
       g.name,
       g.email,
-      getPartyNames(g),
+      g.invitees.map((i) => i.name).join(", ") || g.name,
       g.rsvpStatus ?? "No response",
-      g.scheduleGroup ?? "-",
       g.rsvpSubmittedAt ? new Date(g.rsvpSubmittedAt).toLocaleDateString() : "-",
     ]);
     const csv = [
@@ -155,110 +160,161 @@ export function RSVPTab() {
         <StatCard label="No Response" value={noResponse.length} color="var(--color-text-muted)" />
       </div>
 
-      <div>
-        <h3
-          className="text-xl mb-4"
-          style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 400 }}
-        >
-          Guest List ({guests.length} parties)
-        </h3>
-        <p className="text-xs mb-4" style={{ color: "var(--color-text-dim)" }}>
-          Party Members — comma-separated names. The magic link holder RSVPs for everyone listed.
-        </p>
-        <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--color-border-gold)" }}>
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ backgroundColor: "var(--color-surface)" }}>
-                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
-                  Account Name
-                </th>
-                <th className="text-left p-3 font-medium hidden md:table-cell" style={{ color: "var(--color-gold)" }}>
-                  Email
-                </th>
-                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
-                  Party Members
-                </th>
-                <th className="text-left p-3 font-medium" style={{ color: "var(--color-gold)" }}>
-                  RSVP
-                </th>
-                <th className="text-left p-3 font-medium hidden md:table-cell" style={{ color: "var(--color-gold)" }}>
-                  Group
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {guests.map((guest, i) => (
-                <tr
-                  key={guest.id}
-                  style={{
-                    backgroundColor: i % 2 === 0 ? "var(--color-surface)" : "var(--color-surface-alt)",
-                  }}
-                >
-                  <td className="p-3" style={{ color: "var(--color-text)" }}>
+      <h3
+        className="text-xl mb-2"
+        style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 400 }}
+      >
+        Guest List ({guests.length} parties)
+      </h3>
+      <p className="text-xs mb-4" style={{ color: "var(--color-text-dim)" }}>
+        Click a row to manage invitees and assigned events.
+      </p>
+
+      <div className="flex flex-col gap-2">
+        {guests.map((guest) => {
+          const isExpanded = expandedId === guest.id;
+          const invitedEventIds = new Set(guest.invitedEvents.map((e) => e.id));
+
+          return (
+            <div
+              key={guest.id}
+              className="rounded-lg overflow-hidden"
+              style={{ border: "1px solid var(--color-border-gold)" }}
+            >
+              {/* Row */}
+              <button
+                type="button"
+                className="w-full flex items-center gap-4 px-4 py-3 text-left transition-opacity hover:opacity-80"
+                style={{ backgroundColor: "var(--color-surface)" }}
+                onClick={() => setExpandedId(isExpanded ? null : guest.id)}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
                     {guest.name}
-                  </td>
-                  <td className="p-3 hidden md:table-cell" style={{ color: "var(--color-text-muted)" }}>
+                  </p>
+                  <p className="text-xs truncate" style={{ color: "var(--color-text-muted)" }}>
                     {guest.email}
-                  </td>
-                  <td className="p-3">
-                    {editingId === guest.id ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={editNames}
-                          onChange={(e) => setEditNames(e.target.value)}
-                          placeholder="Name1, Name2, …"
-                          className="rsvp-input"
-                          style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem", minWidth: "180px" }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") { e.preventDefault(); savePartyMembers(guest); }
-                            if (e.key === "Escape") setEditingId(null);
-                          }}
-                          disabled={saving}
-                        />
-                        <button
-                          onClick={() => savePartyMembers(guest)}
-                          disabled={saving}
-                          className="text-xs px-2 py-1 rounded transition-opacity hover:opacity-70"
-                          style={{ color: "var(--color-gold)", border: "1px solid var(--color-gold)" }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingId(null)}
-                          className="text-xs transition-opacity hover:opacity-70"
-                          style={{ color: "var(--color-text-muted)" }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => startEdit(guest)}
-                        className="text-left transition-opacity hover:opacity-70 group"
-                        style={{ color: "var(--color-text-muted)" }}
-                      >
-                        <span>{getPartyNames(guest)}</span>
+                  </p>
+                </div>
+                <div className="shrink-0 text-xs" style={{ color: "var(--color-text-dim)" }}>
+                  {guest.invitees.length > 0
+                    ? guest.invitees.map((i) => i.name).join(", ")
+                    : "No invitees"}
+                </div>
+                <StatusBadge status={guest.rsvpStatus} />
+                <span style={{ color: "var(--color-gold-dim)" }}>{isExpanded ? "▴" : "▾"}</span>
+              </button>
+
+              {/* Expanded panel */}
+              {isExpanded && (
+                <div
+                  className="px-4 pb-4 pt-3 flex flex-col gap-5"
+                  style={{ backgroundColor: "var(--color-bg)", borderTop: "1px solid var(--color-border)" }}
+                >
+                  {/* Invitees */}
+                  <div>
+                    <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "var(--color-gold-dim)" }}>
+                      Invitees (party members)
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {guest.invitees.map((inv, idx) => (
                         <span
-                          className="ml-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ color: "var(--color-gold)" }}
+                          key={inv.id}
+                          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs"
+                          style={{
+                            backgroundColor: "var(--color-surface)",
+                            border: "1px solid var(--color-border-gold)",
+                            color: "var(--color-text)",
+                          }}
                         >
-                          edit
+                          {idx === 0 && (
+                            <span style={{ color: "var(--color-gold-dim)", fontSize: "0.6rem" }}>★</span>
+                          )}
+                          {inv.name}
+                          <button
+                            type="button"
+                            onClick={() => removeInvitee(inv.id)}
+                            disabled={saving}
+                            className="transition-opacity hover:opacity-60"
+                            style={{ color: "var(--color-text-dim)" }}
+                            aria-label={`Remove ${inv.name}`}
+                          >
+                            ✕
+                          </button>
                         </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        placeholder="Add invitee name…"
+                        className="rsvp-input flex-1"
+                        style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { e.preventDefault(); addInvitee(guest); }
+                        }}
+                        disabled={saving}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addInvitee(guest)}
+                        disabled={saving || !newName.trim()}
+                        className="rounded px-3 py-1 text-xs transition-opacity hover:opacity-80 disabled:opacity-40"
+                        style={{ backgroundColor: "var(--color-gold)", color: "var(--color-bg)" }}
+                      >
+                        Add
                       </button>
+                    </div>
+                    <p className="text-xs mt-1" style={{ color: "var(--color-text-dim)" }}>
+                      ★ = party leader (signs in and RSVPs for the group)
+                    </p>
+                  </div>
+
+                  {/* Invited events */}
+                  <div>
+                    <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "var(--color-gold-dim)" }}>
+                      Invited to events
+                    </p>
+                    {allEvents.length === 0 ? (
+                      <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>No events in database.</p>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {allEvents.map((event) => {
+                          const linked = invitedEventIds.has(event.id);
+                          return (
+                            <label
+                              key={event.id}
+                              className="flex items-center gap-2.5 cursor-pointer group"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={linked}
+                                onChange={() => toggleEvent(guest, event.id, linked)}
+                                className="rsvp-checkbox"
+                              />
+                              <span className="rsvp-checkbox-custom" aria-hidden="true" />
+                              <span className="text-xs" style={{ color: "var(--color-text)" }}>
+                                <span style={{ color: "var(--color-text-dim)", marginRight: "0.35rem" }}>
+                                  {event.day.charAt(0).toUpperCase() + event.day.slice(1)}
+                                </span>
+                                {event.title}
+                                <span style={{ color: "var(--color-text-dim)", marginLeft: "0.35rem" }}>
+                                  · {event.startTime}
+                                </span>
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
                     )}
-                  </td>
-                  <td className="p-3">
-                    <StatusBadge status={guest.rsvpStatus} />
-                  </td>
-                  <td className="p-3 hidden md:table-cell" style={{ color: "var(--color-text-muted)" }}>
-                    {guest.scheduleGroup ?? "-"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

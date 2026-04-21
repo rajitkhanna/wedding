@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { db } from "@/lib/instant/db";
-import { getVisibleGroups } from "@/lib/schedule/visibleGroups";
 import { RSVPSection } from "@/components/schedule/RSVPSection";
 
 export function HeroRSVPModal({
@@ -16,26 +15,23 @@ export function HeroRSVPModal({
   onClose: () => void;
   onAfterSubmit?: () => void;
   startEditing?: boolean;
-  /** When false (after RSVP deadline), form is read-only. */
   allowSubmit?: boolean;
 }) {
   const { user } = db.useAuth();
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
-    open && user ? { guests: { $: { where: { email: user.email! } } } } : null,
-  );
-
-  const { data: eventsData } = db.useQuery(
-    open && user ? { scheduleEvents: {} } : null,
+    open && user
+      ? { guests: { invitees: {}, invitedEvents: {}, $: { where: { email: user.email! } } } }
+      : null,
   );
 
   const guest = guestData?.guests?.[0];
-  const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = getVisibleGroups(scheduleGroup);
 
-  const allEvents = eventsData?.scheduleEvents ?? [];
-  const guestEvents = allEvents.filter((e) =>
-    visibleGroups.includes(e.group ?? "all"),
+  const invitees = [...(guest?.invitees ?? [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
+  const invitedEvents = [...(guest?.invitedEvents ?? [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
 
   useEffect(() => {
@@ -90,11 +86,7 @@ export function HeroRSVPModal({
           <h2
             id="hero-rsvp-title"
             className="text-xl"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-gold)",
-              fontWeight: 400,
-            }}
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 400 }}
           >
             RSVP
           </h2>
@@ -102,10 +94,7 @@ export function HeroRSVPModal({
             type="button"
             onClick={onClose}
             className="rounded px-3 py-1.5 text-xs tracking-widest uppercase transition-opacity hover:opacity-70"
-            style={{
-              color: "var(--color-text-muted)",
-              border: "1px solid var(--color-border)",
-            }}
+            style={{ color: "var(--color-text-muted)", border: "1px solid var(--color-border)" }}
           >
             Close
           </button>
@@ -117,9 +106,12 @@ export function HeroRSVPModal({
               Loading…
             </p>
           ) : !guest ? (
-            <p className="py-8 text-center text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              We couldn&apos;t find your invitation for this email. If you believe this is a mistake,
-              please reach out to the couple.
+            <p
+              className="py-8 text-center text-sm leading-relaxed"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              We couldn&apos;t find your invitation for this email. If you believe this is a
+              mistake, please reach out to the couple.
             </p>
           ) : (
             <RSVPSection
@@ -130,20 +122,23 @@ export function HeroRSVPModal({
                 email: guest.email as string,
                 name: guest.name as string | undefined,
                 rsvpStatus: guest.rsvpStatus as string | undefined,
-                mealPreference: guest.mealPreference as string | undefined,
-                dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
-                partySize: guest.partySize as number | undefined,
-                attendingEventIds: guest.attendingEventIds as string | undefined,
-                partyMembers: guest.partyMembers as string | undefined,
+                invitees: invitees.map((inv) => ({
+                  id: inv.id,
+                  name: inv.name as string,
+                  sortOrder: inv.sortOrder as number,
+                  meal: inv.meal as string | undefined,
+                  dietary: inv.dietary as string | undefined,
+                  attendingEventIds: inv.attendingEventIds as string | undefined,
+                })),
+                invitedEvents: invitedEvents.map((e) => ({
+                  id: e.id,
+                  title: e.title as string,
+                  day: e.day as string,
+                  startTime: e.startTime as string,
+                  location: e.location as string | undefined,
+                  group: e.group as string,
+                })),
               }}
-              visibleEvents={guestEvents.map((e) => ({
-                id: e.id,
-                title: e.title as string,
-                day: e.day as string,
-                startTime: e.startTime as string,
-                location: e.location as string | undefined,
-                group: e.group as string,
-              }))}
               onScheduleClick={onClose}
               onSubmitted={() => {
                 onAfterSubmit?.();

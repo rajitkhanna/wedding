@@ -19,10 +19,13 @@ export function GlobalAuthGate() {
             lineHeight: 1,
           }}
         >
-          M &amp; R
+          Meghana and Rajit
         </p>
-        <p className="t-label mt-3" style={{ color: "var(--color-text-muted)" }}>
-          November 28, 2026 &middot; Boston, MA
+        <p
+          className="t-label mt-3"
+          style={{ color: "var(--color-text-muted)" }}
+        >
+          Boston, MA
         </p>
         <div
           className="mx-auto mt-5 h-px w-16"
@@ -40,13 +43,13 @@ export function GlobalAuthGate() {
         <div className="mb-7 text-center">
           <h2
             className="t-sub"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-text)" }}
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--color-text)",
+            }}
           >
             You&apos;re invited.
           </h2>
-          <p className="t-body mt-2">
-            Enter your email to access the wedding site.
-          </p>
         </div>
         <MagicLinkForm />
         <p

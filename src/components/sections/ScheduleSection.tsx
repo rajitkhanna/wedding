@@ -18,24 +18,19 @@ export function ScheduleSection({ onEditRsvp }: { onEditRsvp?: () => void }) {
 
   const { user } = db.useAuth();
 
-  const { isLoading: guestLoading, data: guestData } = db.useQuery(
-    user ? { guests: { $: { where: { email: user.email! } } } } : null,
+  const { isLoading: guestLoading, error: eventsError, data: guestData } = db.useQuery(
+    user
+      ? { guests: { invitees: {}, invitedEvents: {}, $: { where: { email: user.email! } } } }
+      : null,
   );
 
   const guest = guestData?.guests?.[0];
-  const scheduleGroup: string = guest?.scheduleGroup ?? "general";
 
-  const {
-    isLoading: eventsLoading,
-    error: eventsError,
-    data: eventsData,
-  } = db.useQuery(user ? { scheduleEvents: {} } : null);
-
-  const personalizedEvents = personalizeScheduleEvents(
-    eventsData?.scheduleEvents ?? [],
-    guest,
-    scheduleGroup,
+  const invitedEvents = [...(guest?.invitedEvents ?? [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
+
+  const personalizedEvents = personalizeScheduleEvents(invitedEvents, guest);
 
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<
     Record<DayKey, typeof personalizedEvents>
@@ -105,12 +100,12 @@ export function ScheduleSection({ onEditRsvp }: { onEditRsvp?: () => void }) {
           </p>
         </header>
 
-        {eventsLoading || guestLoading ? (
+        {guestLoading ? (
           <p
             className="text-sm text-center py-12"
             style={{ color: "var(--color-text-muted)" }}
           >
-            {eventsLoading ? "Loading events…" : "Loading…"}
+            Loading…
           </p>
         ) : eventsError ? (
           <p

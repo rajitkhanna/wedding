@@ -23,7 +23,9 @@ export default function SchedulePage() {
 
   // ── Guest record (for name + scheduleGroup) ─────────────────────────────────
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
-    user ? { guests: { $: { where: { email: user.email! } } } } : null,
+    user
+      ? { guests: { $: { where: { email: user.email! } }, invitees: {} } }
+      : null,
   );
 
   const guest = guestData?.guests?.[0];
@@ -80,7 +82,7 @@ export default function SchedulePage() {
     visibleGroups.includes(e.group ?? "all"),
   );
 
-  const displayEvents = personalizeScheduleEvents(allEvents, guest, scheduleGroup);
+  const displayEvents = personalizeScheduleEvents(allEvents, guest);
 
   // Group by day (personalized itinerary)
   const byDay = (["friday", "saturday", "sunday"] as DayKey[]).reduce<
@@ -210,20 +212,23 @@ export default function SchedulePage() {
                 email: guest.email as string,
                 name: guest.name as string | undefined,
                 rsvpStatus: guest.rsvpStatus as string | undefined,
-                mealPreference: guest.mealPreference as string | undefined,
-                dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
-                partySize: guest.partySize as number | undefined,
-                attendingEventIds: guest.attendingEventIds as string | undefined,
-                partyMembers: guest.partyMembers as string | undefined,
+                invitees: (guest.invitees ?? []).map((inv) => ({
+                  id: inv.id as string,
+                  name: inv.name as string,
+                  sortOrder: inv.sortOrder as number,
+                  meal: inv.meal as string | undefined,
+                  dietary: inv.dietary as string | undefined,
+                  attendingEventIds: inv.attendingEventIds as string | undefined,
+                })),
+                invitedEvents: tierEvents.map((e) => ({
+                  id: e.id,
+                  title: e.title as string,
+                  day: e.day as string,
+                  startTime: e.startTime as string,
+                  location: e.location as string | undefined,
+                  group: e.group as string,
+                })),
               }}
-              visibleEvents={tierEvents.map((e) => ({
-                id: e.id,
-                title: e.title as string,
-                day: e.day as string,
-                startTime: e.startTime as string,
-                location: e.location as string | undefined,
-                group: e.group as string,
-              }))}
             />
           </>
         )}

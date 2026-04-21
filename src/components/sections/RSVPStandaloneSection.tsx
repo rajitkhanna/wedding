@@ -10,7 +10,9 @@ export function RSVPStandaloneSection() {
   const { user } = db.useAuth();
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
-    user ? { guests: { $: { where: { email: user.email! } } } } : null,
+    user
+      ? { guests: { $: { where: { email: user.email! } }, invitees: {} } }
+      : null,
   );
 
   const { data: eventsData } = db.useQuery(
@@ -72,20 +74,23 @@ export function RSVPStandaloneSection() {
             email: guest.email as string,
             name: guest.name as string | undefined,
             rsvpStatus: guest.rsvpStatus as string | undefined,
-            mealPreference: guest.mealPreference as string | undefined,
-            dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
-            partySize: guest.partySize as number | undefined,
-            attendingEventIds: guest.attendingEventIds as string | undefined,
-            partyMembers: guest.partyMembers as string | undefined,
+            invitees: (guest.invitees ?? []).map((inv) => ({
+              id: inv.id as string,
+              name: inv.name as string,
+              sortOrder: inv.sortOrder as number,
+              meal: inv.meal as string | undefined,
+              dietary: inv.dietary as string | undefined,
+              attendingEventIds: inv.attendingEventIds as string | undefined,
+            })),
+            invitedEvents: guestEvents.map((e) => ({
+              id: e.id,
+              title: e.title as string,
+              day: e.day as string,
+              startTime: e.startTime as string,
+              location: e.location as string | undefined,
+              group: e.group as string,
+            })),
           }}
-          visibleEvents={guestEvents.map((e) => ({
-            id: e.id,
-            title: e.title as string,
-            day: e.day as string,
-            startTime: e.startTime as string,
-            location: e.location as string | undefined,
-            group: e.group as string,
-          }))}
         />
       </div>
     </section>

@@ -1,10 +1,17 @@
-const VISIBLE_GROUPS: Record<string, string[]> = {
-  "wedding-party": ["all", "family", "wedding-party"],
-  family: ["all", "family"],
-  general: ["all"],
-  admin: ["all", "family", "wedding-party"],
+const GROUP_VISIBILITY: Record<string, string[]> = {
+  general: ["welcome", "ceremony", "cocktails", "reception", "farewell"],
+  bride: ["welcome", "ceremony", "cocktails", "reception", "farewell"],
+  groom: ["welcome", "ceremony", "cocktails", "reception", "farewell"],
+  family: [
+    "welcome",
+    "ceremony",
+    "family-dinner",
+    "cocktails",
+    "reception",
+    "farewell",
+  ],
 };
 
-export function getVisibleGroups(scheduleGroup: string | undefined): string[] {
-  return VISIBLE_GROUPS[scheduleGroup ?? "general"] ?? ["all"];
+export function getVisibleGroups(scheduleGroup: string): string[] {
+  return GROUP_VISIBILITY[scheduleGroup] ?? GROUP_VISIBILITY.general;
 }

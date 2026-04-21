@@ -2,7 +2,6 @@
 
 import { db } from "@/lib/instant/db";
 import { isRsvpOpen } from "@/lib/rsvp/rsvpDeadline";
-import { getVisibleGroups } from "@/lib/schedule/visibleGroups";
 import { GlobalAuthGate } from "@/components/auth/GlobalAuthGate";
 import { RSVPSection } from "@/components/schedule/RSVPSection";
 
@@ -10,19 +9,24 @@ export default function RSVPPage() {
   const { isLoading: authLoading, user } = db.useAuth();
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
-    user ? { guests: { $: { where: { email: user.email! } } } } : null,
-  );
-
-  const { isLoading: eventsLoading, data: eventsData } = db.useQuery(
-    user ? { scheduleEvents: {} } : null,
+    user
+      ? {
+          guests: {
+            invitees: {},
+            invitedEvents: {},
+            $: { where: { email: user.email! } },
+          },
+        }
+      : null,
   );
 
   const guest = guestData?.guests?.[0];
-  const scheduleGroup: string = guest?.scheduleGroup ?? "general";
-  const visibleGroups = getVisibleGroups(scheduleGroup);
-  const allEvents = eventsData?.scheduleEvents ?? [];
-  const guestEvents = allEvents.filter((e) =>
-    visibleGroups.includes(e.group ?? "all"),
+
+  const invitees = [...(guest?.invitees ?? [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
+  const invitedEvents = [...(guest?.invitedEvents ?? [])].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
 
   return (
@@ -66,14 +70,19 @@ export default function RSVPPage() {
         style={{ width: "100%", maxWidth: "36rem" }}
       >
         <div className="gold-rule flex-1" />
-        <span style={{ color: "var(--color-gold-dim)", fontSize: "0.7rem" }}>✦</span>
+        <span style={{ color: "var(--color-gold-dim)", fontSize: "0.7rem" }}>
+          ✦
+        </span>
         <div className="gold-rule flex-1" />
       </div>
 
       <div className="w-full" style={{ maxWidth: "36rem" }}>
         {authLoading ? (
           <div className="rsvp-card">
-            <p className="py-10 text-center text-sm" style={{ color: "var(--color-text-muted)" }}>
+            <p
+              className="py-10 text-center text-sm"
+              style={{ color: "var(--color-text-muted)" }}
+            >
               Loading...
             </p>
           </div>
@@ -81,17 +90,23 @@ export default function RSVPPage() {
           <div className="w-full overflow-hidden rounded-lg">
             <GlobalAuthGate />
           </div>
-        ) : guestLoading || eventsLoading ? (
+        ) : guestLoading ? (
           <div className="rsvp-card">
-            <p className="py-10 text-center text-sm" style={{ color: "var(--color-text-muted)" }}>
+            <p
+              className="py-10 text-center text-sm"
+              style={{ color: "var(--color-text-muted)" }}
+            >
               Loading your RSVP...
             </p>
           </div>
         ) : !guest ? (
           <div className="rsvp-card">
-            <p className="py-10 text-center text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              We couldn&apos;t find your invitation for this email. If you believe this is a mistake,
-              please reach out to the couple.
+            <p
+              className="py-10 text-center text-sm leading-relaxed"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              We couldn&apos;t find your invitation for this email. If you
+              believe this is a mistake, please reach out to the couple.
             </p>
           </div>
         ) : (
@@ -102,20 +117,23 @@ export default function RSVPPage() {
               email: guest.email as string,
               name: guest.name as string | undefined,
               rsvpStatus: guest.rsvpStatus as string | undefined,
-              mealPreference: guest.mealPreference as string | undefined,
-              dietaryRestrictions: guest.dietaryRestrictions as string | undefined,
-              partySize: guest.partySize as number | undefined,
-              attendingEventIds: guest.attendingEventIds as string | undefined,
-              partyMembers: guest.partyMembers as string | undefined,
+              invitees: invitees.map((inv) => ({
+                id: inv.id,
+                name: inv.name as string,
+                sortOrder: inv.sortOrder as number,
+                meal: inv.meal as string | undefined,
+                dietary: inv.dietary as string | undefined,
+                attendingEventIds: inv.attendingEventIds as string | undefined,
+              })),
+              invitedEvents: invitedEvents.map((e) => ({
+                id: e.id,
+                title: e.title as string,
+                day: e.day as string,
+                startTime: e.startTime as string,
+                location: e.location as string | undefined,
+                group: e.group as string,
+              })),
             }}
-            visibleEvents={guestEvents.map((e) => ({
-              id: e.id,
-              title: e.title as string,
-              day: e.day as string,
-              startTime: e.startTime as string,
-              location: e.location as string | undefined,
-              group: e.group as string,
-            }))}
           />
         )}
       </div>
