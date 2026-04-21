@@ -15,6 +15,17 @@ export function AccordionItem({
 }: AccordionItemProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
+  function linkifyEmails(text: string) {
+    const parts = text.split(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g);
+    return parts.map((part, i) =>
+      part.includes("@") ? (
+        <a key={i} href={`mailto:${part}`} style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          {part}
+        </a>
+      ) : part
+    );
+  }
+
   return (
     <div
       className="border-b"
@@ -62,20 +73,13 @@ export function AccordionItem({
         <div className="pb-5">
           {answer.includes("\n\n") ? (
             answer.split("\n\n").map((paragraph, i) => (
-              <p
-                key={i}
-                className="mt-2 text-sm leading-relaxed first:mt-0"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {paragraph}
+              <p key={i} className="mt-2 text-sm leading-relaxed first:mt-0" style={{ color: "var(--color-text-muted)" }}>
+                {linkifyEmails(paragraph)}
               </p>
             ))
           ) : (
-            <p
-              className="text-sm leading-relaxed"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              {answer}
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+              {linkifyEmails(answer)}
             </p>
           )}
         </div>

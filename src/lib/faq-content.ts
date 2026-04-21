@@ -50,23 +50,15 @@ export const faqItems: FAQItem[] = [
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
   },
   {
-    q: "Can I take photos during the ceremony?",
-    a: "Sikh Ceremony: respectful photography is welcome.\n\nTelugu Wedding: we'll have a professional photographer; please hold phones during the ceremony.",
-  },
-  {
-    q: "Where do I park?",
-    a: "The InterContinental has both valet and self-parking available. The Westborough Gurudwara has a free parking lot.",
-  },
-  {
-    q: "What time should I arrive?",
-    a: "Plan to arrive at least 30 minutes before each event. For the Telugu ceremony, please arrive by 9:45 AM — it begins promptly at 10:00 AM.",
-  },
-  {
     q: "I have a dietary restriction not covered in my RSVP.",
-    a: "Please text Rajit at 603-921-8190 and he'll make sure you're taken care of.",
+    a: "Email Rajesh Khanna at khannaspb@gmail.com or Venkat Avvaru at vavvaru@gmail.com and they'll make sure you're taken care of.",
+  },
+  {
+    q: "Can I bring a gift?",
+    a: "Please do not bring box gifts to the venue. If you'd like to give a gift, we'll share details soon.",
   },
   {
     q: "Who do I contact with questions?",
-    a: "Text or call Rajit: 603-921-8190.",
+    a: "Email Rajesh Khanna at khannaspb@gmail.com or Venkat Avvaru at vavvaru@gmail.com.",
   },
 ];
