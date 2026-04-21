@@ -7,8 +7,6 @@ const _schema = i.schema({
     invitees: i.entity({
       name: i.string(),
       sortOrder: i.number(),
-      meal: i.string().optional(),
-      dietary: i.string().optional(),
       attendingEventIds: i.string().optional(),
     }),
     $files: i.entity({
@@ -32,17 +30,11 @@ const _schema = i.schema({
       name: i.string(),
       rsvpStatus: i.string().optional(),
       rsvpSubmittedAt: i.number().optional(),
-      scheduleGroup: i.string(),
-    }),
-    groups: i.entity({
-      code: i.string().unique().indexed().optional(),
-      name: i.string(),
     }),
     scheduleEvents: i.entity({
       day: i.string(),
       description: i.string().optional(),
       endTime: i.string().optional(),
-      group: i.string(),
       location: i.string().optional(),
       locationUrl: i.string().optional(),
       sortOrder: i.number(),
@@ -106,39 +98,8 @@ const _schema = i.schema({
         label: "invitedGuests",
       },
     },
-    groupMembers: {
-      forward: {
-        on: "guests",
-        has: "one",
-        label: "group",
-      },
-      reverse: {
-        on: "groups",
-        has: "many",
-        label: "members",
-      },
-    },
-    groupEvents: {
-      forward: {
-        on: "scheduleEvents",
-        has: "one",
-        label: "eventGroup",
-      },
-      reverse: {
-        on: "groups",
-        has: "many",
-        label: "scheduleEvents",
-      },
-    },
   },
-  rooms: {
-    "wedding-visitors": {
-      presence: i.entity({
-        joinedAt: i.number(),
-        page: i.string().optional(),
-      }),
-    },
-  },
+  rooms: {},
 });
 
 // This helps TypeScript display nicer intellisense
