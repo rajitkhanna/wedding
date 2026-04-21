@@ -1,37 +1,57 @@
 "use client";
 
-const HERO_SLIDES = [
-  "/hero.jpg",
-  "/close-portrait-wall.jpg",
-  "/prom-2019.jpeg",
-  "/proposal-after-showing-ring.jpeg",
-  "/couple-with-garlands.jpg",
-  "/under-the-arch-walking.jpg",
+import { useMemo } from "react";
+import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
+
+const HERO_IMAGE_ORDER = [
+  "hero/colonnade-smiling-cover",
+  "hero/close-portrait-wall",
+  "hero/prom-2019",
+  "hero/proposal-after-showing-ring",
+  "hero/couple-with-garlands",
+  "hero/under-the-arch-walking",
 ];
 
-const HERO_IMAGE_OFFSETS: Partial<Record<string, string>> = {
-  "/proposal-after-showing-ring.jpeg": "translateY(4%)",
+const HERO_IMAGE_OFFSETS: Record<string, string> = {
+  "hero/proposal-after-showing-ring": "translateY(4%)",
 };
 
-const LOOPED_SLIDES = [...HERO_SLIDES, ...HERO_SLIDES];
-
 export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
+  const { data } = db.useQuery({ $files: { $: { where: { path: { $like: "hero/%" } } } } });
+  const files = data?.$files ?? [];
+
+  const heroSlides = useMemo(() => {
+    return HERO_IMAGE_ORDER.flatMap((pattern) => {
+      const file = files.find((f) => f.path.startsWith(pattern));
+      return file ? [{ src: cld(file.url, { width: 900, quality: 80 }), pattern }] : [];
+    });
+  }, [files]);
+
+  // Fall back to local public files during dev if InstantDB has no images yet
+  const slides = heroSlides.length > 0 ? heroSlides : HERO_IMAGE_ORDER.map((pattern) => {
+    const filename = pattern.replace("hero/", "");
+    const ext = filename === "prom-2019" || filename === "proposal-after-showing-ring" ? "jpeg" : "jpg";
+    const localFile = filename === "colonnade-smiling-cover" ? "hero" : filename;
+    return { src: `/${localFile}.${ext}`, pattern };
+  });
+
+  const looped = [...slides, ...slides];
+
   return (
     <section id="hero" style={{ backgroundColor: "var(--color-bg)" }}>
       <div className="relative overflow-hidden" style={{ minHeight: "86vh" }}>
         <div className="absolute inset-0 overflow-hidden">
           <div className="hero-filmstrip h-full">
-            {LOOPED_SLIDES.map((src, idx) => (
+            {looped.map(({ src, pattern }, idx) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={`${src}-${idx}`}
                 src={src}
                 alt="Meghana and Rajit"
                 className="hero-filmstrip-frame"
-                loading={idx < HERO_SLIDES.length ? "eager" : "lazy"}
-                style={{
-                  transform: HERO_IMAGE_OFFSETS[src] ?? "none",
-                }}
+                loading={idx < slides.length ? "eager" : "lazy"}
+                style={{ transform: HERO_IMAGE_OFFSETS[pattern] ?? "none" }}
               />
             ))}
           </div>
@@ -61,23 +81,16 @@ export function HeroSection({ onRSVPClick }: { onRSVPClick: () => void }) {
           </h1>
           <p
             className="mt-5 t-label"
-            style={{
-              color: "var(--color-text-muted)",
-              letterSpacing: "var(--ls-caps)",
-            }}
+            style={{ color: "var(--color-text-muted)", letterSpacing: "var(--ls-caps)" }}
           >
             Nov 27 to 29, 2026
           </p>
           <p
             className="mt-2 t-label"
-            style={{
-              color: "var(--color-text-dim)",
-              letterSpacing: "var(--ls-caps)",
-            }}
+            style={{ color: "var(--color-text-dim)", letterSpacing: "var(--ls-caps)" }}
           >
             Boston, MA
           </p>
-
           <div className="mt-8">
             <button
               type="button"

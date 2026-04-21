@@ -1,26 +1,16 @@
-const ZONE = process.env.NEXT_PUBLIC_CLOUDFLARE_ZONE;
+const ZONE = process.env.NEXT_PUBLIC_CLOUDFLARE_ZONE ?? "meghanarajit.com";
 
-/**
- * Build a Cloudflare Image Transformation URL.
- * Cloudflare fetches from source, optimizes (AVIF/WebP), and caches.
- *
- * @param imageUrl  Full URL to the source image (from InstantDB, S3, etc.)
- * @param options   Transform options
- */
 export function cld(
   imageUrl: string,
   options?: { width?: number; height?: number; quality?: number },
 ): string {
-  if (!ZONE) {
-    console.warn("NEXT_PUBLIC_CLOUDFLARE_ZONE is not set");
-    return imageUrl;
-  }
+  if (!ZONE) return imageUrl;
 
-  const params = new URLSearchParams();
-  if (options?.width) params.set("width", String(options.width));
-  if (options?.height) params.set("height", String(options.height));
-  if (options?.quality) params.set("quality", String(options.quality));
+  const parts: string[] = [];
+  if (options?.width) parts.push(`width=${options.width}`);
+  if (options?.height) parts.push(`height=${options.height}`);
+  if (options?.quality) parts.push(`quality=${options.quality}`);
+  const opts = parts.length ? parts.join(",") : "format=auto";
 
-  const encoded = encodeURIComponent(imageUrl);
-  return `https://imagedelivery.net/${ZONE}/${encoded}${params.toString() ? `?${params}` : ""}`;
+  return `https://${ZONE}/cdn-cgi/image/${opts}/${imageUrl}`;
 }
