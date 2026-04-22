@@ -5,9 +5,9 @@ import { useLotusBackground } from "@/lib/useLotusBackground";
 
 const DAY_TO_DATE: Record<string, { label: string; order: number }> = {
   thursday: { label: "November 26", order: 0 },
-  friday:   { label: "November 27", order: 1 },
+  friday: { label: "November 27", order: 1 },
   saturday: { label: "November 28", order: 2 },
-  sunday:   { label: "November 29", order: 3 },
+  sunday: { label: "November 29", order: 3 },
 };
 
 const NAV_LINKS = [
@@ -134,6 +134,27 @@ export function Footer() {
           ))}
         </ul>
       </nav>
+
+      {/* Contact */}
+      <p
+        className="text-center text-xs font-light leading-relaxed mb-4"
+        style={{
+          color: "var(--color-hero-dim)",
+          fontFamily: "var(--font-body)",
+        }}
+      >
+        Issue with this website?{" "}
+        <a
+          href="sms:16039218190"
+          style={{
+            color: "var(--color-hero-muted)",
+            textDecoration: "underline",
+            textUnderlineOffset: "3px",
+          }}
+        >
+          Text Rajit at (603) 921-8190
+        </a>
+      </p>
 
       {/* Copyright */}
       <p

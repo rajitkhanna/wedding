@@ -421,17 +421,6 @@ export default function RSVPPage() {
         )}
 
         <div className="mx-auto mt-16 mb-6 h-px w-24" style={{ backgroundColor: "var(--color-gold-dim)", opacity: 0.5 }} />
-        <p className="text-center text-xs font-light leading-relaxed" style={{ color: "var(--color-hero-dim)" }}>
-          Questions? Email{" "}
-          <a href="mailto:rajitskhanna@gmail.com" style={{ color: "var(--color-hero-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-            rajitskhanna@gmail.com
-          </a>
-          <span className="mx-2">·</span>
-          Issue with this page?{" "}
-          <a href="sms:16039218190" style={{ color: "var(--color-hero-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-            Text Rajit at (603) 921-8190
-          </a>
-        </p>
       </div>
     </div>
   );
