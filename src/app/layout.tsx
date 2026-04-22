@@ -17,8 +17,14 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://meghanarajit.com"),
   title: "Meghana & Rajit",
   description: "Join us to celebrate our wedding — November 28, 2026 · Boston",
+  openGraph: {
+    title: "Meghana & Rajit",
+    description: "Join us to celebrate our wedding — November 28, 2026 · Boston",
+    images: [{ url: "/photos/engagement/colonnade-smiling-cover.jpg", width: 1200, height: 630 }],
+  },
 };
 
 export default function RootLayout({
