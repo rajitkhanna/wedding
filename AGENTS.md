@@ -42,6 +42,13 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - Big review: `git --no-pager diff --color=never`.
 - Multi-agent: check `git status/diff` before edits; ship small commits.
 
+## Image Pattern
+
+- Images stored in InstantDB `$files`; fetched via `db.useQuery({ $files: {} })`.
+- URLs served through **Cloudflare Images** (not Cloudinary) via `cld(url, opts)` in `src/lib/cloudflare.ts` — routes as `https://meghanarajit.com/cdn-cgi/image/<opts>/<url>`. The helper is named `cld` for brevity but it wraps Cloudflare, not Cloudinary.
+- **Never use local `/public` paths as primary image sources.** Local paths are fallbacks only for when the InstantDB file isn't uploaded yet — they will 404 if the filename doesn't exactly match what's in `/public`.
+- Upload images to InstantDB first; only keep a local fallback if the file genuinely exists in `/public` with the exact name used.
+
 ## Design Tokens
 
 - All colors via CSS custom properties in `globals.css` — never hardcode hex/rgb values in components or Tailwind classes.

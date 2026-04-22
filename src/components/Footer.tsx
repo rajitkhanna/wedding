@@ -1,7 +1,7 @@
 "use client";
 
 import { db } from "@/lib/instant/db";
-import { cld } from "@/lib/cloudflare";
+import { useLotusBackground } from "@/lib/useLotusBackground";
 
 const DAY_TO_DATE: Record<string, { label: string; order: number }> = {
   thursday: { label: "November 26", order: 0 },
@@ -37,11 +37,7 @@ function useDateRange(): string | null {
 
 export function Footer() {
   const dateRange = useDateRange();
-  const { data: filesData } = db.useQuery({ $files: {} });
-  const lotusFile = (filesData?.$files ?? []).find((f) =>
-    f.path.toLowerCase().includes("upscayl"),
-  );
-  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
+  const lotusBg = useLotusBackground();
 
   return (
     <footer

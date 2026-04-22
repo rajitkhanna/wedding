@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
-import { cld } from "@/lib/cloudflare";
+import { useLotusBackground } from "@/lib/useLotusBackground";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 
 function dayLabel(day: string) {
@@ -151,8 +151,9 @@ function RSVPForm({
     <form onSubmit={handleSubmit} noValidate>
       {!rsvpLocked && (
         <p className="mb-4 text-right text-sm transition-opacity duration-300" style={{
-          color: "var(--color-text-muted)",
+          color: "var(--color-hero-muted)",
           opacity: isDirty && !submitting ? 1 : 0,
+          textShadow: "0 1px 3px rgba(0,0,0,0.6)",
         }}>
           Unsaved changes
         </p>
@@ -327,11 +328,7 @@ export default function RSVPPage() {
 
   const { user } = db.useAuth();
 
-  const { data: filesData } = db.useQuery({ $files: {} });
-  const lotusFile = (filesData?.$files ?? []).find((f) =>
-    f.path.toLowerCase().includes("upscayl"),
-  );
-  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
+  const lotusBg = useLotusBackground();
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
     user
@@ -361,10 +358,12 @@ export default function RSVPPage() {
     <div
       className="min-h-screen w-full pb-24"
       style={{
-        backgroundImage: [
-          "linear-gradient(to bottom, rgba(8,28,22,0.55) 0%, rgba(8,28,22,0.55) 75%, rgba(8,28,22,0.85) 100%)",
-          `url('${lotusBg}')`,
-        ].join(", "),
+        backgroundImage: lotusBg
+          ? [
+              "linear-gradient(to bottom, rgba(8,28,22,0.55) 0%, rgba(8,28,22,0.55) 75%, rgba(8,28,22,0.85) 100%)",
+              `url('${lotusBg}')`,
+            ].join(", ")
+          : "linear-gradient(to bottom, rgba(8,28,22,1) 0%, rgba(8,28,22,1) 100%)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -373,7 +372,7 @@ export default function RSVPPage() {
       <div className="mx-auto max-w-2xl px-5 pt-32">
 
         <header className="mb-12 text-center">
-          <p className="mb-3 text-xs tracking-[0.3em] uppercase" style={{ color: "var(--color-hero-muted)" }}>
+          <p className="mb-3 text-xs tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(255,255,255,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
             November 27–29, 2026 · Boston
           </p>
           <h1
@@ -384,15 +383,16 @@ export default function RSVPPage() {
               fontWeight: 400,
               letterSpacing: "0.06em",
               lineHeight: 1.05,
+              textShadow: "0 2px 12px rgba(0,0,0,0.7)",
             }}
           >
             RSVP
           </h1>
           <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-gold-dim)", opacity: 0.6 }} />
           {!guestLoading && guest && (
-            <p className="mt-5 text-sm font-light" style={{ color: "var(--color-hero-muted)" }}>
+            <p className="mt-5 text-sm font-normal" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
               Hello,{" "}
-              <span style={{ color: "var(--color-gold)" }}>{guest.name ?? user?.email}</span>
+              <span style={{ color: "var(--color-gold)", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>{guest.name ?? user?.email}</span>
               {" "}— let us know who can make each event.
             </p>
           )}

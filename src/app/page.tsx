@@ -7,6 +7,7 @@ import { RegistrySection } from "@/components/sections/RegistrySection";
 import { ScheduleSummarySection } from "@/components/sections/ScheduleSummarySection";
 import { db } from "@/lib/instant/db";
 import { cld } from "@/lib/cloudflare";
+import { useLotusBackground } from "@/lib/useLotusBackground";
 
 function Divider() {
   return (
@@ -46,11 +47,7 @@ function LotusDivider() {
 }
 
 export default function Home() {
-  const { data: filesData } = db.useQuery({ $files: {} });
-  const lotusFile = (filesData?.$files ?? []).find((f) =>
-    f.path.toLowerCase().includes("upscayl"),
-  );
-  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
+  const lotusBg = useLotusBackground();
 
   useEffect(() => {
     if (window.location.hash) {
