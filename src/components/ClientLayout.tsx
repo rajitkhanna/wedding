@@ -5,9 +5,6 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { GlobalAuthGate } from "@/components/auth/GlobalAuthGate";
 import { db } from "@/lib/instant/db";
-import { usePathname } from "next/navigation";
-
-const PUBLIC_PATHS = ["/rsvp"];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -15,12 +12,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     if (mode) document.documentElement.dataset.surface = mode;
   }, []);
 
-  const pathname = usePathname();
-  const isPublicPath = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-
   const { isLoading, user } = db.useAuth();
 
-  if (!isPublicPath && isLoading) {
+  if (isLoading) {
     return (
       <div
         className="fixed inset-0 flex items-center justify-center"
@@ -37,7 +31,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isPublicPath && !user) {
+  if (!user) {
     return <GlobalAuthGate />;
   }
 

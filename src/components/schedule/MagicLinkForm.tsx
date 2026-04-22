@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { db } from "@/lib/instant/db";
 
 export function MagicLinkForm() {
+  const router = useRouter();
   const [weddingCode, setWeddingCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,7 @@ export function MagicLinkForm() {
         );
       }
       await db.auth.signInWithToken(data.token);
+      router.push("/");
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Invalid code. Please try again.";

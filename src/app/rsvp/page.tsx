@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
-import { GlobalAuthGate } from "@/components/auth/GlobalAuthGate";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 
 function dayLabel(day: string) {
@@ -52,6 +51,7 @@ function RSVPForm({
   );
   const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [error, setError] = useState("");
 
   const isSingle = invitees.length === 1;
@@ -63,6 +63,7 @@ function RSVPForm({
       [eventId]: { ...prev[eventId], [inviteeId]: !prev[eventId]?.[inviteeId] },
     }));
     setSaved(false);
+    setIsDirty(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -90,6 +91,7 @@ function RSVPForm({
         ...inviteeTxns,
       ]);
       setSaved(true);
+      setIsDirty(false);
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -114,6 +116,14 @@ function RSVPForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
+      {!rsvpLocked && (
+        <p className="mb-4 text-right text-sm transition-opacity duration-300" style={{
+          color: "var(--color-text-muted)",
+          opacity: isDirty && !submitting ? 1 : 0,
+        }}>
+          Unsaved changes
+        </p>
+      )}
       <div className="flex flex-col gap-5">
         {events.map((event) => (
           <div
@@ -217,15 +227,15 @@ function RSVPForm({
           >
             {submitting ? "Saving…" : "Save RSVP"}
           </button>
-          {saved && <p className="text-sm" style={{ color: "var(--color-gold-dim)" }}>Saved!</p>}
           {error && <p className="text-sm" style={{ color: "var(--color-red)" }}>{error}</p>}
-          {!saved && !error && (
+          {!error && (
             <p className="text-xs" style={{ color: "var(--color-text-dim)" }}>
               You can update this until {RSVP_DEADLINE_DISPLAY}.
             </p>
           )}
         </div>
       )}
+
 
       {rsvpLocked && (
         <p className="mt-8 text-xs text-center" style={{ color: "var(--color-text-dim)" }}>
@@ -237,7 +247,7 @@ function RSVPForm({
 }
 
 export default function RSVPPage() {
-  const { isLoading: authLoading, user } = db.useAuth();
+  const { user } = db.useAuth();
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
     user
@@ -284,7 +294,7 @@ export default function RSVPPage() {
             RSVP
           </h1>
           <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-border-gold)" }} />
-          {!authLoading && user && !guestLoading && guest && (
+          {!guestLoading && guest && (
             <p className="mt-5 text-sm font-light" style={{ color: "var(--color-text-muted)" }}>
               Hello,{" "}
               <span style={{ color: "var(--color-gold)" }}>{guest.name ?? user.email}</span>
@@ -293,13 +303,7 @@ export default function RSVPPage() {
           )}
         </header>
 
-        {authLoading ? (
-          <p className="text-center text-sm py-12" style={{ color: "var(--color-text-muted)" }}>Loading…</p>
-        ) : !user ? (
-          <div className="w-full overflow-hidden rounded-lg">
-            <GlobalAuthGate />
-          </div>
-        ) : guestLoading ? (
+        {guestLoading ? (
           <p className="text-center text-sm py-12" style={{ color: "var(--color-text-muted)" }}>Loading your invitation…</p>
         ) : !guest ? (
           <div
