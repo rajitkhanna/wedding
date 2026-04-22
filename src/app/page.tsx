@@ -77,10 +77,12 @@ export default function Home() {
 
       <div
         style={{
-          backgroundImage: [
-            "linear-gradient(to bottom, var(--color-bg) 0%, var(--color-bg) 55%, rgba(8,28,22,0.55) 100%)",
-            `url('${lotusBg}')`,
-          ].join(", "),
+          backgroundImage: lotusBg
+            ? [
+                "linear-gradient(to bottom, var(--color-bg) 0%, var(--color-bg) 55%, rgba(8,28,22,0.55) 100%)",
+                `url('${lotusBg}')`,
+              ].join(", ")
+            : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
         }}

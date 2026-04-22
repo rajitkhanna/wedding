@@ -43,10 +43,12 @@ export function Footer() {
     <footer
       className="mt-auto pt-12 pb-8 px-6"
       style={{
-        backgroundImage: [
-          "linear-gradient(rgba(8,28,22,0.72), rgba(8,28,22,0.72))",
-          `url('${lotusBg}')`,
-        ].join(", "),
+        backgroundImage: lotusBg
+          ? [
+              "linear-gradient(rgba(8,28,22,0.72), rgba(8,28,22,0.72))",
+              `url('${lotusBg}')`,
+            ].join(", ")
+          : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -112,12 +114,14 @@ export function Footer() {
                   color: "var(--color-hero-muted)",
                   fontFamily: "var(--font-body)",
                 }}
-                onClick={() => { if (link.href === "/rsvp") sessionStorage.setItem("rsvp-intent", String(Date.now())); }}
+                onClick={() => {}}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-hero-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    "var(--color-hero-muted)";
                 }}
               >
                 {link.label}
