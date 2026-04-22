@@ -56,12 +56,40 @@ function RSVPForm({
 
   const isSingle = invitees.length === 1;
 
+  const [declinedAll, setDeclinedAll] = useState(() => {
+    if (!hasRsvpd) return false;
+    return invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
+  });
+
   function toggle(eventId: string, inviteeId: string) {
     if (rsvpLocked) return;
     setAttendance((prev) => ({
       ...prev,
       [eventId]: { ...prev[eventId], [inviteeId]: !prev[eventId]?.[inviteeId] },
     }));
+    setDeclinedAll(false);
+    setSaved(false);
+    setIsDirty(true);
+  }
+
+  function handleDeclineAll() {
+    if (rsvpLocked) return;
+    if (declinedAll) {
+      setAttendance(buildInitialAttendance(invitees, events, false));
+      setDeclinedAll(false);
+      setIsDirty(true);
+      setSaved(false);
+      return;
+    }
+    const allOff: AttendanceMap = {};
+    for (const ev of events) {
+      allOff[ev.id] = {};
+      for (const inv of invitees) {
+        allOff[ev.id][inv.id] = false;
+      }
+    }
+    setAttendance(allOff);
+    setDeclinedAll(true);
     setSaved(false);
     setIsDirty(true);
   }
@@ -124,6 +152,42 @@ function RSVPForm({
           Unsaved changes
         </p>
       )}
+      {!rsvpLocked && (
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={handleDeclineAll}
+            className="flex w-full items-center gap-3 rounded-lg px-5 py-4 text-left transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: declinedAll ? "var(--color-surface-alt, var(--color-surface))" : "var(--color-surface)",
+              border: `1px solid ${declinedAll ? "var(--color-border-gold)" : "var(--color-border)"}`,
+              opacity: rsvpLocked ? 0.5 : 1,
+            }}
+          >
+            <span
+              className="flex h-5 w-5 shrink-0 items-center justify-center rounded"
+              style={{
+                border: `2px solid ${declinedAll ? "var(--color-gold)" : "var(--color-border-gold)"}`,
+                backgroundColor: declinedAll ? "var(--color-gold)" : "transparent",
+                transition: "all 0.15s",
+              }}
+            >
+              {declinedAll && (
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4l3 3 5-6" stroke="var(--color-bg)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </span>
+            <span
+              className="text-sm tracking-wide"
+              style={{ color: declinedAll ? "var(--color-text)" : "var(--color-text-muted)", fontStyle: "italic" }}
+            >
+              Regretfully Decline All Events
+            </span>
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-5">
         {events.map((event) => (
           <div
