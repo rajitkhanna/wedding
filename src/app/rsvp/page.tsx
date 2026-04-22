@@ -221,7 +221,7 @@ function RSVPForm({
         <div className="mt-10 flex flex-wrap items-center gap-5">
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || (hasRsvpd && !isDirty)}
             className="rounded px-8 py-3 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 disabled:opacity-50"
             style={{ backgroundColor: "var(--color-gold)", color: "var(--color-bg)" }}
           >
