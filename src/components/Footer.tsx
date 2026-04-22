@@ -1,6 +1,7 @@
 "use client";
 
 import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
 
 const DAY_TO_DATE: Record<string, { label: string; order: number }> = {
   thursday: { label: "November 26", order: 0 },
@@ -36,13 +37,22 @@ function useDateRange(): string | null {
 
 export function Footer() {
   const dateRange = useDateRange();
+  const { data: filesData } = db.useQuery({ $files: {} });
+  const lotusFile = (filesData?.$files ?? []).find((f) =>
+    f.path.toLowerCase().includes("upscayl"),
+  );
+  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
 
   return (
     <footer
       className="mt-auto pt-12 pb-8 px-6"
       style={{
-        borderTop: "1px solid var(--color-border)",
-        background: "var(--color-bg)",
+        backgroundImage: [
+          "linear-gradient(rgba(8,28,22,0.72), rgba(8,28,22,0.72))",
+          `url('${lotusBg}')`,
+        ].join(", "),
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       {/* Gold ornament divider */}
@@ -86,7 +96,7 @@ export function Footer() {
       <p
         className="text-center mb-8 text-sm tracking-widest uppercase"
         style={{
-          color: "var(--color-text-muted)",
+          color: "var(--color-hero-muted)",
           fontFamily: "var(--font-body)",
           fontWeight: 300,
         }}
@@ -103,14 +113,15 @@ export function Footer() {
                 href={link.href}
                 className="text-xs tracking-widest uppercase font-light transition-colors"
                 style={{
-                  color: "var(--color-text-muted)",
+                  color: "var(--color-hero-muted)",
                   fontFamily: "var(--font-body)",
                 }}
+                onClick={() => { if (link.href === "/rsvp") sessionStorage.setItem("rsvp-intent", String(Date.now())); }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-hero-muted)";
                 }}
               >
                 {link.label}
@@ -118,7 +129,7 @@ export function Footer() {
               {i < NAV_LINKS.length - 1 && (
                 <span
                   aria-hidden="true"
-                  style={{ color: "var(--color-border-gold)", fontSize: "0.6rem" }}
+                  style={{ color: "rgba(211,150,140,0.5)", fontSize: "0.6rem" }}
                 >
                   ·
                 </span>
@@ -132,7 +143,7 @@ export function Footer() {
       <p
         className="text-center text-xs tracking-wider mb-3"
         style={{
-          color: "var(--color-text-dim)",
+          color: "var(--color-hero-dim)",
           fontFamily: "var(--font-body)",
           fontWeight: 300,
         }}

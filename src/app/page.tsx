@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { RegistrySection } from "@/components/sections/RegistrySection";
+import { ScheduleSummarySection } from "@/components/sections/ScheduleSummarySection";
+import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
 
 function Divider() {
   return (
@@ -16,22 +19,77 @@ function Divider() {
   );
 }
 
+function LotusDivider() {
+  const { data } = db.useQuery({ $files: {} });
+  const file = (data?.$files ?? []).find((f) =>
+    f.path.toLowerCase().includes("removebg"),
+  );
+  const src = file ? cld(file.url) : "/blue_lotus_circle-removebg-preview.png";
+
+  return (
+    <div
+      className="flex items-center justify-center py-2"
+      style={{ backgroundColor: "var(--color-bg)" }}
+    >
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        style={{
+          width: "clamp(100px, 16vw, 180px)",
+          height: "auto",
+          opacity: 0.9,
+        }}
+      />
+    </div>
+  );
+}
+
 export default function Home() {
+  const { data: filesData } = db.useQuery({ $files: {} });
+  const lotusFile = (filesData?.$files ?? []).find((f) =>
+    f.path.toLowerCase().includes("upscayl"),
+  );
+  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
+
   useEffect(() => {
     if (window.location.hash) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
     if (window.sessionStorage.getItem("scroll-to-schedule") !== "true") return;
     window.sessionStorage.removeItem("scroll-to-schedule");
-    document.getElementById("schedule")?.scrollIntoView({ behavior: "smooth" });
-    window.history.replaceState(null, "", "/");
+
+    let attempts = 0;
+    function tryScroll() {
+      const el = document.getElementById("schedule");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      if (++attempts < 40) setTimeout(tryScroll, 100);
+    }
+    tryScroll();
   }, []);
 
   return (
     <main style={{ backgroundColor: "var(--color-bg)" }}>
       <HeroSection />
       <Divider />
-      <FAQSection />
+      <ScheduleSummarySection />
+      <LotusDivider />
+
+      <div
+        style={{
+          backgroundImage: [
+            "linear-gradient(to bottom, var(--color-bg) 0%, var(--color-bg) 55%, rgba(8,28,22,0.55) 100%)",
+            `url('${lotusBg}')`,
+          ].join(", "),
+          backgroundSize: "cover",
+          backgroundPosition: "center bottom",
+        }}
+      >
+        <FAQSection />
+      </div>
       {/* <Divider />
       <RegistrySection /> */}
     </main>

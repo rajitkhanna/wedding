@@ -37,7 +37,7 @@ export function SectionBanner({
       aria-hidden="true"
     >
       <Image
-        src={cld(photo.url)}
+        src={cld(photo.url, { width: 1920, quality: 90 })}
         alt=""
         fill
         className="object-cover object-center"

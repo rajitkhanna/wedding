@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
+import { cld } from "@/lib/cloudflare";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 
 function dayLabel(day: string) {
@@ -53,6 +55,7 @@ function RSVPForm({
   const [saved, setSaved] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const isSingle = invitees.length === 1;
 
@@ -120,6 +123,8 @@ function RSVPForm({
       ]);
       setSaved(true);
       setIsDirty(false);
+      window.sessionStorage.setItem("scroll-to-schedule", "true");
+      router.push("/");
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -311,7 +316,22 @@ function RSVPForm({
 }
 
 export default function RSVPPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const intentTime = Number(sessionStorage.getItem("rsvp-intent") ?? 0);
+    if (Date.now() - intentTime > 3000) {
+      router.replace("/");
+    }
+  }, [router]);
+
   const { user } = db.useAuth();
+
+  const { data: filesData } = db.useQuery({ $files: {} });
+  const lotusFile = (filesData?.$files ?? []).find((f) =>
+    f.path.toLowerCase().includes("upscayl"),
+  );
+  const lotusBg = lotusFile ? cld(lotusFile.url, { width: 1920, quality: 90 }) : "/lotus_flower2.jpg";
 
   const { isLoading: guestLoading, data: guestData } = db.useQuery(
     user
@@ -338,11 +358,22 @@ export default function RSVPPage() {
   const rsvpLocked = !isRsvpOpen();
 
   return (
-    <div className="min-h-screen w-full pb-24" style={{ backgroundColor: "var(--color-bg)" }}>
+    <div
+      className="min-h-screen w-full pb-24"
+      style={{
+        backgroundImage: [
+          "linear-gradient(to bottom, rgba(8,28,22,0.55) 0%, rgba(8,28,22,0.55) 75%, rgba(8,28,22,0.85) 100%)",
+          `url('${lotusBg}')`,
+        ].join(", "),
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="mx-auto max-w-2xl px-5 pt-32">
 
         <header className="mb-12 text-center">
-          <p className="mb-3 text-xs tracking-[0.3em] uppercase" style={{ color: "var(--color-text-muted)" }}>
+          <p className="mb-3 text-xs tracking-[0.3em] uppercase" style={{ color: "var(--color-hero-muted)" }}>
             November 27–29, 2026 · Boston
           </p>
           <h1
@@ -357,9 +388,9 @@ export default function RSVPPage() {
           >
             RSVP
           </h1>
-          <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-border-gold)" }} />
+          <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-gold-dim)", opacity: 0.6 }} />
           {!guestLoading && guest && (
-            <p className="mt-5 text-sm font-light" style={{ color: "var(--color-text-muted)" }}>
+            <p className="mt-5 text-sm font-light" style={{ color: "var(--color-hero-muted)" }}>
               Hello,{" "}
               <span style={{ color: "var(--color-gold)" }}>{guest.name ?? user?.email}</span>
               {" "}— let us know who can make each event.
@@ -368,7 +399,7 @@ export default function RSVPPage() {
         </header>
 
         {guestLoading ? (
-          <p className="text-center text-sm py-12" style={{ color: "var(--color-text-muted)" }}>Loading your invitation…</p>
+          <p className="text-center text-sm py-12" style={{ color: "var(--color-hero-muted)" }}>Loading your invitation…</p>
         ) : !guest ? (
           <div
             className="rounded-lg px-8 py-10 text-center"
@@ -389,15 +420,15 @@ export default function RSVPPage() {
           />
         )}
 
-        <div className="mx-auto mt-16 mb-6 h-px w-24" style={{ backgroundColor: "var(--color-border-gold)" }} />
-        <p className="text-center text-xs font-light leading-relaxed" style={{ color: "var(--color-text-dim)" }}>
+        <div className="mx-auto mt-16 mb-6 h-px w-24" style={{ backgroundColor: "var(--color-gold-dim)", opacity: 0.5 }} />
+        <p className="text-center text-xs font-light leading-relaxed" style={{ color: "var(--color-hero-dim)" }}>
           Questions? Email{" "}
-          <a href="mailto:rajitskhanna@gmail.com" style={{ color: "var(--color-text-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          <a href="mailto:rajitskhanna@gmail.com" style={{ color: "var(--color-hero-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
             rajitskhanna@gmail.com
           </a>
           <span className="mx-2">·</span>
           Issue with this page?{" "}
-          <a href="sms:16039218190" style={{ color: "var(--color-text-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          <a href="sms:16039218190" style={{ color: "var(--color-hero-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
             Text Rajit at (603) 921-8190
           </a>
         </p>

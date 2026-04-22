@@ -2,40 +2,40 @@
 /* v2 */
 /* ─── Semantic Tokens ─────────────────────────────────────────────────────── */
 :root {
-  /* Backgrounds */
-  --color-bg:          #f4efe8;   /* warm bridal ivory */
-  --color-surface:     #fbf5ee;   /* soft porcelain */
-  --color-surface-alt: #f0dfca;   /* warm champagne */
+  /* Backgrounds — warm neutral beige */
+  --color-bg:          #f5f1e8;   /* warm parchment */
+  --color-surface:     #faf7ee;   /* soft ivory */
+  --color-surface-alt: #ede6d0;   /* medium beige */
 
   /* Brand */
-  --color-red:         #c46e58;   /* terracotta rose */
-  --color-red-hover:   #b86b30;   /* burnt amber */
+  --color-red:         #b86058;   /* deep rose — errors */
+  --color-red-hover:   #a04840;   /* darker rose */
 
-  /* Gold */
-  --color-gold:        #b86b30;   /* spiced amber */
-  --color-gold-light:  #cba979;   /* honey beige */
-  --color-gold-dim:    #b38a67;   /* muted caramel */
+  /* Rosy pink — headings, buttons, card accents */
+  --color-gold:        #d3968c;   /* rosy pink */
+  --color-gold-light:  #e0b0a8;   /* lighter rose */
+  --color-gold-dim:    #b87870;   /* muted rose */
 
-  /* Text */
-  --color-text:        #4d4033;   /* warm bark brown */
-  --color-text-muted:  #8c6c58;   /* rosy taupe */
-  --color-text-dim:    #b09784;   /* pale clay */
+  /* Text — midnight & teal greens */
+  --color-text:        #0d3d30;   /* deep forest */
+  --color-text-muted:  #105666;   /* midnight green */
+  --color-text-dim:    #839958;   /* moss green */
 
-  /* Borders */
-  --color-border:      #e5d6c8;
-  --color-border-gold: #d1b08d;
+  /* Borders — teal/beige so pink doesn't bleed into structure */
+  --color-border:      #ddd8c4;   /* beige border */
+  --color-border-gold: #7aaa90;   /* teal-green border */
 
   /* Overlays */
-  --color-overlay-soft:   rgba(240, 223, 202, 0.18);
-  --color-overlay-medium: rgba(176, 151, 132, 0.28);
-  --color-overlay-strong: rgba(77, 64, 51, 0.18);
-  --color-overlay-nav:    rgba(244, 239, 232, 0.86);
-  --color-shadow-soft:    rgba(77, 64, 51, 0.18);
-  --color-shadow-strong:  rgba(77, 64, 51, 0.28);
-  --color-hero-text:      #fff8f1;
-  --color-hero-muted:     rgba(255, 248, 241, 0.86);
-  --color-hero-dim:       rgba(255, 248, 241, 0.72);
-  --color-hero-button:    rgba(255, 248, 241, 0.92);
+  --color-overlay-soft:   rgba(211, 150, 140, 0.10);
+  --color-overlay-medium: rgba(16, 86, 102, 0.20);
+  --color-overlay-strong: rgba(13, 61, 48, 0.18);
+  --color-overlay-nav:    rgba(250, 247, 238, 0.92);
+  --color-shadow-soft:    rgba(13, 61, 48, 0.12);
+  --color-shadow-strong:  rgba(13, 61, 48, 0.24);
+  --color-hero-text:      #faf7ee;
+  --color-hero-muted:     rgba(250, 247, 238, 0.86);
+  --color-hero-dim:       rgba(250, 247, 238, 0.70);
+  --color-hero-button:    rgba(250, 247, 238, 0.92);
 
   /* ── Fonts ──────────────────────────────────────────────────────────── */
   --font-display: "Cormorant Garamond", Georgia, serif;
@@ -68,15 +68,15 @@
   --lh-relaxed:  1.75;
 }
 
-/* Preview: light sage surfaces (non-white background sections) */
+/* Preview: deeper teal surfaces */
 :root[data-surface="sage"] {
-  --color-surface:     #eef4ee;
-  --color-surface-alt: #dde9dd;
-  --color-border:      #cfdccf;
-  --color-border-gold: #b7c7b0;
-  --color-overlay-nav: rgba(238, 244, 238, 0.86);
-  --color-text-muted:  #5f6b58;
-  --color-text-dim:    #7a8672;
+  --color-surface:     #e8f0ec;
+  --color-surface-alt: #d4e4da;
+  --color-border:      #b8d0c4;
+  --color-border-gold: #7aaa90;
+  --color-overlay-nav: rgba(232, 240, 236, 0.92);
+  --color-text-muted:  #2d6b5a;
+  --color-text-dim:    #839958;
 }
 
 /* ─── Tailwind Theme Mapping ──────────────────────────────────────────────── */
@@ -401,5 +401,5 @@ h1, h2, h3, h4 {
 
 .timeline-photo:hover {
   transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), inset 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 0 20px rgba(16, 86, 102, 0.4), inset 0 2px 8px rgba(0,0,0,0.3);
 }

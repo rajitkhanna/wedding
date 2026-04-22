@@ -114,7 +114,7 @@ export function HeroSection() {
           <div className="mt-8">
             <button
               type="button"
-              onClick={() => router.push("/rsvp")}
+              onClick={() => { sessionStorage.setItem("rsvp-intent", String(Date.now())); router.push("/rsvp"); }}
               className="inline-block cursor-pointer px-10 py-3 text-xs tracking-[0.25em] uppercase transition-all hover:opacity-80"
               style={{
                 border: "1px solid var(--color-gold)",
