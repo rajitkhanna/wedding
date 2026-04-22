@@ -69,7 +69,7 @@ function TabbedSchedule({
                 borderLeft: "4px solid var(--color-gold)",
               }}
             >
-              <div className="flex items-center justify-between gap-4 px-5 py-4">
+              <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <p
                     className="leading-snug"
@@ -85,13 +85,15 @@ function TabbedSchedule({
                   <p className="mt-1 text-xs" style={{ color: "var(--color-text-muted)" }}>
                     {event.startTime}
                     {event.endTime && <> &ndash; {event.endTime}</>}
-                    {event.location && (
-                      <span style={{ color: "var(--color-text-dim)" }}>{" · "}{event.location}</span>
-                    )}
                   </p>
+                  {event.location && (
+                    <p className="mt-0.5 text-xs" style={{ color: "var(--color-text-dim)" }}>
+                      {event.location}
+                    </p>
+                  )}
                 </div>
-                {!isSingle && (
-                  <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+                {!isSingle && names.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
                     {names.map((name) => (
                       <span
                         key={name}
