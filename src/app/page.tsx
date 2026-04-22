@@ -50,15 +50,13 @@ export default function Home() {
   const lotusBg = useLotusBackground();
 
   useEffect(() => {
-    if (window.location.hash) {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    }
-    if (window.sessionStorage.getItem("scroll-to-schedule") !== "true") return;
-    window.sessionStorage.removeItem("scroll-to-schedule");
+    if (!window.location.hash) return;
+    const id = window.location.hash.slice(1);
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
     let attempts = 0;
     function tryScroll() {
-      const el = document.getElementById("schedule");
+      const el = document.getElementById(id);
       if (el) {
         el.scrollIntoView({ behavior: "smooth" });
         return;

@@ -123,8 +123,7 @@ function RSVPForm({
       ]);
       setSaved(true);
       setIsDirty(false);
-      window.sessionStorage.setItem("scroll-to-schedule", "true");
-      router.push("/");
+      router.push("/#schedule");
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -318,14 +317,6 @@ function RSVPForm({
 
 export default function RSVPPage() {
   const router = useRouter();
-
-  useEffect(() => {
-    const intentTime = Number(sessionStorage.getItem("rsvp-intent") ?? 0);
-    if (Date.now() - intentTime > 3000) {
-      router.replace("/");
-    }
-  }, [router]);
-
   const { user } = db.useAuth();
 
   const lotusBg = useLotusBackground();

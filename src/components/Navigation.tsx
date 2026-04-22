@@ -88,7 +88,7 @@ export function Navigation() {
                 href={link.href}
                 className="text-sm tracking-widest uppercase font-light"
                 style={linkStyle(link.href)}
-                onClick={() => { if (link.href === "/rsvp") sessionStorage.setItem("rsvp-intent", String(Date.now())); }}
+                onClick={() => {}}
                 onMouseEnter={(e) => {
                   if (!isActive(link.href))
                     (e.currentTarget as HTMLElement).style.color = "var(--color-gold)";
@@ -137,7 +137,7 @@ export function Navigation() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => { if (link.href === "/rsvp") sessionStorage.setItem("rsvp-intent", String(Date.now())); setDrawerOpen(false); }}
+                onClick={() => setDrawerOpen(false)}
                 className="py-3 text-sm tracking-widest uppercase font-light border-b"
                 style={{
                   color: isActive(link.href) ? "var(--color-gold)" : "var(--color-text-muted)",

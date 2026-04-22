@@ -205,8 +205,7 @@ export function ScheduleSummarySection() {
               RSVP to see the full weekend at a glance.
             </p>
             <Link
-              href="/rsvp" onClick={() => sessionStorage.setItem("rsvp-intent", String(Date.now()))}
-              className="inline-block rounded px-8 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
+              href="/rsvp"              className="inline-block rounded px-8 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
               style={{ backgroundColor: "var(--color-gold)", color: "var(--color-bg)" }}
             >
               RSVP Now
@@ -243,8 +242,7 @@ export function ScheduleSummarySection() {
             <p className="mt-6 text-xs" style={{ color: "var(--color-text-dim)" }}>
               Changed your mind?{" "}
               <Link
-                href="/rsvp" onClick={() => sessionStorage.setItem("rsvp-intent", String(Date.now()))}
-                style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                href="/rsvp"                style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
               >
                 Update your RSVP
               </Link>
@@ -290,8 +288,7 @@ export function ScheduleSummarySection() {
         <p className="mt-8 text-center text-xs" style={{ color: "var(--color-text-dim)" }}>
           Need to make changes?{" "}
           <Link
-            href="/rsvp" onClick={() => sessionStorage.setItem("rsvp-intent", String(Date.now()))}
-            style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+            href="/rsvp"            style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
           >
             Update your RSVP
           </Link>
