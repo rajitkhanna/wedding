@@ -3,21 +3,21 @@
 /* ─── Semantic Tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Backgrounds — warm neutral beige */
-  --color-bg:          #f5f1e8;   /* warm parchment */
-  --color-surface:     #faf7ee;   /* soft ivory */
-  --color-surface-alt: #ede6d0;   /* medium beige */
+  --color-bg:          #e8ece2;   /* warm sage */
+  --color-surface:     #fdf4e8;   /* warm ivory blush */
+  --color-surface-alt: #f2e7d6;   /* medium ivory blush */
 
   /* Brand */
-  --color-red:         #b86058;   /* deep rose — errors */
-  --color-red-hover:   #a04840;   /* darker rose */
+  --color-red:         #b85550;   /* deep rose — errors */
+  --color-red-hover:   #9a3f3a;   /* darker rose */
 
-  /* Rosy pink — headings, buttons, card accents */
-  --color-gold:        #d3968c;   /* rosy pink */
-  --color-gold-light:  #e0b0a8;   /* lighter rose */
-  --color-gold-dim:    #b87870;   /* muted rose */
+  /* Lotus coral-pink — headings, buttons, card accents */
+  --color-gold:        #dc8880;   /* lotus coral pink */
+  --color-gold-light:  #eeaaa4;   /* lighter lotus pink */
+  --color-gold-dim:    #c06e68;   /* muted lotus pink */
 
   /* Text — midnight & teal greens */
-  --color-text:        #0d3d30;   /* deep forest */
+  --color-text:        #0A3323;   /* dark green */
   --color-text-muted:  #105666;   /* midnight green */
   --color-text-dim:    #839958;   /* moss green */
 
@@ -29,13 +29,13 @@
   --color-overlay-soft:   rgba(211, 150, 140, 0.10);
   --color-overlay-medium: rgba(16, 86, 102, 0.20);
   --color-overlay-strong: rgba(13, 61, 48, 0.18);
-  --color-overlay-nav:    rgba(250, 247, 238, 0.92);
-  --color-shadow-soft:    rgba(13, 61, 48, 0.12);
-  --color-shadow-strong:  rgba(13, 61, 48, 0.24);
-  --color-hero-text:      #faf7ee;
-  --color-hero-muted:     rgba(250, 247, 238, 0.86);
-  --color-hero-dim:       rgba(250, 247, 238, 0.70);
-  --color-hero-button:    rgba(250, 247, 238, 0.92);
+  --color-overlay-nav:    rgba(232, 236, 226, 0.92);
+  --color-shadow-soft:    rgba(10, 51, 35, 0.12);
+  --color-shadow-strong:  rgba(10, 51, 35, 0.24);
+  --color-hero-text:      #e8ece2;
+  --color-hero-muted:     rgba(232, 236, 226, 0.86);
+  --color-hero-dim:       rgba(232, 236, 226, 0.70);
+  --color-hero-button:    rgba(232, 236, 226, 0.92);
 
   /* ── Fonts ──────────────────────────────────────────────────────────── */
   --font-display: "Cormorant Garamond", Georgia, serif;
