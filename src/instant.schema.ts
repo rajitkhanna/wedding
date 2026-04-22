@@ -40,10 +40,6 @@ const _schema = i.schema({
       startTime: i.string(),
       title: i.string(),
     }),
-    siteConfig: i.entity({
-      key: i.string().unique().indexed(),
-      value: i.string(),
-    }),
   },
   links: {
     $streams$files: {
