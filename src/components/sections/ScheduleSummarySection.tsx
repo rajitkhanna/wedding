@@ -42,7 +42,7 @@ function TabbedSchedule({
               key={day}
               type="button"
               onClick={() => setActiveDay(day)}
-              className="flex-1 rounded py-2.5 text-xs tracking-[0.2em] uppercase transition-all duration-200"
+              className="flex-1 rounded py-2 text-[10px] tracking-[0.08em] uppercase transition-all duration-200 sm:py-2.5 sm:text-xs sm:tracking-[0.2em]"
               style={{
                 backgroundColor: active ? "var(--color-gold)" : "transparent",
                 color: active ? "var(--color-bg)" : "var(--color-text-muted)",

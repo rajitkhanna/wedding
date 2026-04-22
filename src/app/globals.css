@@ -68,16 +68,6 @@
   --lh-relaxed:  1.75;
 }
 
-/* Preview: deeper teal surfaces */
-:root[data-surface="sage"] {
-  --color-surface:     #e8f0ec;
-  --color-surface-alt: #d4e4da;
-  --color-border:      #b8d0c4;
-  --color-border-gold: #7aaa90;
-  --color-overlay-nav: rgba(232, 240, 236, 0.92);
-  --color-text-muted:  #2d6b5a;
-  --color-text-dim:    #839958;
-}
 
 /* ─── Tailwind Theme Mapping ──────────────────────────────────────────────── */
 @theme inline {
