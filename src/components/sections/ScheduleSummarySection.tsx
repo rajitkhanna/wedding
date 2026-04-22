@@ -5,7 +5,7 @@ import Link from "next/link";
 import { db } from "@/lib/instant/db";
 
 type InviteeShape = { id: string; name: string; sortOrder: number; attendingEvents?: Array<{ id: string }> };
-type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; sortOrder: number };
+type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; sortOrder: number };
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -88,7 +88,16 @@ function TabbedSchedule({
                   </p>
                   {event.location && (
                     <p className="mt-0.5 text-xs" style={{ color: "var(--color-text-dim)" }}>
-                      {event.location}
+                      {event.locationUrl ? (
+                        <a
+                          href={event.locationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: "underline", textUnderlineOffset: "3px" }}
+                        >
+                          {event.location}
+                        </a>
+                      ) : event.location}
                     </p>
                   )}
                 </div>
