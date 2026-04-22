@@ -254,7 +254,7 @@ export default function RSVPPage() {
 
   return (
     <div className="min-h-screen w-full pb-24" style={{ backgroundColor: "var(--color-bg)" }}>
-      <div className="mx-auto max-w-2xl px-5 pt-20">
+      <div className="mx-auto max-w-2xl px-5 pt-32">
 
         <header className="mb-12 text-center">
           <p className="mb-3 text-xs tracking-[0.3em] uppercase" style={{ color: "var(--color-text-muted)" }}>

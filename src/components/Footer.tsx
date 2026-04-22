@@ -1,8 +1,42 @@
 "use client";
 
-const footerLinks = [{ href: "/rsvp", label: "RSVP" }];
+import { db } from "@/lib/instant/db";
+
+const DAY_TO_DATE: Record<string, { label: string; order: number }> = {
+  thursday: { label: "November 26", order: 0 },
+  friday:   { label: "November 27", order: 1 },
+  saturday: { label: "November 28", order: 2 },
+  sunday:   { label: "November 29", order: 3 },
+};
+
+const NAV_LINKS = [
+  { href: "/rsvp", label: "RSVP" },
+  { href: "/#faq", label: "FAQ" },
+];
+
+function useDateRange(): string | null {
+  const { user } = db.useAuth();
+  const { data } = db.useQuery(
+    user
+      ? { guests: { invitedEvents: {}, $: { where: { email: user.email! } } } }
+      : null,
+  );
+  const events: any[] = data?.guests?.[0]?.invitedEvents ?? [];
+  const days = events
+    .map((e) => DAY_TO_DATE[e.day as string])
+    .filter(Boolean)
+    .sort((a, b) => a.order - b.order);
+
+  if (!days.length) return null;
+  const first = days[0].label;
+  const last = days[days.length - 1].label;
+  if (first === last) return `${first}, 2026`;
+  return `${first}–${last.replace("November ", "")}, 2026`;
+}
 
 export function Footer() {
+  const dateRange = useDateRange();
+
   return (
     <footer
       className="mt-auto pt-12 pb-8 px-6"
@@ -48,7 +82,7 @@ export function Footer() {
         With love, Meghana &amp; Rajit
       </p>
 
-      {/* Date + city */}
+      {/* Date + city — personalized to guest's invited days */}
       <p
         className="text-center mb-8 text-sm tracking-widest uppercase"
         style={{
@@ -57,13 +91,13 @@ export function Footer() {
           fontWeight: 300,
         }}
       >
-        Boston
+        {dateRange ? <>{dateRange} &middot; Boston</> : "Boston"}
       </p>
 
       {/* Footer links */}
       <nav aria-label="Footer navigation">
         <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-6">
-          {footerLinks.map((link, i) => (
+          {NAV_LINKS.map((link, i) => (
             <li key={link.href} className="flex items-center gap-6">
               <a
                 href={link.href}
@@ -73,23 +107,18 @@ export function Footer() {
                   fontFamily: "var(--font-body)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
-                    "var(--color-gold)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
-                    "var(--color-text-muted)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-text-muted)";
                 }}
               >
                 {link.label}
               </a>
-              {i < footerLinks.length - 1 && (
+              {i < NAV_LINKS.length - 1 && (
                 <span
                   aria-hidden="true"
-                  style={{
-                    color: "var(--color-border-gold)",
-                    fontSize: "0.6rem",
-                  }}
+                  style={{ color: "var(--color-border-gold)", fontSize: "0.6rem" }}
                 >
                   ·
                 </span>
