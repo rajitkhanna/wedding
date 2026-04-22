@@ -33,7 +33,7 @@ function buildInitialAttendance(
 }
 
 type InviteeShape = { id: string; name: string; sortOrder: number; attendingEvents?: Array<{ id: string }> };
-type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; sortOrder: number };
+type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; sortOrder: number };
 
 function RSVPForm({
   guest,
@@ -84,7 +84,7 @@ function RSVPForm({
       });
       await db.transact([
         db.tx.guests[lookup("email", guest.email)].merge({
-          rsvpStatus: "attending",
+          rsvpStatus: "submitted",
           rsvpSubmittedAt: Date.now(),
         }),
         ...inviteeTxns,
@@ -148,7 +148,18 @@ function RSVPForm({
                     <svg width="11" height="14" viewBox="0 0 12 14" fill="none" style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}>
                       <path d="M6 0C3.79 0 2 1.79 2 4c0 3 4 8.5 4 8.5S10 7 10 4c0-2.21-1.79-4-4-4zm0 5.5C5.17 5.5 4.5 4.83 4.5 4S5.17 2.5 6 2.5 7.5 3.17 7.5 4 6.83 5.5 6 5.5z" fill="currentColor" />
                     </svg>
-                    {event.location}
+                    {event.locationUrl ? (
+                      <a
+                        href={event.locationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "var(--color-text-muted)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-gold)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "var(--color-text-muted)"; }}
+                      >
+                        {event.location}
+                      </a>
+                    ) : event.location}
                   </p>
                 )}
               </div>
