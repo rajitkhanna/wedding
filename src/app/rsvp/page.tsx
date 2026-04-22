@@ -297,7 +297,7 @@ export default function RSVPPage() {
           {!guestLoading && guest && (
             <p className="mt-5 text-sm font-light" style={{ color: "var(--color-text-muted)" }}>
               Hello,{" "}
-              <span style={{ color: "var(--color-gold)" }}>{guest.name ?? user.email}</span>
+              <span style={{ color: "var(--color-gold)" }}>{guest.name ?? user?.email}</span>
               {" "}— let us know who can make each event.
             </p>
           )}
