@@ -11,6 +11,7 @@ const _schema = i.schema({
     $files: i.entity({
       path: i.string().unique().indexed(),
       url: i.string(),
+      event: i.string().optional().indexed(),
     }),
     $streams: i.entity({
       abortReason: i.string().optional(),
