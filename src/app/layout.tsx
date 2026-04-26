@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Meghana & Rajit",
     description: "Join us to celebrate our wedding — November 28, 2026 · Boston",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 800 }],
   },
 };
 
