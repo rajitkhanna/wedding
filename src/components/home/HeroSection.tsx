@@ -8,6 +8,7 @@ import { cld } from "@/lib/cloudflare";
 const HERO_IMAGE_ORDER = [
   "hero/colonnade-smiling-cover",
   "hero/close-portrait-wall",
+  "hero/telugu-saree",
   "hero/prom-2019",
   "hero/proposal-after-showing-ring",
   "hero/couple-with-garlands",

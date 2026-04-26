@@ -12,6 +12,7 @@ const SLIDE_PATTERNS = [
   "couple-with-garlands",
   "under-the-arch-walking",
   "close-portrait-wall",
+  "telugu-saree",
 ];
 
 export function JourneySection() {
