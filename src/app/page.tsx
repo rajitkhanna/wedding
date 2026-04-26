@@ -55,16 +55,8 @@ export default function Home() {
     const id = window.location.hash.slice(1);
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
-    let attempts = 0;
-    function tryScroll() {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-      if (++attempts < 40) setTimeout(tryScroll, 100);
-    }
-    tryScroll();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   return (
