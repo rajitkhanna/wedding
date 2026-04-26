@@ -5,30 +5,9 @@ import Image from "next/image";
 import { db } from "@/lib/instant/db";
 import { cld } from "@/lib/cloudflare";
 
-const SLIDE_PATTERNS = [
-  "prom-2019",
-  "proposal-kneeling",
-  "proposal-after-showing-ring",
-  "couple-with-garlands",
-  "under-the-arch-walking",
-  "close-portrait-wall",
-  "telugu-saree",
-];
+const EVENT_ORDER = ["prom", "proposal", "nischitartham", "engagement-shoot"];
 
-export function JourneySection() {
-  const { data } = db.useQuery({ $files: {} });
-  const files = data?.$files ?? [];
-
-  const slides = useMemo(() => {
-    return SLIDE_PATTERNS.map((pattern) =>
-      files.find((f) => f.path.toLowerCase().includes(pattern)),
-    )
-      .filter(Boolean)
-      .map((f) => cld(f!.url)) as string[];
-  }, [files]);
-
-  if (!slides.length) return null;
-
+function Carousel({ slides }: { slides: string[] }) {
   const [current, setCurrent] = useState(0);
   const [opacity, setOpacity] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
@@ -77,15 +56,6 @@ export function JourneySection() {
       <div className="mx-auto" style={{ maxWidth: "480px" }}>
         {/* Section header */}
         <header className="mb-14 text-center">
-          <p
-            className="mb-3 t-label"
-            style={{
-              color: "var(--color-text-muted)",
-              letterSpacing: "var(--ls-caps)",
-            }}
-          >
-            Our Story
-          </p>
           <h2
             style={{
               fontFamily: "var(--font-display)",
@@ -94,7 +64,7 @@ export function JourneySection() {
               fontWeight: 400,
             }}
           >
-            Every Chapter
+            Our Story
           </h2>
           <div
             className="mx-auto mt-5 h-px w-24"
@@ -207,4 +177,28 @@ export function JourneySection() {
       </div>
     </section>
   );
+}
+
+export function JourneySection() {
+  const { data } = db.useQuery({ $files: {} });
+  const files = data?.$files ?? [];
+
+  const slides = useMemo(() => {
+    const byEvent = new Map<string, typeof files>();
+    for (const f of files) {
+      const event = (f as any).event as string | undefined;
+      if (!event || !EVENT_ORDER.includes(event)) continue;
+      if (!byEvent.has(event)) byEvent.set(event, []);
+      byEvent.get(event)!.push(f);
+    }
+    return EVENT_ORDER.flatMap((event) => {
+      const first = (byEvent.get(event) ?? []).sort((a, b) =>
+        a.path.localeCompare(b.path),
+      )[0];
+      return first ? [cld(first.url)] : [];
+    });
+  }, [files]);
+
+  if (!slides.length) return null;
+  return <Carousel slides={slides} />;
 }

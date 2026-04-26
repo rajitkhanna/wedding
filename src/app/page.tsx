@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FAQSection } from "@/components/sections/FAQSection";
+import { JourneySection } from "@/components/sections/JourneySection";
 import { RegistrySection } from "@/components/sections/RegistrySection";
 import { ScheduleSummarySection } from "@/components/sections/ScheduleSummarySection";
 import { db } from "@/lib/instant/db";
@@ -69,6 +70,8 @@ export default function Home() {
   return (
     <main style={{ backgroundColor: "var(--color-bg)" }}>
       <HeroSection />
+      <Divider />
+      <JourneySection />
       <Divider />
       <ScheduleSummarySection />
       <LotusDivider />
