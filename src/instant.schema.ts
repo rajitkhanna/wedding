@@ -25,6 +25,7 @@ const _schema = i.schema({
     }),
     guests: i.entity({
       code: i.string().unique().indexed().optional(),
+      contactEmail: i.string().optional(),
       email: i.string().unique().indexed(),
       name: i.string(),
       rsvpStatus: i.string().optional(),
