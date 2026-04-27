@@ -27,17 +27,10 @@ export function RegistrySection() {
             Registry
           </h2>
           <p
-            className="text-base leading-relaxed"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            Honestly, your presence is the greatest gift.
-          </p>
-          <p
             className="mt-2 text-base leading-relaxed"
             style={{ color: "var(--color-text-muted)" }}
           >
-            But if you&apos;d like to do something, please just Venmo or Zelle us —
-            no registry needed.
+            If you'd like to support us, you can contribute here.
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
@@ -52,7 +45,9 @@ export function RegistrySection() {
               href={option.url}
               target={option.url.startsWith("http") ? "_blank" : undefined}
               rel={
-                option.url.startsWith("http") ? "noopener noreferrer" : undefined
+                option.url.startsWith("http")
+                  ? "noopener noreferrer"
+                  : undefined
               }
               className="group block rounded-lg px-8 py-7 transition-all"
               style={{

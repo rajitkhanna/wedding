@@ -5,12 +5,14 @@ import { useState } from "react";
 interface AccordionItemProps {
   question: string;
   answer: string;
+  link?: { label: string; href: string };
   defaultOpen?: boolean;
 }
 
 export function AccordionItem({
   question,
   answer,
+  link,
   defaultOpen = false,
 }: AccordionItemProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -80,6 +82,14 @@ export function AccordionItem({
           ) : (
             <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
               {linkifyEmails(answer)}
+              {link && (
+                <a
+                  href={link.href}
+                  style={{ color: "var(--color-gold)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                >
+                  {link.label}
+                </a>
+              )}
             </p>
           )}
         </div>

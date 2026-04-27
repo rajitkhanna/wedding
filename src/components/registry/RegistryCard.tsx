@@ -50,12 +50,6 @@ export function RegistryCard({ item }: RegistryCardProps) {
           >
             {item.handle}
           </p>
-          <p
-            className="mt-3 text-sm leading-relaxed"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            {item.detail}
-          </p>
         </div>
         <span
           className="mt-1 shrink-0 text-[var(--color-text-muted)] transition-colors group-hover:text-[var(--color-gold)]"
