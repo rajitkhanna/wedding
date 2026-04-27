@@ -9,7 +9,7 @@ type Slide = { url: string; label: string; caption: string };
 
 const EVENT_SLIDES: Record<string, { label: string; caption: string }> = {
   prom: {
-    label: "Prom · 2019",
+    label: "Prom · June 2019",
     caption:
       "We started dating during our senior year of high school. The summer of 2019 was one of the best summers of our lives, but that fall we started long-distance as Meghana went to Cornell in Ithaca, NY and Rajit went to Georgia Tech in Atlanta, GA.",
   },
@@ -24,7 +24,7 @@ const EVENT_SLIDES: Record<string, { label: string; caption: string }> = {
       "We set the date for our wedding and started the process of joining our two families at the Nischitartham on January 4th.",
   },
   "engagement-shoot": {
-    label: "Engagement",
+    label: "Engagement Photos · March 2026",
     caption:
       "We're excited to start our lives together and can't wait to celebrate with everyone who helped make it possible.",
   },
