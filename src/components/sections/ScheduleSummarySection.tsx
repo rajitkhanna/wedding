@@ -4,6 +4,74 @@ import { useState } from "react";
 import Link from "next/link";
 import { db } from "@/lib/instant/db";
 
+const DAY_DATES: Record<string, string> = {
+  thursday: "20261126",
+  friday: "20261127",
+  saturday: "20261128",
+  sunday: "20261129",
+};
+
+function parseTimeToMins(time: string): number {
+  const match = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return 0;
+  let hours = parseInt(match[1], 10);
+  const mins = parseInt(match[2], 10);
+  const ampm = match[3].toUpperCase();
+  if (ampm === "PM" && hours !== 12) hours += 12;
+  if (ampm === "AM" && hours === 12) hours = 0;
+  return hours * 60 + mins;
+}
+
+function minsToICSTime(totalMins: number): string {
+  const h = Math.floor(totalMins / 60) % 24;
+  const m = totalMins % 60;
+  return String(h).padStart(2, "0") + String(m).padStart(2, "0") + "00";
+}
+
+function buildICS(events: EventShape[]): string {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Meghana & Rajit//Wedding//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+
+  for (const event of events) {
+    const dateStr = DAY_DATES[event.day.toLowerCase()];
+    if (!dateStr) continue;
+    const startMins = parseTimeToMins(event.startTime);
+    const endMins = event.endTime ? parseTimeToMins(event.endTime) : startMins + 60;
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${event.id}@meghanarajit.wedding`);
+    lines.push(`DTSTART:${dateStr}T${minsToICSTime(startMins)}`);
+    lines.push(`DTEND:${dateStr}T${minsToICSTime(endMins)}`);
+    lines.push(`SUMMARY:${event.title}`);
+    if (event.location) lines.push(`LOCATION:${event.location}`);
+    if (event.locationUrl) lines.push(`URL:${event.locationUrl}`);
+    const descParts: string[] = [];
+    if (event.dressCode) descParts.push(`Dress code: ${event.dressCode}`);
+    if (event.description) descParts.push(event.description);
+    if (descParts.length > 0) lines.push(`DESCRIPTION:${descParts.join("\\n")}`);
+    lines.push("END:VEVENT");
+  }
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+function downloadICS(events: EventShape[]) {
+  const blob = new Blob([buildICS(events)], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "meghana-rajit-wedding.ics";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 type InviteeShape = { id: string; name: string; sortOrder: number; attendingEvents?: Array<{ id: string }> };
 type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; dressCode?: string; description?: string; sortOrder: number };
 
@@ -295,6 +363,7 @@ export function ScheduleSummarySection() {
   }, {});
 
   const days = Object.keys(byDay);
+  const attendingEvents = events.filter((ev) => (attendeesByEvent[ev.id] ?? []).length > 0);
 
   return (
     <section
@@ -304,13 +373,35 @@ export function ScheduleSummarySection() {
     >
       <div className="mx-auto max-w-2xl">
         <SectionHeader />
+        {attendingEvents.length > 0 && (
+          <div className="mb-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => downloadICS(attendingEvents)}
+              className="flex items-center gap-2 rounded px-5 py-2.5 text-xs tracking-widest uppercase transition-opacity hover:opacity-70"
+              style={{
+                border: "1px solid var(--color-border-gold)",
+                color: "var(--color-gold-dim)",
+                backgroundColor: "transparent",
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M8 2v4M16 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M8 13h4m-4 4h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Add to Calendar
+            </button>
+          </div>
+        )}
         <TabbedSchedule
           days={days}
           byDay={byDay}
           attendeesByEvent={attendeesByEvent}
           isSingle={invitees.length === 1}
         />
-        <p className="mt-8 text-center text-xs" style={{ color: "var(--color-text-dim)" }}>
+        <p className="mt-6 text-center text-xs" style={{ color: "var(--color-text-dim)" }}>
           Need to make changes?{" "}
           <Link
             href="/rsvp"            style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
