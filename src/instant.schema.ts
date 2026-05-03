@@ -35,6 +35,7 @@ const _schema = i.schema({
     scheduleEvents: i.entity({
       day: i.string(),
       description: i.string().optional(),
+      dressCode: i.string().optional(),
       endTime: i.string().optional(),
       location: i.string().optional(),
       locationUrl: i.string().optional(),

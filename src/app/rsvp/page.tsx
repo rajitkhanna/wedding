@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
@@ -49,6 +49,7 @@ type EventShape = {
   endTime?: string;
   location?: string;
   locationUrl?: string;
+  dressCode?: string;
   sortOrder: number;
 };
 
@@ -303,6 +304,29 @@ function RSVPForm({
                     ) : (
                       event.location
                     )}
+                  </p>
+                )}
+                {event.dressCode && (
+                  <p
+                    className="flex items-center gap-2 text-sm"
+                    style={{ color: "var(--color-text-muted)" }}
+                  >
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}
+                    >
+                      <path
+                        d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    {event.dressCode}
                   </p>
                 )}
               </div>
