@@ -41,9 +41,8 @@ export function RegistrySection() {
             style={{ color: "var(--color-text-muted)" }}
           >
             We are so blessed and grateful for all of your love and well wishes.
-            This truly is the greatest gift of all. However if you do wish to
-            celebrate with a gift, a contribution to our Honeymoon Fund would be
-            warmly appreciated. We hope to celebrate with all of you soon.
+            If you do wish to celebrate with a gift, a contribution to our
+            Honeymoon Fund would be appreciated.{" "}
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
@@ -108,10 +107,12 @@ export function RegistrySection() {
                   className="group block w-full rounded-lg px-8 py-7 text-left transition-all"
                   style={sharedStyle}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--color-gold)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--color-gold)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--color-border-gold)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--color-border-gold)";
                   }}
                 >
                   {inner}
@@ -124,14 +125,20 @@ export function RegistrySection() {
                 key={option.name}
                 href={option.url}
                 target={option.url.startsWith("http") ? "_blank" : undefined}
-                rel={option.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                rel={
+                  option.url.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 className="group block rounded-lg px-8 py-7 transition-all"
                 style={sharedStyle}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--color-gold)";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                    "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--color-border-gold)";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                    "var(--color-border-gold)";
                 }}
               >
                 {inner}
