@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       allFiles.find((f) => f.path === "hero/colonnade-smiling-cover.jpg") ??
       allFiles.find((f) => f.event === "hero");
     const secondFile =
-      allFiles.find((f) => f.path === "story/02-proposal-3.jpg") ??
+      allFiles.find((f) => f.path === "story/03-engagement-8.jpg") ??
       heroFile;
 
     const heroImageUrl = heroFile ? cld(heroFile.url, { width: 600, quality: 85 }) : "";
