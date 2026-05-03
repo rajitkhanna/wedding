@@ -129,6 +129,32 @@ function RSVPForm({
       ]);
       setSaved(true);
       setIsDirty(false);
+
+      // Send confirmation email (non-blocking — don't fail RSVP if email fails)
+      const attendingEvents = events
+        .filter((ev) => invitees.some((inv) => attendance[ev.id]?.[inv.id]))
+        .map((ev) => ({
+          title: ev.title,
+          day: ev.day,
+          startTime: ev.startTime,
+          endTime: ev.endTime,
+          location: ev.location,
+          dressCode: ev.dressCode,
+          attendees: invitees
+            .filter((inv) => attendance[ev.id]?.[inv.id])
+            .map((inv) => inv.name),
+        }));
+
+      fetch("/api/rsvp-confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guestName: guest.name ?? guest.email,
+          contactEmail: contactEmail.trim(),
+          events: attendingEvents,
+        }),
+      }).catch((e) => console.warn("[rsvp-confirm]", e));
+
       router.push("/#schedule");
     } catch (err) {
       console.error(err);
