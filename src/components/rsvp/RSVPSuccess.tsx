@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface RSVPSuccessProps {
   name: string;
@@ -9,10 +9,10 @@ export function RSVPSuccess({ name, attending }: RSVPSuccessProps) {
   return (
     <div
       className="flex flex-col items-center gap-6 py-12 text-center"
-      style={{ animation: 'fadeIn 0.6s ease-out' }}
+      style={{ animation: "fadeIn 0.6s ease-out" }}
     >
       {/* Rose SVG */}
-      <div style={{ animation: 'roseBloom 0.8s ease-out forwards' }}>
+      <div style={{ animation: "roseBloom 0.8s ease-out forwards" }}>
         <svg
           width="80"
           height="80"
@@ -67,7 +67,13 @@ export function RSVPSuccess({ name, attending }: RSVPSuccessProps) {
             opacity="0.9"
           />
           {/* Center */}
-          <circle cx="40" cy="38" r="5" fill="var(--color-gold)" opacity="0.9" />
+          <circle
+            cx="40"
+            cy="38"
+            r="5"
+            fill="var(--color-gold)"
+            opacity="0.9"
+          />
           <circle cx="40" cy="38" r="3" fill="var(--color-gold-light)" />
         </svg>
       </div>
@@ -76,10 +82,10 @@ export function RSVPSuccess({ name, attending }: RSVPSuccessProps) {
       <div
         className="flex items-center justify-center rounded-full"
         style={{
-          width: '3rem',
-          height: '3rem',
-          background: 'var(--color-surface-alt)',
-          border: '2px solid var(--color-gold)',
+          width: "3rem",
+          height: "3rem",
+          background: "var(--color-surface-alt)",
+          border: "2px solid var(--color-gold)",
         }}
       >
         <svg
@@ -102,19 +108,19 @@ export function RSVPSuccess({ name, attending }: RSVPSuccessProps) {
       <div>
         <h2
           style={{
-            fontFamily: 'var(--font-display)',
-            color: 'var(--color-gold)',
-            fontSize: '1.75rem',
+            fontFamily: "var(--font-display)",
+            color: "var(--color-gold)",
+            fontSize: "1.75rem",
             fontWeight: 400,
-            marginBottom: '0.5rem',
+            marginBottom: "0.5rem",
           }}
         >
-          Thank you, {name}!
+          Thank you, {name}
         </h2>
-        <p style={{ color: 'var(--color-text-muted)', maxWidth: '24rem' }}>
+        <p style={{ color: "var(--color-text-muted)", maxWidth: "24rem" }}>
           {attending
             ? "We can't wait to celebrate with you."
-            : 'We\'ll miss you, but we appreciate you letting us know.'}
+            : "We'll miss you, but we appreciate you letting us know."}
         </p>
       </div>
 
