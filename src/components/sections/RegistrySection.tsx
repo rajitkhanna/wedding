@@ -30,10 +30,10 @@ export function RegistrySection() {
             className="mt-2 text-base leading-relaxed"
             style={{ color: "var(--color-text-muted)" }}
           >
-            We are so blessed and grateful for all of your love and well wishes!
+            We are so blessed and grateful for all of your love and well wishes.
             This truly is the greatest gift of all. However if you do wish to
             celebrate with a gift, a contribution to our Honeymoon Fund would be
-            warmly appreciated. We hope to celebrate with all of you soon!
+            warmly appreciated. We hope to celebrate with all of you soon.
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
