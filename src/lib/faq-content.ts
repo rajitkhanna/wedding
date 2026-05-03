@@ -9,6 +9,7 @@ export interface CeremonyGuideData {
 export interface FAQItem {
   q: string;
   a: string;
+  link?: { label: string; href: string };
 }
 
 export const ceremonyGuides: CeremonyGuideData[] = [
@@ -55,7 +56,8 @@ export const faqItems: FAQItem[] = [
   },
   {
     q: "Can I bring a gift?",
-    a: "Please do not bring box gifts to the venue. If you'd like to give a gift, we'll share details soon.",
+    a: "Please don't bring a physical gift to the venue. If you'd like to support us, you can contribute ",
+    link: { label: "here.", href: "#registry" },
   },
   {
     q: "Who do I contact with questions?",
