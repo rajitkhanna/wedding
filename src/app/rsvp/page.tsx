@@ -6,6 +6,7 @@ import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
+import { buildDateRange } from "@/lib/schedule/dateRange";
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -529,7 +530,7 @@ export default function RSVPPage() {
               textShadow: "0 1px 4px rgba(0,0,0,0.8)",
             }}
           >
-            November 27–29, 2026 · Boston
+            {buildDateRange(events.map((e) => e.day)) ?? "November 27–29, 2026"} · Boston
           </p>
           <h1
             style={{
