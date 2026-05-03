@@ -82,8 +82,7 @@ export default function Home() {
       >
         <FAQSection />
       </div>
-      {/* <Divider />
-      <RegistrySection /> */}
+      <RegistrySection />
     </main>
   );
 }
