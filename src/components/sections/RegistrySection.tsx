@@ -1,9 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { paymentOptions } from "@/lib/registry-content";
 import { SectionBanner } from "@/components/SectionBanner";
 
 export function RegistrySection() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  function handleCopy(value: string, key: string) {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  }
+
   return (
     <section
       id="registry"
@@ -42,30 +52,13 @@ export function RegistrySection() {
         </header>
 
         <div className="flex flex-col gap-5">
-          {paymentOptions.map((option) => (
-            <a
-              key={option.name}
-              href={option.url}
-              target={option.url.startsWith("http") ? "_blank" : undefined}
-              rel={
-                option.url.startsWith("http")
-                  ? "noopener noreferrer"
-                  : undefined
-              }
-              className="group block rounded-lg px-8 py-7 transition-all"
-              style={{
-                background: "var(--color-surface)",
-                border: "1px solid var(--color-border-gold)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                  "var(--color-gold)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                  "var(--color-border-gold)";
-              }}
-            >
+          {paymentOptions.map((option) => {
+            const isCopied = copied === option.name;
+            const sharedStyle = {
+              background: "var(--color-surface)",
+              border: "1px solid var(--color-border-gold)",
+            };
+            const inner = (
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3
@@ -83,7 +76,7 @@ export function RegistrySection() {
                     className="mt-1 text-sm font-mono tracking-wide"
                     style={{ color: "var(--color-text)" }}
                   >
-                    {option.handle}
+                    {isCopied ? "Copied" : option.handle}
                   </p>
                 </div>
                 <span
@@ -105,8 +98,46 @@ export function RegistrySection() {
                   </svg>
                 </span>
               </div>
-            </a>
-          ))}
+            );
+
+            if (option.copyValue) {
+              return (
+                <button
+                  key={option.name}
+                  onClick={() => handleCopy(option.copyValue!, option.name)}
+                  className="group block w-full rounded-lg px-8 py-7 text-left transition-all"
+                  style={sharedStyle}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "var(--color-gold)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "var(--color-border-gold)";
+                  }}
+                >
+                  {inner}
+                </button>
+              );
+            }
+
+            return (
+              <a
+                key={option.name}
+                href={option.url}
+                target={option.url.startsWith("http") ? "_blank" : undefined}
+                rel={option.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="group block rounded-lg px-8 py-7 transition-all"
+                style={sharedStyle}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--color-gold)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--color-border-gold)";
+                }}
+              >
+                {inner}
+              </a>
+            );
+          })}
         </div>
 
         <p
