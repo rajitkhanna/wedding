@@ -12,7 +12,6 @@ const HERO_IMAGE_ORDER = [
   "hero/prom-2019",
   "hero/proposal-after-showing-ring",
   "hero/couple-with-garlands",
-  "hero/under-the-arch-walking",
 ];
 
 const HERO_IMAGE_OFFSETS: Record<string, string> = {
