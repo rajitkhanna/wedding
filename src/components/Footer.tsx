@@ -2,13 +2,7 @@
 
 import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
-
-const DAY_TO_DATE: Record<string, { label: string; order: number }> = {
-  thursday: { label: "November 26", order: 0 },
-  friday: { label: "November 27", order: 1 },
-  saturday: { label: "November 28", order: 2 },
-  sunday: { label: "November 29", order: 3 },
-};
+import { buildDateRange } from "@/lib/schedule/dateRange";
 
 const NAV_LINKS = [
   { href: "/rsvp", label: "RSVP" },
@@ -23,16 +17,7 @@ function useDateRange(): string | null {
       : null,
   );
   const events: any[] = data?.guests?.[0]?.invitedEvents ?? [];
-  const days = events
-    .map((e) => DAY_TO_DATE[e.day as string])
-    .filter(Boolean)
-    .sort((a, b) => a.order - b.order);
-
-  if (!days.length) return null;
-  const first = days[0].label;
-  const last = days[days.length - 1].label;
-  if (first === last) return `${first}, 2026`;
-  return `${first}–${last.replace("November ", "")}, 2026`;
+  return buildDateRange(events.map((e) => e.day as string));
 }
 
 export function Footer() {

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/instant/db";
 import { cld } from "@/lib/cloudflare";
+import { buildDateRange } from "@/lib/schedule/dateRange";
 
 const HERO_IMAGE_ORDER = [
   "hero/colonnade-smiling-cover",
@@ -20,10 +21,17 @@ const HERO_IMAGE_OFFSETS: Record<string, string> = {
 
 export function HeroSection() {
   const router = useRouter();
-  const { data } = db.useQuery({
+  const { user } = db.useAuth();
+  const { isLoading, data } = db.useQuery({
     $files: { $: { where: { path: { $like: "hero/%" } } } },
   });
   const files = data?.$files ?? [];
+
+  const { data: guestData } = db.useQuery(
+    user ? { guests: { invitedEvents: {}, $: { where: { email: user.email! } } } } : null,
+  );
+  const invitedDays = (guestData?.guests?.[0]?.invitedEvents ?? []).map((e: any) => e.day as string);
+  const dateRange = buildDateRange(invitedDays) ?? "Nov 27 to 29, 2026";
 
   const heroSlides = useMemo(() => {
     return HERO_IMAGE_ORDER.flatMap((pattern) => {
@@ -34,11 +42,11 @@ export function HeroSection() {
     });
   }, [files]);
 
-  // Fall back to local public files during dev if InstantDB has no images yet
+  // Fall back to local public files only after InstantDB confirms no images exist
   const slides =
     heroSlides.length > 0
       ? heroSlides
-      : HERO_IMAGE_ORDER.map((pattern) => {
+      : isLoading ? [] : HERO_IMAGE_ORDER.map((pattern) => {
           const filename = pattern.replace("hero/", "");
           const ext =
             filename === "prom-2019" ||
@@ -100,7 +108,7 @@ export function HeroSection() {
               letterSpacing: "var(--ls-caps)",
             }}
           >
-            Nov 27 to 29, 2026
+            {dateRange}
           </p>
           <p
             className="mt-2 t-label"
