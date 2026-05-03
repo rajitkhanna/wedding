@@ -30,7 +30,10 @@ export function RegistrySection() {
             className="mt-2 text-base leading-relaxed"
             style={{ color: "var(--color-text-muted)" }}
           >
-            If you'd like to support us, you can contribute here.
+            We are so blessed and grateful for all of your love and well wishes!
+            This truly is the greatest gift of all. However if you do wish to
+            celebrate with a gift, a contribution to our Honeyfund would be
+            warmly appreciated. We hope to celebrate with all of you soon!
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
@@ -82,12 +85,6 @@ export function RegistrySection() {
                   >
                     {option.handle}
                   </p>
-                  <p
-                    className="mt-3 text-sm leading-relaxed"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    {option.detail}
-                  </p>
                 </div>
                 <span
                   className="mt-1 shrink-0 transition-colors"
@@ -116,7 +113,7 @@ export function RegistrySection() {
           className="mt-10 text-center text-sm"
           style={{ color: "var(--color-text-dim)" }}
         >
-          Thank you so much — we can&apos;t wait to celebrate with you. ♥
+          With lots of love, Meghana &amp; Rajit ♥
         </p>
       </div>
     </section>
