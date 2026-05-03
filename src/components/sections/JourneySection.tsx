@@ -204,7 +204,19 @@ export function JourneySection() {
           />
         </header>
 
-        {!isLoading && slides.length > 0 && <Carousel slides={slides} />}
+        {isLoading ? (
+          <div
+            className="mx-auto overflow-hidden rounded-xl"
+            style={{
+              maxWidth: "480px",
+              aspectRatio: "4 / 5",
+              border: "1px solid var(--color-border-gold)",
+              backgroundColor: "var(--color-surface)",
+            }}
+          />
+        ) : slides.length > 0 ? (
+          <Carousel slides={slides} />
+        ) : null}
       </div>
     </section>
   );
