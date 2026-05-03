@@ -6,6 +6,7 @@ import {
   Hr,
   Html,
   Img,
+  Link,
   Preview,
   Row,
   Column,
@@ -21,6 +22,7 @@ export type RSVPEvent = {
   startTime: string;
   endTime?: string;
   location?: string;
+  locationUrl?: string;
   dressCode?: string;
   attendees: string[];
 };
@@ -235,7 +237,18 @@ export function RSVPConfirmation({
                       >
                         {ev.startTime}
                         {ev.endTime ? ` – ${ev.endTime}` : ""}
-                        {ev.location ? ` · ${ev.location}` : ""}
+                        {ev.location ? (
+                          <>
+                            {" · "}
+                            {ev.locationUrl ? (
+                              <Link href={ev.locationUrl} style={{ color: "#777", textDecoration: "underline" }}>
+                                {ev.location}
+                              </Link>
+                            ) : (
+                              ev.location
+                            )}
+                          </>
+                        ) : null}
                       </Text>
                       {ev.dressCode && (
                         <Text

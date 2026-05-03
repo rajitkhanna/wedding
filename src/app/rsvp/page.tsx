@@ -140,6 +140,7 @@ function RSVPForm({
           startTime: ev.startTime,
           endTime: ev.endTime,
           location: ev.location,
+          locationUrl: ev.locationUrl,
           dressCode: ev.dressCode,
           attendees: invitees
             .filter((inv) => attendance[ev.id]?.[inv.id])
