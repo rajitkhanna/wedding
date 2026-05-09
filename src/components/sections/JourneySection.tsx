@@ -35,7 +35,6 @@ const EVENT_ORDER = Object.keys(EVENT_SLIDES);
 function Carousel({ slides }: { slides: Slide[] }) {
   const [current, setCurrent] = useState(0);
   const [opacity, setOpacity] = useState(1);
-  const [isHovered, setIsHovered] = useState(false);
   const indexRef = useRef(0);
 
   const goTo = useCallback(
@@ -56,12 +55,6 @@ function Carousel({ slides }: { slides: Slide[] }) {
   const prev = useCallback(() => goTo(indexRef.current - 1), [goTo]);
 
   useEffect(() => {
-    if (isHovered) return;
-    const t = setTimeout(() => goTo(indexRef.current + 1), 6000);
-    return () => clearTimeout(t);
-  }, [current, isHovered, goTo]);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
@@ -78,8 +71,6 @@ function Carousel({ slides }: { slides: Slide[] }) {
         border: "1px solid var(--color-border-gold)",
         backgroundColor: "var(--color-surface)",
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Photo */}
       <div className="relative" style={{ aspectRatio: "4 / 5" }}>
