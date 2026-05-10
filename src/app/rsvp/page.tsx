@@ -220,16 +220,18 @@ function RSVPForm({
             style={{
               backgroundColor: "var(--color-surface)",
               border: "1px solid var(--color-border)",
-              borderLeft: "4px solid var(--color-gold)",
+              borderLeft: `4px solid ${event.informational ? "var(--color-border-gold)" : "var(--color-gold)"}`,
             }}
           >
             <div className="px-6 pt-6 pb-5">
-              <p
-                className="mb-1 text-xs tracking-[0.2em] uppercase"
-                style={{ color: "var(--color-gold-dim)" }}
-              >
-                {dayLabel(event.day)}
-              </p>
+              <div className="flex items-start justify-between gap-3 mb-1">
+                <p
+                  className="text-xs tracking-[0.2em] uppercase"
+                  style={{ color: "var(--color-gold-dim)" }}
+                >
+                  {dayLabel(event.day)}
+                </p>
+              </div>
               <h2
                 className="mb-3 leading-snug"
                 style={{
@@ -275,6 +277,29 @@ function RSVPForm({
                     </>
                   )}
                 </p>
+                {event.dressCode && (
+                  <p
+                    className="flex items-center gap-2 text-sm"
+                    style={{ color: "var(--color-text-muted)" }}
+                  >
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}
+                    >
+                      <path
+                        d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    {event.dressCode}
+                  </p>
+                )}
                 {event.location && (
                   <p
                     className="flex items-center gap-2 text-sm"
@@ -318,99 +343,79 @@ function RSVPForm({
                     )}
                   </p>
                 )}
-                {event.dressCode && (
+              </div>
+            </div>
+
+            {!event.informational && (
+              <>
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "var(--color-border)",
+                    margin: "0 1.5rem",
+                  }}
+                />
+                <div className="px-6 py-5">
                   <p
-                    className="flex items-center gap-2 text-sm"
+                    className="mb-4 text-xs tracking-widest uppercase"
                     style={{ color: "var(--color-text-muted)" }}
                   >
-                    <svg
-                      width="13"
-                      height="13"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}
-                    >
-                      <path
-                        d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {event.dressCode}
+                    {isSingle ? "Will you attend?" : "Who's attending?"}
                   </p>
-                )}
-              </div>
-            </div>
-
-            <div
-              style={{
-                height: "1px",
-                backgroundColor: "var(--color-border)",
-                margin: "0 1.5rem",
-              }}
-            />
-
-            <div className="px-6 py-5">
-              <p
-                className="mb-4 text-xs tracking-widest uppercase"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {isSingle ? "Will you attend?" : "Who's attending?"}
-              </p>
-              <div className="flex flex-wrap gap-x-6 gap-y-3">
-                {invitees.map((inv) => {
-                  const checked = attendance[event.id]?.[inv.id] ?? false;
-                  return (
-                    <label
-                      key={inv.id}
-                      className={`flex items-center gap-2.5 ${rsvpLocked ? "cursor-default" : "cursor-pointer"}`}
-                      onClick={() => toggle(event.id, inv.id)}
-                    >
-                      <span
-                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded"
-                        style={{
-                          border: `2px solid ${checked ? "var(--color-gold)" : "var(--color-border-gold)"}`,
-                          backgroundColor: checked
-                            ? "var(--color-gold)"
-                            : "transparent",
-                          transition: "all 0.15s",
-                          opacity: rsvpLocked ? 0.6 : 1,
-                        }}
-                      >
-                        {checked && (
-                          <svg
-                            width="10"
-                            height="8"
-                            viewBox="0 0 10 8"
-                            fill="none"
+                  <div className="flex flex-wrap gap-x-6 gap-y-3">
+                    {invitees.map((inv) => {
+                      const checked = attendance[event.id]?.[inv.id] ?? false;
+                      return (
+                        <label
+                          key={inv.id}
+                          className={`flex items-center gap-2.5 ${rsvpLocked ? "cursor-default" : "cursor-pointer"}`}
+                          onClick={() => toggle(event.id, inv.id)}
+                        >
+                          <span
+                            className="flex h-5 w-5 shrink-0 items-center justify-center rounded"
+                            style={{
+                              border: `2px solid ${checked ? "var(--color-gold)" : "var(--color-border-gold)"}`,
+                              backgroundColor: checked
+                                ? "var(--color-gold)"
+                                : "transparent",
+                              transition: "all 0.15s",
+                              opacity: rsvpLocked ? 0.6 : 1,
+                            }}
                           >
-                            <path
-                              d="M1 4l3 3 5-6"
-                              stroke="var(--color-bg)"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </span>
-                      <span
-                        className="text-sm"
-                        style={{
-                          color: checked
-                            ? "var(--color-text)"
-                            : "var(--color-text-dim)",
-                        }}
-                      >
-                        {inv.name}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
+                            {checked && (
+                              <svg
+                                width="10"
+                                height="8"
+                                viewBox="0 0 10 8"
+                                fill="none"
+                              >
+                                <path
+                                  d="M1 4l3 3 5-6"
+                                  stroke="var(--color-bg)"
+                                  strokeWidth="1.8"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            )}
+                          </span>
+                          <span
+                            className="text-sm"
+                            style={{
+                              color: checked
+                                ? "var(--color-text)"
+                                : "var(--color-text-dim)",
+                            }}
+                          >
+                            {inv.name}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -540,7 +545,8 @@ export default function RSVPPage() {
               textShadow: "0 1px 4px rgba(0,0,0,0.8)",
             }}
           >
-            {buildDateRange(events.map((e) => e.day)) ?? "November 27–29, 2026"} · Boston
+            {buildDateRange(events.map((e) => e.day)) ?? "November 27–29, 2026"}{" "}
+            · Boston
           </p>
           <h1
             style={{
