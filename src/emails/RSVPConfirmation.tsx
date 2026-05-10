@@ -33,6 +33,7 @@ type Props = {
   events: RSVPEvent[];
   heroImageUrl: string;
   secondImageUrl: string;
+  guestCode?: string;
 };
 
 const DAY_LABELS: Record<string, string> = {
@@ -59,6 +60,7 @@ export function RSVPConfirmation({
   events,
   heroImageUrl,
   secondImageUrl,
+  guestCode,
 }: Props) {
   const dateRange = buildDateRange(events.map((e) => e.day)) ?? "November 27–29, 2026";
   const byDay = events.reduce<Record<string, RSVPEvent[]>>((acc, ev) => {
@@ -197,7 +199,7 @@ export function RSVPConfirmation({
                 color: textMuted,
                 fontSize: "15px",
                 lineHeight: "1.75",
-                margin: 0,
+                margin: "0 0 24px",
                 fontFamily: "'Jost', Helvetica, Arial, sans-serif",
               }}
             >
@@ -205,6 +207,52 @@ export function RSVPConfirmation({
               for the weekend is below — we&apos;ll send any updates to this
               address.
             </Text>
+            {guestCode && (
+              <Section
+                style={{
+                  backgroundColor: bg,
+                  borderRadius: "6px",
+                  padding: "16px 20px",
+                  textAlign: "center",
+                  border: `1px solid ${borderGold}`,
+                }}
+              >
+                <Text
+                  style={{
+                    color: textMuted,
+                    fontSize: "10px",
+                    letterSpacing: "0.25em",
+                    textTransform: "uppercase",
+                    margin: "0 0 8px",
+                    fontFamily: "'Jost', Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  Your invite code
+                </Text>
+                <Text
+                  style={{
+                    color: dark,
+                    fontSize: "22px",
+                    fontWeight: 600,
+                    letterSpacing: "0.18em",
+                    margin: 0,
+                    fontFamily: "'Jost', Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  {guestCode}
+                </Text>
+                <Text
+                  style={{
+                    color: textDim,
+                    fontSize: "11px",
+                    margin: "8px 0 0",
+                    fontFamily: "'Jost', Helvetica, Arial, sans-serif",
+                  }}
+                >
+                  Use this to access the wedding website at meghanarajit.com
+                </Text>
+              </Section>
+            )}
           </Section>
 
           <Hr style={{ borderColor: border, margin: 0 }} />
@@ -300,7 +348,7 @@ export function RSVPConfirmation({
                           Dress code: {ev.dressCode}
                         </Text>
                       )}
-                      {ev.attendees.length > 0 && (
+                      {ev.attendees.length > 1 && (
                         <Text
                           style={{ color: textDim, fontSize: "12px", margin: 0, fontFamily: "'Jost', Helvetica, Arial, sans-serif" }}
                         >

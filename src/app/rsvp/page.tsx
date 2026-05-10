@@ -66,6 +66,7 @@ function RSVPForm({
     name?: string;
     rsvpStatus?: string;
     contactEmail?: string;
+    code?: string;
   };
   invitees: InviteeShape[];
   events: EventShape[];
@@ -155,6 +156,7 @@ function RSVPForm({
           guestName: guest.name ?? guest.email,
           contactEmail: contactEmail.trim(),
           events: attendingEvents,
+          guestCode: guest.code,
         }),
       }).catch((e) => console.warn("[rsvp-confirm]", e));
 
@@ -603,6 +605,7 @@ export default function RSVPPage() {
               name: guest.name as string | undefined,
               rsvpStatus: guest.rsvpStatus as string | undefined,
               contactEmail: guest.contactEmail as string | undefined,
+              code: guest.code as string | undefined,
             }}
             invitees={invitees}
             events={events}
