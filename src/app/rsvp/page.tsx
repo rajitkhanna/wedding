@@ -16,11 +16,12 @@ type AttendanceMap = Record<string, Record<string, boolean>>;
 
 function buildInitialAttendance(
   invitees: Array<{ id: string; attendingEvents?: Array<{ id: string }> }>,
-  events: Array<{ id: string }>,
+  events: Array<{ id: string; informational?: boolean }>,
   hasRsvpd: boolean,
 ): AttendanceMap {
   const map: AttendanceMap = {};
   for (const event of events) {
+    if (event.informational) continue;
     map[event.id] = {};
     for (const inv of invitees) {
       if (hasRsvpd) {
@@ -51,6 +52,7 @@ type EventShape = {
   location?: string;
   locationUrl?: string;
   dressCode?: string;
+  informational?: boolean;
   sortOrder: number;
 };
 
@@ -109,7 +111,7 @@ function RSVPForm({
       const inviteeTxns = invitees.flatMap((inv) => {
         const currentIds = (inv.attendingEvents ?? []).map((e) => e.id);
         const newIds = events
-          .filter((ev) => attendance[ev.id]?.[inv.id])
+          .filter((ev) => !ev.informational && attendance[ev.id]?.[inv.id])
           .map((ev) => ev.id);
         const toUnlink = currentIds.filter((id) => !newIds.includes(id));
         const toLink = newIds.filter((id) => !currentIds.includes(id));
@@ -135,7 +137,11 @@ function RSVPForm({
 
       // Send confirmation email (non-blocking — don't fail RSVP if email fails)
       const attendingEvents = events
-        .filter((ev) => invitees.some((inv) => attendance[ev.id]?.[inv.id]))
+        .filter((ev) =>
+          ev.informational
+            ? true
+            : invitees.some((inv) => attendance[ev.id]?.[inv.id]),
+        )
         .map((ev) => ({
           title: ev.title,
           day: ev.day,
@@ -144,9 +150,11 @@ function RSVPForm({
           location: ev.location,
           locationUrl: ev.locationUrl,
           dressCode: ev.dressCode,
-          attendees: invitees
-            .filter((inv) => attendance[ev.id]?.[inv.id])
-            .map((inv) => inv.name),
+          attendees: ev.informational
+            ? []
+            : invitees
+                .filter((inv) => attendance[ev.id]?.[inv.id])
+                .map((inv) => inv.name),
         }));
 
       fetch("/api/rsvp-confirm", {

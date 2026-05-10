@@ -73,7 +73,7 @@ function downloadICS(events: EventShape[]) {
 }
 
 type InviteeShape = { id: string; name: string; sortOrder: number; attendingEvents?: Array<{ id: string }> };
-type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; dressCode?: string; description?: string; sortOrder: number };
+type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; dressCode?: string; description?: string; informational?: boolean; sortOrder: number };
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -264,7 +264,8 @@ export function ScheduleSummarySection() {
   ) as EventShape[];
 
   const hasRsvpd = Boolean(guest.rsvpStatus);
-  const declinedAll = hasRsvpd && invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
+  const nonInformationalEvents = events.filter((ev) => !ev.informational);
+  const declinedAll = hasRsvpd && nonInformationalEvents.length > 0 && invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
 
   if (!hasRsvpd) {
     return (
@@ -354,16 +355,19 @@ export function ScheduleSummarySection() {
       .map((inv) => inv.name);
   }
 
-  // Group by day, only include events with at least one attendee
+  // Group by day: include informational events always, others only if someone is attending
   const byDay = events.reduce<Record<string, EventShape[]>>((acc, ev) => {
-    if ((attendeesByEvent[ev.id] ?? []).length === 0) return acc;
+    const hasAttendees = (attendeesByEvent[ev.id] ?? []).length > 0;
+    if (!ev.informational && !hasAttendees) return acc;
     if (!acc[ev.day]) acc[ev.day] = [];
     acc[ev.day].push(ev);
     return acc;
   }, {});
 
   const days = Object.keys(byDay);
-  const attendingEvents = events.filter((ev) => (attendeesByEvent[ev.id] ?? []).length > 0);
+  const attendingEvents = events.filter(
+    (ev) => ev.informational || (attendeesByEvent[ev.id] ?? []).length > 0,
+  );
 
   return (
     <section

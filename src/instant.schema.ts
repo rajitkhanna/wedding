@@ -37,6 +37,7 @@ const _schema = i.schema({
       description: i.string().optional(),
       dressCode: i.string().optional(),
       endTime: i.string().optional(),
+      informational: i.boolean().optional(),
       location: i.string().optional(),
       locationUrl: i.string().optional(),
       sortOrder: i.number(),
