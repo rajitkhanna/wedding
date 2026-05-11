@@ -243,7 +243,7 @@ function RSVPForm({
               >
                 {event.title}
               </h2>
-              <div className="flex flex-wrap gap-x-5 gap-y-1.5">
+              <div className="flex flex-col gap-1.5">
                 <p
                   className="flex items-center gap-2 text-sm"
                   style={{ color: "var(--color-text-muted)" }}
