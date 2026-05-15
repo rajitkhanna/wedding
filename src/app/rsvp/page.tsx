@@ -607,7 +607,7 @@ export default function RSVPPage() {
               style={{ color: "var(--color-text-muted)" }}
             >
               We couldn&apos;t find your invitation for this email. If you
-              believe this is a mistake, please reach out to the couple.
+              believe this is a mistake, please text Rajit at +16039218190.{" "}
             </p>
           </div>
         ) : (
