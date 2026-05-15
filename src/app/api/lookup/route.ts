@@ -22,7 +22,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid code" }, { status: 404 });
     }
 
-    const token = await db.auth.createToken(guest.email);
+    const email = (guest.email as string).toLowerCase();
+    if (email !== guest.email) {
+      await db.transact(db.tx.guests[guest.id as string].update({ email }));
+    }
+
+    const token = await db.auth.createToken(email);
     return NextResponse.json({ token });
   } catch (err) {
     console.error("[/api/lookup]", err);
