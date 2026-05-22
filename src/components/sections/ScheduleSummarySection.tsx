@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { db } from "@/lib/instant/db";
 import { EventFlipCard } from "@/components/schedule/EventFlipCard";
+import { DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
 
 const DAY_DATES: Record<string, string> = {
   thursday: "20261126",
@@ -111,14 +112,19 @@ function TabbedSchedule({
               key={day}
               type="button"
               onClick={() => setActiveDay(day)}
-              className="flex-1 rounded py-2 text-[10px] tracking-[0.08em] uppercase transition-all duration-200 sm:py-2.5 sm:text-xs sm:tracking-[0.2em]"
+              className="flex-1 rounded py-2 flex flex-col items-center gap-0.5 transition-all duration-200"
               style={{
                 backgroundColor: active ? "var(--color-gold)" : "transparent",
                 color: active ? "var(--color-bg)" : "var(--color-text-muted)",
                 fontWeight: active ? 500 : 400,
               }}
             >
-              {dayLabel(day)}
+              <span className="text-xs tracking-[0.08em] uppercase sm:tracking-[0.2em]">{dayLabel(day)}</span>
+              {DAY_DISPLAY_SHORT[day] && (
+                <span className="text-xs tracking-[0.05em]" style={{ opacity: 0.75 }}>
+                  {DAY_DISPLAY_SHORT[day]}
+                </span>
+              )}
             </button>
           );
         })}

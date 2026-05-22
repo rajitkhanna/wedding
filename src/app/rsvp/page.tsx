@@ -6,7 +6,7 @@ import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
-import { buildDateRange } from "@/lib/schedule/dateRange";
+import { buildDateRange, DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -229,7 +229,7 @@ function RSVPForm({
                   className="text-xs tracking-[0.2em] uppercase"
                   style={{ color: "var(--color-gold-dim)" }}
                 >
-                  {dayLabel(event.day)}
+                  {dayLabel(event.day)}{DAY_DISPLAY_SHORT[event.day.toLowerCase()] ? ` ${DAY_DISPLAY_SHORT[event.day.toLowerCase()]}` : ""}
                 </p>
               </div>
               <h2

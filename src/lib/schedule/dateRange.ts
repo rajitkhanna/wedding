@@ -7,6 +7,13 @@ const DAY_DATES: Record<string, string> = {
   sunday: "November 29",
 };
 
+export const DAY_DISPLAY_SHORT: Record<string, string> = {
+  thursday: "Nov 26",
+  friday: "Nov 27",
+  saturday: "Nov 28",
+  sunday: "Nov 29",
+};
+
 export function buildDateRange(days: string[]): string | null {
   const sorted = DAY_ORDER.filter((d) => days.includes(d));
   if (!sorted.length) return null;
