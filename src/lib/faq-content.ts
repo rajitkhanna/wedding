@@ -47,6 +47,10 @@ export const ceremonyGuides: CeremonyGuideData[] = [
 
 export const faqItems: FAQItem[] = [
   {
+    q: "Which events should I RSVP to and which events are only for family?",
+    a: "We'd love to see you at all of the events. We will have the family-specific events before the wedding weekend.",
+  },
+  {
     q: "Will there be vegetarian options?",
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
   },
