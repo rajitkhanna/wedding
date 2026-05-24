@@ -60,8 +60,7 @@ export const faqItems: FAQItem[] = [
   },
   {
     q: "Can I bring a gift?",
-    a: "Please don't bring a physical gift to the venue. If you'd like to support us, you can contribute ",
-    link: { label: "here.", href: "#registry" },
+    a: "Please don't bring a physical gift to the venue.",
   },
   {
     q: "Who do I contact with questions?",

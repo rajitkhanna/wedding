@@ -82,7 +82,7 @@ export default function Home() {
       >
         <FAQSection />
       </div>
-      <RegistrySection />
+      {/* <RegistrySection /> */}
     </main>
   );
 }
