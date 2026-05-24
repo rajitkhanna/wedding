@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { db } from "@/lib/instant/db";
 
 const NAV_LINKS = [
@@ -33,6 +34,7 @@ export function Navigation() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("");
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const update = () => setActiveHash(window.location.hash);
@@ -40,6 +42,28 @@ export function Navigation() {
     update();
     return () => window.removeEventListener("hashchange", update);
   }, []);
+
+  function scrollToId(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      window.history.replaceState(null, "", `#${id}`);
+      setActiveHash(`#${id}`);
+    }
+  }
+
+  function handleHashLinkClick(e: React.MouseEvent, href: string) {
+    if (!href.startsWith("/#")) return;
+    e.preventDefault();
+    const id = href.slice(2);
+    setDrawerOpen(false);
+    if (pathname === "/") {
+      scrollToId(id);
+    } else {
+      router.push("/", { scroll: false });
+      setTimeout(() => scrollToId(id), 150);
+    }
+  }
 
   function isActive(href: string) {
     if (href.startsWith("/#")) return activeHash === href.slice(1);
@@ -73,23 +97,23 @@ export function Navigation() {
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           {/* Logo */}
-          <a
+          <Link
             href="/"
             className="text-xl tracking-widest hover:opacity-80 transition-opacity"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}
           >
             M &amp; R
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-sm tracking-widest uppercase font-light"
                 style={linkStyle(link.href)}
-                onClick={() => {}}
+                onClick={(e) => handleHashLinkClick(e, link.href)}
                 onMouseEnter={(e) => {
                   if (!isActive(link.href))
                     (e.currentTarget as HTMLElement).style.color = "var(--color-gold)";
@@ -100,7 +124,7 @@ export function Navigation() {
                 }}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
 
             <button
@@ -135,10 +159,10 @@ export function Navigation() {
         >
           <div className="px-6 py-4 flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setDrawerOpen(false)}
+                onClick={(e) => handleHashLinkClick(e, link.href)}
                 className="py-3 text-sm tracking-widest uppercase font-light border-b"
                 style={{
                   color: isActive(link.href) ? "var(--color-gold)" : "var(--color-text-muted)",
@@ -146,7 +170,7 @@ export function Navigation() {
                 }}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <button
               onClick={handleSignOut}
