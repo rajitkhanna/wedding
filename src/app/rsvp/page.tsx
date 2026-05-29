@@ -128,7 +128,7 @@ function RSVPForm({
         db.tx.guests[lookup("email", guest.email)].merge({
           rsvpStatus: "submitted",
           rsvpSubmittedAt: Date.now(),
-          contactEmail: contactEmail.trim(),
+          contactEmail: contactEmail.trim().toLowerCase(),
         }),
         ...inviteeTxns,
       ]);
@@ -229,7 +229,10 @@ function RSVPForm({
                   className="text-xs tracking-[0.2em] uppercase"
                   style={{ color: "var(--color-gold-dim)" }}
                 >
-                  {dayLabel(event.day)}{DAY_DISPLAY_SHORT[event.day.toLowerCase()] ? ` ${DAY_DISPLAY_SHORT[event.day.toLowerCase()]}` : ""}
+                  {dayLabel(event.day)}
+                  {DAY_DISPLAY_SHORT[event.day.toLowerCase()]
+                    ? ` ${DAY_DISPLAY_SHORT[event.day.toLowerCase()]}`
+                    : ""}
                 </p>
               </div>
               <h2
