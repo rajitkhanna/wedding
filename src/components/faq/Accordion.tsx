@@ -17,6 +17,7 @@ export function Accordion({ items }: AccordionProps) {
           question={item.q}
           answer={item.a}
           link={item.link}
+          links={item.links}
           defaultOpen={index === 0}
         />
       ))}

@@ -5,7 +5,8 @@ import { useState } from "react";
 interface AccordionItemProps {
   question: string;
   answer: string;
-  link?: { label: string; href: string };
+  link?: { label: string; href: string; inline?: boolean };
+  links?: { label: string; href: string }[];
   defaultOpen?: boolean;
 }
 
@@ -13,6 +14,7 @@ export function AccordionItem({
   question,
   answer,
   link,
+  links,
   defaultOpen = false,
 }: AccordionItemProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -81,16 +83,46 @@ export function AccordionItem({
             ))
           ) : (
             <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              {linkifyEmails(answer)}
-              {link && (
-                <a
-                  href={link.href}
-                  style={{ color: "var(--color-gold)", textDecoration: "underline", textUnderlineOffset: "3px" }}
-                >
-                  {link.label}
-                </a>
+              {link?.inline ? (
+                (() => {
+                  const [before, after] = answer.split(link.label);
+                  return (
+                    <>
+                      {linkifyEmails(before)}
+                      <a href={link.href} style={{ color: "var(--color-gold)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                        {link.label}
+                      </a>
+                      {linkifyEmails(after ?? "")}
+                    </>
+                  );
+                })()
+              ) : (
+                <>
+                  {linkifyEmails(answer)}
+                  {link && (
+                    <a href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                      {link.label}
+                    </a>
+                  )}
+                </>
               )}
             </p>
+          )}
+          {links && links.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm"
+                  style={{ color: "var(--color-gold)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
           )}
         </div>
       </div>

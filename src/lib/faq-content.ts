@@ -9,7 +9,8 @@ export interface CeremonyGuideData {
 export interface FAQItem {
   q: string;
   a: string;
-  link?: { label: string; href: string };
+  link?: { label: string; href: string; inline?: boolean };
+  links?: { label: string; href: string }[];
 }
 
 export const ceremonyGuides: CeremonyGuideData[] = [
@@ -47,6 +48,17 @@ export const ceremonyGuides: CeremonyGuideData[] = [
 
 export const faqItems: FAQItem[] = [
   {
+    q: "What does traditional Indian attire mean?",
+    a: "Search terms to check on Indian clothing websites include \"festive wear\" or \"occasion wear.\" For men, a festive kurta set, Nehru jacket with trousers, or a bandhgala jacket are all great options — avoid cotton; silk, silk blend, and chanderi are ideal fabrics. For women, anything that's not bridal attire works beautifully.",
+    links: [
+      { label: "Guide to Indian wedding attire", href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/" },
+      { label: "Lashkaraa", href: "https://www.lashkaraa.com/" },
+      { label: "House of Indya", href: "https://www.houseofindya.com/" },
+      { label: "Pernia's Pop Up Shop", href: "https://www.perniaspopupshop.com/" },
+      { label: "Aza Fashions", href: "https://www.azafashions.com/" },
+    ],
+  },
+  {
     q: "Which events should I RSVP to and which events are only for family?",
     a: "We'd love to see you at all of the events. We will have the family-specific events before the wedding weekend.",
   },
@@ -60,7 +72,8 @@ export const faqItems: FAQItem[] = [
   },
   {
     q: "Can I bring a gift?",
-    a: "Please don't bring a physical gift to the venue.",
+    a: "Your presence is the greatest gift we can ask for. If you'd like to give something, please do not bring a box gift to the venue — instead, you can visit the Registry tab to contribute to our honeymoon fund.",
+    link: { label: "Registry", href: "/registry", inline: true },
   },
   {
     q: "Who do I contact with questions?",
