@@ -8,6 +8,7 @@ import { db } from "@/lib/instant/db";
 const NAV_LINKS = [
   { href: "/rsvp",      label: "RSVP" },
   { href: "/gallery",   label: "Gallery" },
+  { href: "/registry",  label: "Registry" },
   { href: "/#faq",      label: "FAQ" },
 ];
 
