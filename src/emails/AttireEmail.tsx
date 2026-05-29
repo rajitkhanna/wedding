@@ -28,8 +28,9 @@ const textDim = "#839958";
 const border = "#ddd8c4";
 const borderGold = "#7aaa90";
 
+const guide = { label: "Hitched: What to Wear Guide", href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/" };
+
 const shops = [
-  { label: "Hitched: What to Wear Guide", href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/" },
   { label: "Lashkaraa", href: "https://www.lashkaraa.com/" },
   { label: "House of Indya", href: "https://www.houseofindya.com/" },
   { label: "Pernia's Pop Up Shop", href: "https://www.perniaspopupshop.com/" },
@@ -201,6 +202,23 @@ export function AttireEmail({ heroImageUrl }: Props) {
                 }}
               >
                 Search terms to check on Indian clothing websites include &ldquo;festive wear&rdquo; or &ldquo;occasion wear.&rdquo; For men, a festive kurta set, Nehru jacket with trousers, or a bandhgala jacket are all great options — avoid cotton; silk, silk blend, and chanderi are ideal fabrics. For women, anything that&apos;s not bridal attire works beautifully.
+              </Text>
+              <Text
+                style={{
+                  color: textDim,
+                  fontSize: "12px",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  margin: "0 0 8px",
+                  fontFamily: "'Jost', Helvetica, Arial, sans-serif",
+                }}
+              >
+                Further reading
+              </Text>
+              <Text style={{ margin: "0 0 16px", fontFamily: "'Jost', Helvetica, Arial, sans-serif" }}>
+                <Link href={guide.href} style={{ color: goldDim, fontSize: "14px", textDecoration: "underline" }}>
+                  {guide.label}
+                </Link>
               </Text>
               <Text
                 style={{
