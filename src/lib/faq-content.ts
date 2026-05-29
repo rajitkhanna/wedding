@@ -49,12 +49,18 @@ export const ceremonyGuides: CeremonyGuideData[] = [
 export const faqItems: FAQItem[] = [
   {
     q: "What does traditional Indian attire mean?",
-    a: "Search terms to check on Indian clothing websites include \"festive wear\" or \"occasion wear.\" For men, a festive kurta set, Nehru jacket with trousers, or a bandhgala jacket are all great options — avoid cotton; silk, silk blend, and chanderi are ideal fabrics. For women, anything that's not bridal attire works beautifully.",
+    a: 'Search terms to check on Indian clothing websites include "festive wear" or "occasion wear." For men, a festive kurta set, Nehru jacket with trousers, or a bandhgala jacket are all great options — avoid cotton; silk, silk blend, and chanderi are ideal fabrics. For women, anything that\'s not bridal attire works.',
     links: [
-      { label: "Guide to Indian wedding attire", href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/" },
+      {
+        label: "Guide to Indian wedding attire",
+        href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/",
+      },
       { label: "Lashkaraa", href: "https://www.lashkaraa.com/" },
       { label: "House of Indya", href: "https://www.houseofindya.com/" },
-      { label: "Pernia's Pop Up Shop", href: "https://www.perniaspopupshop.com/" },
+      {
+        label: "Pernia's Pop Up Shop",
+        href: "https://www.perniaspopupshop.com/",
+      },
       { label: "Aza Fashions", href: "https://www.azafashions.com/" },
     ],
   },

@@ -28,7 +28,10 @@ const textDim = "#839958";
 const border = "#ddd8c4";
 const borderGold = "#7aaa90";
 
-const guide = { label: "Hitched: What to Wear Guide", href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/" };
+const guide = {
+  label: "Hitched: What to Wear Guide",
+  href: "https://www.hitched.co.uk/wedding-planning/bridalwear-articles/what-to-wear-indian-wedding/",
+};
 
 const shops = [
   { label: "Lashkaraa", href: "https://www.lashkaraa.com/" },
@@ -62,7 +65,9 @@ export function AttireEmail({ heroImageUrl }: Props) {
           fontStyle="normal"
         />
       </Head>
-      <Preview>What to wear — Meghana &amp; Rajit · November 2026 · Boston</Preview>
+      <Preview>
+        What to wear — Meghana &amp; Rajit · November 2026 · Boston
+      </Preview>
       <Body
         style={{
           backgroundColor: bg,
@@ -133,7 +138,9 @@ export function AttireEmail({ heroImageUrl }: Props) {
           />
 
           {/* Body */}
-          <Section style={{ backgroundColor: surface, padding: "40px 48px 36px" }}>
+          <Section
+            style={{ backgroundColor: surface, padding: "40px 48px 36px" }}
+          >
             <Text
               style={{
                 color: goldDim,
@@ -167,7 +174,7 @@ export function AttireEmail({ heroImageUrl }: Props) {
                 fontFamily: "'Jost', Helvetica, Arial, sans-serif",
               }}
             >
-              We got a few questions about what to wear for the wedding, so here&apos;s some more information.
+              Here is some more information about what to wear at the wedding.
             </Text>
 
             {/* FAQ box */}
@@ -201,7 +208,12 @@ export function AttireEmail({ heroImageUrl }: Props) {
                   fontFamily: "'Jost', Helvetica, Arial, sans-serif",
                 }}
               >
-                Search terms to check on Indian clothing websites include &ldquo;festive wear&rdquo; or &ldquo;occasion wear.&rdquo; For men, a festive kurta set, Nehru jacket with trousers, or a bandhgala jacket are all great options — avoid cotton; silk, silk blend, and chanderi are ideal fabrics. For women, anything that&apos;s not bridal attire works beautifully.
+                Search terms to check on Indian clothing websites include
+                &ldquo;festive wear&rdquo; or &ldquo;occasion wear.&rdquo; For
+                men, a festive kurta set, Nehru jacket with trousers, or a
+                bandhgala jacket are all great options — avoid cotton; silk,
+                silk blend, and chanderi are ideal fabrics. For women, anything
+                that&apos;s not bridal attire works.
               </Text>
               <Text
                 style={{
@@ -215,8 +227,20 @@ export function AttireEmail({ heroImageUrl }: Props) {
               >
                 Further reading
               </Text>
-              <Text style={{ margin: "0 0 16px", fontFamily: "'Jost', Helvetica, Arial, sans-serif" }}>
-                <Link href={guide.href} style={{ color: goldDim, fontSize: "14px", textDecoration: "underline" }}>
+              <Text
+                style={{
+                  margin: "0 0 16px",
+                  fontFamily: "'Jost', Helvetica, Arial, sans-serif",
+                }}
+              >
+                <Link
+                  href={guide.href}
+                  style={{
+                    color: goldDim,
+                    fontSize: "14px",
+                    textDecoration: "underline",
+                  }}
+                >
                   {guide.label}
                 </Link>
               </Text>
