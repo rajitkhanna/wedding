@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/rsvp",      label: "RSVP" },
   { href: "/gallery",   label: "Gallery" },
   { href: "/registry",  label: "Registry" },
+  { href: "/travel",    label: "Travel" },
   { href: "/#faq",      label: "FAQ" },
 ];
 

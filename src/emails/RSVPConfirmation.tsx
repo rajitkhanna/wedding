@@ -25,6 +25,7 @@ export type RSVPEvent = {
   location?: string;
   locationUrl?: string;
   dressCode?: string;
+  description?: string;
   attendees: string[];
 };
 
@@ -336,8 +337,9 @@ export function RSVPConfirmation({
                           </>
                         ) : null}
                       </Text>
-                      {ev.dressCode && (
+                      {ev.description && ev.description.split("\\n").map((line, i) => (
                         <Text
+                          key={i}
                           style={{
                             color: textDim,
                             fontSize: "12px",
@@ -345,9 +347,9 @@ export function RSVPConfirmation({
                             fontFamily: "'Jost', Helvetica, Arial, sans-serif",
                           }}
                         >
-                          Dress code: {ev.dressCode}
+                          {line}
                         </Text>
-                      )}
+                      ))}
                       {ev.attendees.length > 1 && (
                         <Text
                           style={{ color: textDim, fontSize: "12px", margin: 0, fontFamily: "'Jost', Helvetica, Arial, sans-serif" }}

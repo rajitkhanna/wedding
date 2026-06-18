@@ -73,12 +73,8 @@ export const faqItems: FAQItem[] = [
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
   },
   {
-    q: "I have a dietary restriction not covered in my RSVP.",
-    a: "Email Rajesh Khanna at khannaspb@gmail.com or Venkat Avvaru at vavvaru@gmail.com and they'll make sure you're taken care of.",
-  },
-  {
     q: "Can I bring a gift?",
-    a: "Your presence is the greatest gift we can ask for. If you'd like to give something, please do not bring a box gift to the venue — instead, you can visit the Registry tab to contribute to our honeymoon fund.",
+    a: "Having you with us is truly the greatest gift. If you'd like to honor us with something, we'd be so touched by a contribution to our Newly Wed Fund — you can find it under the Registry tab. We kindly ask that wrapped gifts not be brought to the venue.",
     link: { label: "Registry", href: "/registry", inline: true },
   },
   {

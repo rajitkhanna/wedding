@@ -52,6 +52,7 @@ type EventShape = {
   location?: string;
   locationUrl?: string;
   dressCode?: string;
+  description?: string;
   informational?: boolean;
   sortOrder: number;
 };
@@ -150,6 +151,7 @@ function RSVPForm({
           location: ev.location,
           locationUrl: ev.locationUrl,
           dressCode: ev.dressCode,
+          description: ev.description,
           attendees: ev.informational
             ? []
             : invitees
@@ -280,28 +282,21 @@ function RSVPForm({
                     </>
                   )}
                 </p>
-                {event.dressCode && (
-                  <p
-                    className="flex items-center gap-2 text-sm"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    <svg
-                      width="13"
-                      height="13"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}
-                    >
-                      <path
-                        d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                {event.description && (
+                  <div className="flex items-start gap-2">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-gold-dim)" }}>
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M12 11v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="currentColor" strokeWidth="1" />
                     </svg>
-                    {event.dressCode}
-                  </p>
+                    <div className="flex flex-col gap-0.5">
+                      {event.description.split("\\n").map((line, i) => (
+                        <p key={i} className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 {event.location && (
                   <p

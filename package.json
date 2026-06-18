@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "push": "bunx instant-cli@latest push"
+    "push": "bunx instant-cli@latest push",
+    "email": "email dev --dir src/emails"
   },
   "dependencies": {
     "@instantdb/admin": "^1.0.1",
@@ -19,6 +20,7 @@
     "resend": "^6.12.2"
   },
   "devDependencies": {
+    "@react-email/ui": "^6.6.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -26,6 +28,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "react-email": "^6.6.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

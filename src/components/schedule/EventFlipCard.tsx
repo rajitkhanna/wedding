@@ -61,13 +61,14 @@ export function EventFlipCard({
             {event.startTime}{event.endTime && <><span aria-hidden> –</span> {event.endTime}</>}
           </p>
 
-          {event.dressCode && (
-            <p className="flex items-center gap-1.5 text-xs" style={{ color: "var(--color-text-muted)" }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, color: "var(--color-gold-dim)" }}>
-                <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {event.dressCode}
-            </p>
+          {event.description && (
+            <div className="flex flex-col gap-0.5">
+              {event.description.split("\\n").map((line, i) => (
+                <p key={i} className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                  {line}
+                </p>
+              ))}
+            </div>
           )}
 
           {event.location && (

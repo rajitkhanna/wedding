@@ -62,15 +62,7 @@ export function VenuesSection() {
             <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)", marginBottom: "1.25rem" }}>
               {ic.address}
             </p>
-            <ul className="space-y-2 mb-6">
-              {ic.events.map((e) => (
-                <li key={e} style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-                  <span style={{ color: "var(--color-gold-dim)", marginRight: "0.5rem" }}>·</span>
-                  {e}
-                </li>
-              ))}
-            </ul>
-            <a
+            <
               href={ic.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -109,14 +101,6 @@ export function VenuesSection() {
             <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)", marginBottom: "1.25rem" }}>
               {gurdwara.address}
             </p>
-            <ul className="space-y-2 mb-6">
-              {gurdwara.events.map((e) => (
-                <li key={e} style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-                  <span style={{ color: "var(--color-gold-dim)", marginRight: "0.5rem" }}>·</span>
-                  {e}
-                </li>
-              ))}
-            </ul>
             {gurdwara.mapsUrl && (
               <a
                 href={gurdwara.mapsUrl}

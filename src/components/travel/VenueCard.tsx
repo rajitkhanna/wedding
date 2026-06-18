@@ -28,20 +28,6 @@ export function VenueCard({ name, address, mapsUrl, events }: VenueCardProps) {
         {name}
       </h3>
 
-      {/* Events */}
-      <ul className="mt-3 space-y-1">
-        {events.map((event) => (
-          <li
-            key={event}
-            className="text-sm"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            <span style={{ color: "var(--color-gold-dim)" }}>·</span>{" "}
-            {event}
-          </li>
-        ))}
-      </ul>
-
       {/* Address */}
       <p
         className="mt-4 text-sm font-light"

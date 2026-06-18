@@ -7,14 +7,14 @@ export interface PaymentOption {
 
 export const paymentOptions: PaymentOption[] = [
   {
-    name: "Meghana — Venmo",
+    name: "Venmo",
     handle: "@meghana-avvaru",
     url: "https://venmo.com/u/meghana-avvaru",
   },
   {
-    name: "Meghana — Zelle",
-    handle: "603-320-3391",
+    name: "Zelle",
+    handle: "meghanaavvaru20@gmail.com",
     url: "#",
-    copyValue: "603-320-3391",
+    copyValue: "meghanaavvaru20@gmail.com",
   },
 ];

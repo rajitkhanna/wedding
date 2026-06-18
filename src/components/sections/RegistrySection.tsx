@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { paymentOptions } from "@/lib/registry-content";
-import { SectionBanner } from "@/components/SectionBanner";
 
 export function RegistrySection() {
   const [copied, setCopied] = useState<string | null>(null);
@@ -18,9 +17,8 @@ export function RegistrySection() {
     <section
       id="registry"
       className="w-full pt-0 pb-24 px-4"
-      style={{ backgroundColor: "var(--color-bg)", scrollMarginTop: "64px" }}
+      style={{ scrollMarginTop: "64px" }}
     >
-      <SectionBanner match="palace" fallbackMatch="venue/" height="22vh" />
       <div className="mx-auto max-w-lg px-4 pt-16">
         <header className="mb-12 text-center">
           <h2
@@ -32,17 +30,18 @@ export function RegistrySection() {
               letterSpacing: "0.04em",
               lineHeight: 1.1,
               marginBottom: "0.75rem",
+              textShadow: "0 2px 12px rgba(0,0,0,0.7)",
             }}
           >
             Registry
           </h2>
           <p
             className="mt-2 text-base leading-relaxed"
-            style={{ color: "var(--color-text-muted)" }}
+            style={{ color: "rgba(255,255,255,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
           >
             We are so blessed and grateful for all of your love and well wishes.
             If you do wish to celebrate with a gift, a contribution to our
-            Honeymoon Fund would be appreciated.{" "}
+            Newly Wed Fund would be appreciated.{" "}
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
@@ -149,7 +148,7 @@ export function RegistrySection() {
 
         <p
           className="mt-10 text-center text-sm"
-          style={{ color: "var(--color-text-dim)" }}
+          style={{ color: "rgba(255,255,255,0.4)" }}
         >
           With lots of love, Meghana &amp; Rajit ♥
         </p>

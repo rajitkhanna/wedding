@@ -57,8 +57,8 @@ export const hotels = [
   {
     name: "InterContinental Boston",
     distance: null,
-    note: "All Friday, Saturday, and Sunday events are held here — staying at the IC means you're steps from everything.",
-    bookingUrl: "https://www.intercontinentalboston.com/",
+    note: "Most events are held here — staying at the IC means you're steps from everything.\nBook your room with the special room block link below for a discounted rate.",
+    bookingUrl: "https://www.ihg.com/intercontinental/hotels/us/en/find-hotels/select-roomrate?fromRedirect=true&qSrt=sBR&qIta=99801505&icdv=99801505&qSlH=bosha&qCiD=27&qCiMy=102026&qCoD=29&qCoMy=102026&qGrpCd=ram&setPMCookies=true&qSHBrC=IC&qDest=510%20Atlantic%20Avenue,%20Boston,%20MA,%20US&showApp=true&adjustMonth=false&srb_u=1",
     preferred: true,
   },
   {
