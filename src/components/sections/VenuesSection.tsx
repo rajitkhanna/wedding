@@ -62,7 +62,7 @@ export function VenuesSection() {
             <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)", marginBottom: "1.25rem" }}>
               {ic.address}
             </p>
-            <
+            <a
               href={ic.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
