@@ -580,7 +580,7 @@ export default function RSVPPage() {
               >
                 {guest.name ?? user?.email}
               </span>{" "}
-              — let us know who can make each event.
+              — please let us know which events you can attend.
             </p>
           )}
         </header>

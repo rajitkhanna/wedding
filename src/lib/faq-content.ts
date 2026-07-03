@@ -74,7 +74,7 @@ export const faqItems: FAQItem[] = [
   },
   {
     q: "Can I bring a gift?",
-    a: "Having you with us is truly the greatest gift. If you'd like to honor us with something, we'd be so touched by a contribution to our Newly Wed Fund — you can find it under the Registry tab. We kindly ask that wrapped gifts not be brought to the venue.",
+    a: "Having you with us is truly the greatest gift. If you'd like to honor us with something, we'd be so touched by a contribution to our Newly Wed Fund — you can find it under the Registry tab. We kindly ask that wrapped or boxed gifts not be brought to the venue.",
     link: { label: "Registry", href: "/registry", inline: true },
   },
   {
