@@ -5,6 +5,7 @@ import Link from "next/link";
 import { db } from "@/lib/instant/db";
 import { EventFlipCard } from "@/components/schedule/EventFlipCard";
 import { DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
+import { HIDDEN_EVENT_IDS } from "@/lib/schedule/hiddenEvents";
 
 const DAY_DATES: Record<string, string> = {
   thursday: "20261126",
@@ -196,9 +197,9 @@ export function ScheduleSummarySection() {
     (a: InviteeShape, b: InviteeShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   ) as InviteeShape[];
 
-  const events = [...(guest.invitedEvents ?? [])].sort(
-    (a: EventShape, b: EventShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
-  ) as EventShape[];
+  const events = [...(guest.invitedEvents ?? [])]
+    .filter((ev: EventShape) => !HIDDEN_EVENT_IDS.has(ev.id))
+    .sort((a: EventShape, b: EventShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) as EventShape[];
 
   const hasRsvpd = Boolean(guest.rsvpStatus);
   const nonInformationalEvents = events.filter((ev) => !ev.informational);

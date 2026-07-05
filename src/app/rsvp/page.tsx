@@ -7,6 +7,7 @@ import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
 import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
 import { buildDateRange, DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
+import { HIDDEN_EVENT_IDS } from "@/lib/schedule/hiddenEvents";
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -513,9 +514,9 @@ export default function RSVPPage() {
     (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   ) as InviteeShape[];
 
-  const events = [...(guest?.invitedEvents ?? [])].sort(
-    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
-  ) as EventShape[];
+  const events = [...(guest?.invitedEvents ?? [])]
+    .filter((ev) => !HIDDEN_EVENT_IDS.has(ev.id))
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) as EventShape[];
 
   const rsvpLocked = !isRsvpOpen();
 

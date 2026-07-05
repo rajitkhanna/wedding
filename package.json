@@ -14,7 +14,7 @@
     "@instantdb/admin": "^1.0.1",
     "@instantdb/react": "^0.22.185",
     "@react-email/components": "^1.0.12",
-    "next": "16.1.6",
+    "next": "^16.2.10",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "resend": "^6.12.2"
