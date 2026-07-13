@@ -65,6 +65,10 @@ export const faqItems: FAQItem[] = [
     ],
   },
   {
+    q: "How will we get to the Gurudwara (Sikh Temple) from the hotel on Saturday morning?",
+    a: "We will provide transportation via Ubers or car pools.",
+  },
+  {
     q: "Which events should I RSVP to and which events are only for family?",
     a: "We'd love to see you at all of the events. We will have the family-specific events before the wedding weekend.",
   },
