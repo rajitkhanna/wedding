@@ -183,6 +183,25 @@ export default function AdminPage() {
           >
             RSVP overview for Meghana &amp; Rajit
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              document
+                .getElementById("guest-view")
+                ?.scrollIntoView({ behavior: "smooth" });
+              window.setTimeout(() => {
+                document.getElementById("guest-search")?.focus();
+              }, 500);
+            }}
+            className="mt-6 inline-block rounded px-6 py-3 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 cursor-pointer"
+            style={{
+              backgroundColor: "var(--color-gold)",
+              color: "var(--color-bg)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            Search all guests
+          </button>
         </header>
       </div>
 

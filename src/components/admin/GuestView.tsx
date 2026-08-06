@@ -15,11 +15,14 @@ import { PartyTable, PartyRow } from "./PartyTable";
 export function GuestView({
   events,
   guests,
+  query,
+  onQueryChange,
 }: {
   events: AdminEvent[];
   guests: AdminGuest[];
+  query: string;
+  onQueryChange: (q: string) => void;
 }) {
-  const [query, setQuery] = useState("");
   const [sideFilter, setSideFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -73,13 +76,14 @@ export function GuestView({
   }, [partyRows, query, sideFilter, statusFilter]);
 
   return (
-    <section>
+    <section id="guest-view">
       <SectionTitle>Guest view</SectionTitle>
       <Card>
         <div className="px-6 py-5 flex flex-col gap-4">
           <SearchInput
+            id="guest-search"
             value={query}
-            onChange={setQuery}
+            onChange={onQueryChange}
             placeholder="Search by name, party, email, or code…"
           />
           <div className="flex flex-wrap items-center gap-3">

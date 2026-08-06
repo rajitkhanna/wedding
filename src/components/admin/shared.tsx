@@ -150,14 +150,17 @@ export function SearchInput({
   onChange,
   placeholder,
   className = "",
+  id,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   className?: string;
+  id?: string;
 }) {
   return (
     <input
+      id={id}
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}

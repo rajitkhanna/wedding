@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AdminEvent, AdminGuest } from "./shared";
 import { EventView } from "./EventView";
 import { GuestView } from "./GuestView";
@@ -12,6 +12,8 @@ export function AdminDashboard({
   events: AdminEvent[];
   guests: AdminGuest[];
 }) {
+  const [query, setQuery] = useState("");
+
   const stats = useMemo(() => {
     const total = guests.reduce((n, g) => n + g.invitees.length, 0);
     const rsvpd = guests
@@ -63,7 +65,12 @@ export function AdminDashboard({
 
       <EventView events={events} guests={guests} />
 
-      <GuestView events={events} guests={guests} />
+      <GuestView
+        events={events}
+        guests={guests}
+        query={query}
+        onQueryChange={setQuery}
+      />
     </div>
   );
 }
