@@ -28,9 +28,11 @@ const _schema = i.schema({
       code: i.string().unique().indexed().optional(),
       contactEmail: i.string().optional(),
       email: i.string().unique().indexed(),
+      isAdmin: i.boolean().optional(),
       name: i.string(),
       rsvpStatus: i.string().optional(),
       rsvpSubmittedAt: i.number().optional(),
+      side: i.string<"groom" | "bride">().optional().indexed(),
     }),
     scheduleEvents: i.entity({
       day: i.string(),

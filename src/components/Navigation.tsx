@@ -6,26 +6,72 @@ import Link from "next/link";
 import { db } from "@/lib/instant/db";
 
 const NAV_LINKS = [
-  { href: "/rsvp",      label: "RSVP" },
-  { href: "/gallery",   label: "Gallery" },
-  { href: "/registry",  label: "Registry" },
-  { href: "/travel",    label: "Travel" },
-  { href: "/#faq",      label: "FAQ" },
+  { href: "/rsvp", label: "RSVP" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/registry", label: "Registry" },
+  { href: "/travel", label: "Travel" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 function HamburgerIcon({ open }: { open: boolean }) {
   return (
-    <svg aria-hidden="true" width="22" height="16" viewBox="0 0 22 16" fill="none">
+    <svg
+      aria-hidden="true"
+      width="22"
+      height="16"
+      viewBox="0 0 22 16"
+      fill="none"
+    >
       {open ? (
         <>
-          <line x1="1" y1="1" x2="21" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="21" y1="1" x2="1" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line
+            x1="1"
+            y1="1"
+            x2="21"
+            y2="15"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="21"
+            y1="1"
+            x2="1"
+            y2="15"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
         </>
       ) : (
         <>
-          <line x1="1" y1="2" x2="21" y2="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="1" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="1" y1="14" x2="21" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <line
+            x1="1"
+            y1="2"
+            x2="21"
+            y2="2"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="1"
+            y1="8"
+            x2="21"
+            y2="8"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="1"
+            y1="14"
+            x2="21"
+            y2="14"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
         </>
       )}
     </svg>
@@ -37,6 +83,11 @@ export function Navigation() {
   const [activeHash, setActiveHash] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = db.useAuth();
+  const { data: adminData } = db.useQuery(
+    user ? { guests: { $: { where: { email: user.email! } } } } : null,
+  );
+  const isAdmin = Boolean(adminData?.guests?.[0]?.isAdmin);
 
   useEffect(() => {
     const update = () => setActiveHash(window.location.hash);
@@ -76,7 +127,9 @@ export function Navigation() {
     const active = isActive(href);
     return {
       color: active ? "var(--color-gold)" : "var(--color-text-muted)",
-      borderBottom: active ? "2px solid var(--color-gold)" : "2px solid transparent",
+      borderBottom: active
+        ? "2px solid var(--color-gold)"
+        : "2px solid transparent",
       paddingBottom: "2px",
       transition: "color 150ms, border-color 150ms",
     };
@@ -102,7 +155,11 @@ export function Navigation() {
           <Link
             href="/"
             className="text-xl tracking-widest hover:opacity-80 transition-opacity"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--color-gold)",
+              fontWeight: 500,
+            }}
           >
             M &amp; R
           </Link>
@@ -118,16 +175,36 @@ export function Navigation() {
                 onClick={(e) => handleHashLinkClick(e, link.href)}
                 onMouseEnter={(e) => {
                   if (!isActive(link.href))
-                    (e.currentTarget as HTMLElement).style.color = "var(--color-gold)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--color-gold)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive(link.href))
-                    (e.currentTarget as HTMLElement).style.color = "var(--color-text-muted)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--color-text-muted)";
                 }}
               >
                 {link.label}
               </Link>
             ))}
+
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-sm tracking-widest uppercase font-light"
+                style={linkStyle("/admin")}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    "var(--color-gold)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    "var(--color-text-muted)";
+                }}
+              >
+                Admin
+              </Link>
+            )}
 
             <button
               onClick={handleSignOut}
@@ -167,13 +244,29 @@ export function Navigation() {
                 onClick={(e) => handleHashLinkClick(e, link.href)}
                 className="py-3 text-sm tracking-widest uppercase font-light border-b"
                 style={{
-                  color: isActive(link.href) ? "var(--color-gold)" : "var(--color-text-muted)",
+                  color: isActive(link.href)
+                    ? "var(--color-gold)"
+                    : "var(--color-text-muted)",
                   borderColor: "var(--color-border)",
                 }}
               >
                 {link.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="py-3 text-sm tracking-widest uppercase font-light border-b"
+                style={{
+                  color: isActive("/admin")
+                    ? "var(--color-gold)"
+                    : "var(--color-text-muted)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                Admin
+              </Link>
+            )}
             <button
               onClick={handleSignOut}
               className="mt-3 py-3 text-xs tracking-widest uppercase font-light text-left transition-opacity hover:opacity-70"
