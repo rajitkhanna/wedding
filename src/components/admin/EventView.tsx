@@ -6,7 +6,6 @@ import {
   AdminEvent,
   AdminGuest,
   Card,
-  Divider,
   SectionTitle,
   Select,
   dayLabel,
@@ -139,8 +138,8 @@ export function EventView({
                 aria-expanded={isExpanded}
               >
                 <div className="px-6 pt-5 pb-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                    <div className="min-w-0">
                       <p
                         className="text-xs tracking-[0.2em] uppercase"
                         style={{ color: "var(--color-gold-dim)" }}
@@ -162,7 +161,7 @@ export function EventView({
                         {ev.title}
                       </h3>
                     </div>
-                    <div className="shrink-0 text-right flex items-center gap-4">
+                    <div className="flex items-center justify-between gap-4 sm:shrink-0">
                       <div>
                         <p
                           className="text-2xl"
@@ -207,12 +206,7 @@ export function EventView({
                   </div>
                 </div>
               </button>
-              {isExpanded && (
-                <>
-                  <Divider />
-                  <EventPartyTable rows={rows} events={events} />
-                </>
-              )}
+              {isExpanded && <EventPartyTable rows={rows} events={events} />}
             </Card>
           );
         })}

@@ -146,7 +146,7 @@ export default function AdminPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="mx-auto max-w-4xl px-5 pt-32">
+      <div className="mx-auto max-w-4xl px-5 pt-24 sm:pt-32">
         <header className="mb-12 text-center">
           <p
             className="mb-3 text-xs tracking-[0.3em] uppercase font-medium"
@@ -193,7 +193,7 @@ export default function AdminPage() {
                 document.getElementById("guest-search")?.focus();
               }, 500);
             }}
-            className="mt-6 inline-block rounded px-6 py-3 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 cursor-pointer"
+            className="mt-6 inline-block w-full rounded px-6 py-3 text-sm tracking-widest uppercase transition-opacity hover:opacity-80 cursor-pointer sm:w-auto"
             style={{
               backgroundColor: "var(--color-gold)",
               color: "var(--color-bg)",

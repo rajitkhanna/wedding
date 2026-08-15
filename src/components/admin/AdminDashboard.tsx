@@ -19,10 +19,13 @@ export function AdminDashboard({
     const rsvpd = guests
       .filter((g) => g.rsvpStatus)
       .reduce((n, g) => n + g.invitees.length, 0);
+    const notYet = guests
+      .filter((g) => !g.rsvpStatus)
+      .reduce((n, g) => n + g.invitees.length, 0);
     const coming = guests
       .flatMap((g) => g.invitees)
       .filter((inv) => (inv.attendingEvents?.length ?? 0) > 0).length;
-    return { total, rsvpd, notYet: total - rsvpd, coming };
+    return { total, rsvpd, notYet, coming };
   }, [guests]);
 
   const statCards = [
