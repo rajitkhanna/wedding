@@ -23,7 +23,7 @@ export default function AdminPage() {
   const { isLoading: dataLoading, data } = db.useQuery(
     isAdmin
       ? {
-          guests: { invitees: { attendingEvents: {} } },
+          guests: { invitees: { attendingEvents: {} }, invitedEvents: {} },
           scheduleEvents: {},
         }
       : null,

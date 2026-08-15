@@ -42,6 +42,10 @@ export function GuestView({
           code: g.code,
           contactEmail: g.contactEmail,
           rsvpStatus: g.rsvpStatus,
+          invitedEvents: (g.invitedEvents ?? [])
+            .map((e) => eventById[e.id])
+            .filter((e): e is AdminEvent => Boolean(e))
+            .sort((a, b) => events.indexOf(a) - events.indexOf(b)),
           members: g.invitees.map((inv) => ({
             id: inv.id,
             name: inv.name,

@@ -10,6 +10,7 @@ export type PartyRow = {
   code?: string;
   contactEmail?: string;
   rsvpStatus?: string;
+  invitedEvents?: AdminEvent[];
   members: { id: string; name: string; attendingEvents?: AdminEvent[] }[];
 };
 
@@ -28,6 +29,22 @@ function EventChip({ event }: { event: AdminEvent }) {
   );
 }
 
+function EventGhostChip({ event }: { event: AdminEvent }) {
+  return (
+    <span
+      className="rounded-full px-2.5 py-0.5 text-xs whitespace-nowrap"
+      title="Not attending"
+      style={{
+        backgroundColor: "transparent",
+        border: "1px dashed var(--color-border-gold)",
+        color: "var(--color-text-dim)",
+      }}
+    >
+      {event.title}
+    </span>
+  );
+}
+
 function sortEvents(
   attending: AdminEvent[] | undefined,
   eventOrder?: AdminEvent[],
@@ -36,6 +53,20 @@ function sortEvents(
   return [...attending].sort(
     (a, b) => (eventOrder?.indexOf(a) ?? 0) - (eventOrder?.indexOf(b) ?? 0),
   );
+}
+
+function skippedEvents(
+  member: PartyRow["members"][number],
+  invited: AdminEvent[] | undefined,
+  eventOrder: AdminEvent[] | undefined,
+) {
+  if (!invited?.length) return [];
+  const attending = new Set(member.attendingEvents?.map((e) => e.id) ?? []);
+  return [...invited]
+    .sort(
+      (a, b) => (eventOrder?.indexOf(a) ?? 0) - (eventOrder?.indexOf(b) ?? 0),
+    )
+    .filter((e) => !attending.has(e.id));
 }
 
 export function PartyTable({
@@ -97,11 +128,16 @@ export function PartyTable({
                     {m.name}
                   </span>
                   {showEventBadges &&
-                    (sortEvents(m.attendingEvents, eventOrder).length ? (
+                    (p.rsvpStatus ? (
                       <span className="flex flex-wrap gap-1.5">
                         {sortEvents(m.attendingEvents, eventOrder).map((e) => (
                           <EventChip key={e.id} event={e} />
                         ))}
+                        {skippedEvents(m, p.invitedEvents, eventOrder).map(
+                          (e) => (
+                            <EventGhostChip key={e.id} event={e} />
+                          ),
+                        )}
                       </span>
                     ) : (
                       <span className="t-fine">—</span>
@@ -171,32 +207,35 @@ export function PartyTable({
               >
                 <td className="px-6 py-3.5">
                   <div className="flex flex-col gap-2.5">
-                    {p.members.map((m) => {
-                      const attending = sortEvents(
-                        m.attendingEvents,
-                        eventOrder,
-                      );
-                      return (
-                        <div key={m.id} className="flex flex-col gap-1">
-                          <span
-                            className="text-sm"
-                            style={{ color: "var(--color-text)" }}
-                          >
-                            {m.name}
-                          </span>
-                          {showEventBadges &&
-                            (attending.length ? (
-                              <span className="flex flex-wrap gap-1.5">
-                                {attending.map((e) => (
+                    {p.members.map((m) => (
+                      <div key={m.id} className="flex flex-col gap-1">
+                        <span
+                          className="text-sm"
+                          style={{ color: "var(--color-text)" }}
+                        >
+                          {m.name}
+                        </span>
+                        {showEventBadges &&
+                          (p.rsvpStatus ? (
+                            <span className="flex flex-wrap gap-1.5">
+                              {sortEvents(m.attendingEvents, eventOrder).map(
+                                (e) => (
                                   <EventChip key={e.id} event={e} />
-                                ))}
-                              </span>
-                            ) : (
-                              <span className="t-fine">—</span>
-                            ))}
-                        </div>
-                      );
-                    })}
+                                ),
+                              )}
+                              {skippedEvents(
+                                m,
+                                p.invitedEvents,
+                                eventOrder,
+                              ).map((e) => (
+                                <EventGhostChip key={e.id} event={e} />
+                              ))}
+                            </span>
+                          ) : (
+                            <span className="t-fine">—</span>
+                          ))}
+                      </div>
+                    ))}
                   </div>
                 </td>
                 <td className="px-6 py-3.5">

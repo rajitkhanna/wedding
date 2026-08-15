@@ -26,6 +26,7 @@ export type AdminGuest = {
   side?: string;
   isAdmin?: boolean;
   invitees: AdminInvitee[];
+  invitedEvents?: Array<{ id: string }>;
 };
 
 export type Attendee = {

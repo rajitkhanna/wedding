@@ -30,7 +30,7 @@ const _schema = i.schema({
       email: i.string().unique().indexed(),
       isAdmin: i.boolean().optional(),
       name: i.string(),
-      rsvpStatus: i.string().optional(),
+      rsvpStatus: i.string().optional().indexed(),
       rsvpSubmittedAt: i.number().optional(),
       side: i.string<"groom" | "bride">().optional().indexed(),
     }),
@@ -117,7 +117,7 @@ const _schema = i.schema({
 
 // This helps TypeScript display nicer intellisense
 type _AppSchema = typeof _schema;
-interface AppSchema extends _AppSchema {}
+type AppSchema = _AppSchema;
 const schema: AppSchema = _schema;
 
 export type { AppSchema };
