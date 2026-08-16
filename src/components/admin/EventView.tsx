@@ -12,16 +12,23 @@ import {
 } from "./shared";
 import { PartyRow, PartyTable } from "./PartyTable";
 
+type EventFilter = { query: string; side: string };
+
 function EventPartyTable({
   rows,
   events,
+  query,
+  side,
+  onQueryChange,
+  onSideChange,
 }: {
   rows: PartyRow[];
   events: AdminEvent[];
+  query: string;
+  side: string;
+  onQueryChange: (q: string) => void;
+  onSideChange: (s: string) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [side, setSide] = useState("all");
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((p) => {
@@ -43,7 +50,7 @@ function EventPartyTable({
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search party or guest…"
           className="w-full sm:flex-1 rounded px-4 py-2.5 text-sm outline-none transition-colors"
           style={{
@@ -52,7 +59,7 @@ function EventPartyTable({
             color: "var(--color-text)",
           }}
         />
-        <Select value={side} onChange={(e) => setSide(e.target.value)}>
+        <Select value={side} onChange={(e) => onSideChange(e.target.value)}>
           <option value="all">Any side</option>
           <option value="groom">Groom</option>
           <option value="bride">Bride</option>
@@ -63,7 +70,9 @@ function EventPartyTable({
         <p className="t-fine mt-4">
           {query.trim()
             ? `No matches for “${query}”.`
-            : "No parties coming yet."}
+            : side !== "all"
+              ? "No parties match this side."
+              : "No parties coming yet."}
         </p>
       ) : (
         <div className="mt-4">
@@ -86,6 +95,7 @@ export function EventView({
   guests: AdminGuest[];
 }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [filters, setFilters] = useState<Record<string, EventFilter>>({});
 
   const eventPartyRows = useMemo(() => {
     const map: Record<string, PartyRow[]> = {};
@@ -124,13 +134,47 @@ export function EventView({
     return map;
   }, [guests, events]);
 
+  const filteredRows = useMemo(() => {
+    const m: Record<string, PartyRow[]> = {};
+    for (const id of Object.keys(eventPartyRows)) {
+      const f = filters[id] ?? { query: "", side: "all" };
+      const q = f.query.trim().toLowerCase();
+      m[id] = eventPartyRows[id].filter((p) => {
+        if (f.side !== "all" && p.side !== f.side) return false;
+        if (
+          q &&
+          ![p.party, p.code, ...p.members.map((m) => m.name)].some((v) =>
+            (v ?? "").toLowerCase().includes(q),
+          )
+        )
+          return false;
+        return true;
+      });
+    }
+    return m;
+  }, [eventPartyRows, filters]);
+
+  const updateFilter = (id: string, patch: Partial<EventFilter>) =>
+    setFilters((f) => ({
+      ...f,
+      [id]: { ...(f[id] ?? { query: "", side: "all" }), ...patch },
+    }));
+
   return (
     <section>
       <SectionTitle>Event view</SectionTitle>
       <div className="flex flex-col gap-4">
         {events.map((ev) => {
           const rows = eventPartyRows[ev.id] ?? [];
+          const matched = filteredRows[ev.id] ?? [];
           const people = rows.reduce((n, r) => n + r.members.length, 0);
+          const matchedPeople = matched.reduce(
+            (n, r) => n + r.members.length,
+            0,
+          );
+          const filter = filters[ev.id] ?? { query: "", side: "all" };
+          const filterActive =
+            filter.query.trim() !== "" || filter.side !== "all";
           const isExpanded = Boolean(expanded[ev.id]);
           return (
             <Card key={ev.id}>
@@ -173,12 +217,21 @@ export function EventView({
                           style={{
                             fontFamily: "var(--font-display)",
                             color: "var(--color-gold)",
+                            whiteSpace: "nowrap",
                           }}
                         >
-                          {people}
+                          {filterActive
+                            ? `${matchedPeople} of ${people}`
+                            : people}
                         </p>
                         <p className="t-fine">
-                          {people === 1 ? "person" : "people"}
+                          {filterActive
+                            ? people === 1
+                              ? "person"
+                              : "people"
+                            : people === 1
+                              ? "person"
+                              : "people"}
                         </p>
                       </div>
                       <span
@@ -211,7 +264,16 @@ export function EventView({
                   </div>
                 </div>
               </button>
-              {isExpanded && <EventPartyTable rows={rows} events={events} />}
+              {isExpanded && (
+                <EventPartyTable
+                  rows={rows}
+                  events={events}
+                  query={filter.query}
+                  side={filter.side}
+                  onQueryChange={(q) => updateFilter(ev.id, { query: q })}
+                  onSideChange={(s) => updateFilter(ev.id, { side: s })}
+                />
+              )}
             </Card>
           );
         })}
