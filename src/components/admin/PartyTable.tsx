@@ -10,6 +10,7 @@ export type PartyRow = {
   code?: string;
   contactEmail?: string;
   rsvpStatus?: string;
+  rsvpSubmittedAt?: number;
   invitedEvents?: AdminEvent[];
   members: { id: string; name: string; attendingEvents?: AdminEvent[] }[];
 };

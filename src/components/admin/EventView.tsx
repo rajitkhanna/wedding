@@ -103,6 +103,7 @@ export function EventView({
               side: g.side,
               code: g.code,
               rsvpStatus: g.rsvpStatus,
+              rsvpSubmittedAt: g.rsvpSubmittedAt,
               members: [],
             };
             bucket.push(row);
@@ -114,7 +115,11 @@ export function EventView({
       }
     }
     for (const id of Object.keys(map)) {
-      map[id].sort((a, b) => a.party.localeCompare(b.party));
+      map[id].sort(
+        (a, b) =>
+          (b.rsvpSubmittedAt ?? 0) - (a.rsvpSubmittedAt ?? 0) ||
+          a.party.localeCompare(b.party),
+      );
     }
     return map;
   }, [guests, events]);
