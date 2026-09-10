@@ -59,6 +59,10 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 
 - Use `bun` — not npm/yarn/pnpm. `bun install`, `bun add`, `bun run`.
 
+## Testing
+
+- Local guest/login code for manual + playwriter tests: `BANANA` (also an admin code; see `scripts/set-admins.ts`).
+
 ## Language/Stack Notes
 
 - Swift: use workspace helper/daemon; validate `swift build` + tests; keep concurrency attrs right.
