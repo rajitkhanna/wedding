@@ -167,6 +167,8 @@ export function EventView({
         {events.map((ev) => {
           const rows = eventPartyRows[ev.id] ?? [];
           const matched = filteredRows[ev.id] ?? [];
+          const parties = rows.length;
+          const matchedParties = matched.length;
           const people = rows.reduce((n, r) => n + r.members.length, 0);
           const matchedPeople = matched.reduce(
             (n, r) => n + r.members.length,
@@ -211,28 +213,41 @@ export function EventView({
                       </h3>
                     </div>
                     <div className="flex items-center justify-between gap-4 sm:shrink-0">
-                      <div>
-                        <p
-                          className="text-2xl"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            color: "var(--color-gold)",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {filterActive
-                            ? `${matchedPeople} of ${people}`
-                            : people}
-                        </p>
-                        <p className="t-fine">
-                          {filterActive
-                            ? people === 1
-                              ? "person"
-                              : "people"
-                            : people === 1
-                              ? "person"
-                              : "people"}
-                        </p>
+                      <div className="flex items-center gap-5">
+                        <div className="text-center">
+                          <p
+                            className="text-2xl"
+                            style={{
+                              fontFamily: "var(--font-display)",
+                              color: "var(--color-gold)",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {filterActive
+                              ? `${matchedParties} of ${parties}`
+                              : parties}
+                          </p>
+                          <p className="t-fine">
+                            {parties === 1 ? "party" : "parties"}
+                          </p>
+                        </div>
+                        <div className="text-center">
+                          <p
+                            className="text-2xl"
+                            style={{
+                              fontFamily: "var(--font-display)",
+                              color: "var(--color-gold)",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {filterActive
+                              ? `${matchedPeople} of ${people}`
+                              : people}
+                          </p>
+                          <p className="t-fine">
+                            {people === 1 ? "person" : "people"}
+                          </p>
+                        </div>
                       </div>
                       <span
                         className="rounded-full px-3 py-1.5 text-xs"
