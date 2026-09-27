@@ -5,9 +5,33 @@ import { useRouter } from "next/navigation";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
-import { isRsvpOpen, RSVP_DEADLINE_DISPLAY } from "@/lib/rsvp/rsvpDeadline";
+import {
+  isRsvpOpen,
+  RSVP_DEADLINE_DISPLAY,
+  RSVP_CONTACT_EMAILS,
+} from "@/lib/rsvp/rsvpDeadline";
 import { buildDateRange, DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
 import { HIDDEN_EVENT_IDS } from "@/lib/schedule/hiddenEvents";
+
+function ContactLinks() {
+  const linkStyle = {
+    color: "var(--color-gold)",
+    textDecoration: "underline",
+    textUnderlineOffset: "3px",
+  } as const;
+  return (
+    <>
+      {RSVP_CONTACT_EMAILS.map((email, i) => (
+        <span key={email}>
+          {i > 0 && " or "}
+          <a href={`mailto:${email}`} style={linkStyle}>
+            {email}
+          </a>
+        </span>
+      ))}
+    </>
+  );
+}
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -190,11 +214,18 @@ function RSVPForm({
         }}
       >
         <p
+          className="mb-3 text-sm font-medium tracking-widest uppercase"
+          style={{ color: "var(--color-gold)" }}
+        >
+          RSVPs are closed
+        </p>
+        <p
           className="text-sm leading-relaxed"
           style={{ color: "var(--color-text-muted)" }}
         >
-          RSVP closed on {RSVP_DEADLINE_DISPLAY}. Please reach out to the couple
-          directly if you need assistance.
+          Our RSVP window closed on {RSVP_DEADLINE_DISPLAY}. Still hoping to
+          join us? We&apos;d love to hear from you — email <ContactLinks /> and
+          we&apos;ll do our best to accommodate you.
         </p>
       </div>
     );
@@ -285,14 +316,46 @@ function RSVPForm({
                 </p>
                 {event.description && (
                   <div className="flex items-start gap-2">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-gold-dim)" }}>
-                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M12 11v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="currentColor" strokeWidth="1" />
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{
+                        flexShrink: 0,
+                        marginTop: "3px",
+                        color: "var(--color-gold-dim)",
+                      }}
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M12 11v5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <circle
+                        cx="12"
+                        cy="8"
+                        r="0.5"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      />
                     </svg>
                     <div className="flex flex-col gap-0.5">
                       {event.description.split("\\n").map((line, i) => (
-                        <p key={i} className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                        <p
+                          key={i}
+                          className="text-sm leading-relaxed"
+                          style={{ color: "var(--color-text-muted)" }}
+                        >
                           {line}
                         </p>
                       ))}
@@ -480,10 +543,11 @@ function RSVPForm({
 
       {rsvpLocked && (
         <p
-          className="mt-8 text-xs text-center"
+          className="mt-8 text-xs text-center leading-relaxed"
           style={{ color: "var(--color-text-dim)" }}
         >
-          RSVP closed on {RSVP_DEADLINE_DISPLAY}.
+          RSVPs closed on {RSVP_DEADLINE_DISPLAY}. Need to make a change? Email{" "}
+          <ContactLinks />.
         </p>
       )}
     </form>
@@ -581,7 +645,9 @@ export default function RSVPPage() {
               >
                 {guest.name ?? user?.email}
               </span>{" "}
-              — please let us know which events you can attend.
+              {rsvpLocked
+                ? "— our RSVP window has closed."
+                : "— please let us know which events you can attend."}
             </p>
           )}
         </header>

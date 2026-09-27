@@ -6,6 +6,31 @@ import { db } from "@/lib/instant/db";
 import { EventFlipCard } from "@/components/schedule/EventFlipCard";
 import { DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
 import { HIDDEN_EVENT_IDS } from "@/lib/schedule/hiddenEvents";
+import {
+  isRsvpOpen,
+  RSVP_DEADLINE_DISPLAY,
+  RSVP_CONTACT_EMAILS,
+} from "@/lib/rsvp/rsvpDeadline";
+
+function ContactLinks() {
+  const linkStyle = {
+    color: "var(--color-gold-dim)",
+    textDecoration: "underline",
+    textUnderlineOffset: "3px",
+  } as const;
+  return (
+    <>
+      {RSVP_CONTACT_EMAILS.map((email, i) => (
+        <span key={email}>
+          {i > 0 && " or "}
+          <a href={`mailto:${email}`} style={linkStyle}>
+            {email}
+          </a>
+        </span>
+      ))}
+    </>
+  );
+}
 
 const DAY_DATES: Record<string, string> = {
   thursday: "20261126",
@@ -44,7 +69,9 @@ function buildICS(events: EventShape[]): string {
     const dateStr = DAY_DATES[event.day.toLowerCase()];
     if (!dateStr) continue;
     const startMins = parseTimeToMins(event.startTime);
-    const endMins = event.endTime ? parseTimeToMins(event.endTime) : startMins + 60;
+    const endMins = event.endTime
+      ? parseTimeToMins(event.endTime)
+      : startMins + 60;
     lines.push("BEGIN:VEVENT");
     lines.push(`UID:${event.id}@meghanarajit.wedding`);
     lines.push(`DTSTART:${dateStr}T${minsToICSTime(startMins)}`);
@@ -55,7 +82,8 @@ function buildICS(events: EventShape[]): string {
     const descParts: string[] = [];
     if (event.dressCode) descParts.push(`Dress code: ${event.dressCode}`);
     if (event.description) descParts.push(event.description);
-    if (descParts.length > 0) lines.push(`DESCRIPTION:${descParts.join("\\n")}`);
+    if (descParts.length > 0)
+      lines.push(`DESCRIPTION:${descParts.join("\\n")}`);
     lines.push("END:VEVENT");
   }
 
@@ -64,7 +92,9 @@ function buildICS(events: EventShape[]): string {
 }
 
 function downloadICS(events: EventShape[]) {
-  const blob = new Blob([buildICS(events)], { type: "text/calendar;charset=utf-8" });
+  const blob = new Blob([buildICS(events)], {
+    type: "text/calendar;charset=utf-8",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -75,8 +105,25 @@ function downloadICS(events: EventShape[]) {
   URL.revokeObjectURL(url);
 }
 
-type InviteeShape = { id: string; name: string; sortOrder: number; attendingEvents?: Array<{ id: string }> };
-type EventShape = { id: string; title: string; day: string; startTime: string; endTime?: string; location?: string; locationUrl?: string; dressCode?: string; description?: string; informational?: boolean; sortOrder: number };
+type InviteeShape = {
+  id: string;
+  name: string;
+  sortOrder: number;
+  attendingEvents?: Array<{ id: string }>;
+};
+type EventShape = {
+  id: string;
+  title: string;
+  day: string;
+  startTime: string;
+  endTime?: string;
+  location?: string;
+  locationUrl?: string;
+  dressCode?: string;
+  description?: string;
+  informational?: boolean;
+  sortOrder: number;
+};
 
 function dayLabel(day: string) {
   return day.charAt(0).toUpperCase() + day.slice(1);
@@ -104,7 +151,10 @@ function TabbedSchedule({
       {/* Day tabs */}
       <div
         className="mb-6 flex gap-1 rounded-lg p-1"
-        style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+        style={{
+          backgroundColor: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+        }}
       >
         {days.map((day) => {
           const active = day === activeDay;
@@ -120,9 +170,14 @@ function TabbedSchedule({
                 fontWeight: active ? 500 : 400,
               }}
             >
-              <span className="text-xs tracking-[0.08em] uppercase sm:tracking-[0.2em]">{dayLabel(day)}</span>
+              <span className="text-xs tracking-[0.08em] uppercase sm:tracking-[0.2em]">
+                {dayLabel(day)}
+              </span>
               {DAY_DISPLAY_SHORT[day] && (
-                <span className="text-xs tracking-[0.05em]" style={{ opacity: 0.75 }}>
+                <span
+                  className="text-xs tracking-[0.05em]"
+                  style={{ opacity: 0.75 }}
+                >
                   {DAY_DISPLAY_SHORT[day]}
                 </span>
               )}
@@ -169,7 +224,10 @@ function SectionHeader() {
       >
         Schedule
       </h2>
-      <div className="mx-auto mt-5 h-px w-24" style={{ backgroundColor: "var(--color-border-gold)" }} />
+      <div
+        className="mx-auto mt-5 h-px w-24"
+        style={{ backgroundColor: "var(--color-border-gold)" }}
+      />
     </header>
   );
 }
@@ -194,16 +252,23 @@ export function ScheduleSummarySection() {
   const guest = data.guests[0];
 
   const invitees = [...(guest.invitees ?? [])].sort(
-    (a: InviteeShape, b: InviteeShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+    (a: InviteeShape, b: InviteeShape) =>
+      (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   ) as InviteeShape[];
 
   const events = [...(guest.invitedEvents ?? [])]
     .filter((ev: EventShape) => !HIDDEN_EVENT_IDS.has(ev.id))
-    .sort((a: EventShape, b: EventShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)) as EventShape[];
+    .sort(
+      (a: EventShape, b: EventShape) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+    ) as EventShape[];
 
   const hasRsvpd = Boolean(guest.rsvpStatus);
+  const rsvpOpen = isRsvpOpen();
   const nonInformationalEvents = events.filter((ev) => !ev.informational);
-  const declinedAll = hasRsvpd && nonInformationalEvents.length > 0 && invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
+  const declinedAll =
+    hasRsvpd &&
+    nonInformationalEvents.length > 0 &&
+    invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
 
   if (!hasRsvpd) {
     return (
@@ -216,32 +281,82 @@ export function ScheduleSummarySection() {
           <SectionHeader />
           <div
             className="rounded-lg px-8 py-14 text-center"
-            style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+            style={{
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+            }}
           >
             <div
               className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full"
-              style={{ backgroundColor: "var(--color-surface-alt)", border: "1px solid var(--color-border-gold)" }}
+              style={{
+                backgroundColor: "var(--color-surface-alt)",
+                border: "1px solid var(--color-border-gold)",
+              }}
             >
-              <svg width="18" height="20" viewBox="0 0 18 22" fill="none" style={{ color: "var(--color-gold-dim)" }}>
-                <rect x="1" y="9" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M5 9V6a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <svg
+                width="18"
+                height="20"
+                viewBox="0 0 18 22"
+                fill="none"
+                style={{ color: "var(--color-gold-dim)" }}
+              >
+                <rect
+                  x="1"
+                  y="9"
+                  width="16"
+                  height="12"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M5 9V6a4 4 0 0 1 8 0v3"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </div>
             <p
               className="mb-1 text-sm"
-              style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-xl)", color: "var(--color-text)", fontWeight: 400 }}
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-xl)",
+                color: "var(--color-text)",
+                fontWeight: 400,
+              }}
             >
-              Your schedule awaits
+              {rsvpOpen ? "Your schedule awaits" : "RSVPs are closed"}
             </p>
-            <p className="mb-8 text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              RSVP to see the full weekend at a glance.
-            </p>
-            <Link
-              href="/rsvp"              className="inline-block rounded px-8 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--color-gold)", color: "var(--color-bg)" }}
-            >
-              RSVP Now
-            </Link>
+            {rsvpOpen ? (
+              <>
+                <p
+                  className="mb-8 text-sm leading-relaxed"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  RSVP to see the full weekend at a glance.
+                </p>
+                <Link
+                  href="/rsvp"
+                  className="inline-block rounded px-8 py-3 text-xs tracking-widest uppercase transition-opacity hover:opacity-80"
+                  style={{
+                    backgroundColor: "var(--color-gold)",
+                    color: "var(--color-bg)",
+                  }}
+                >
+                  RSVP Now
+                </Link>
+              </>
+            ) : (
+              <p
+                className="mt-3 text-sm leading-relaxed"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                Our RSVP window closed on {RSVP_DEADLINE_DISPLAY}. Still hoping
+                to join us? Email <ContactLinks /> and we&apos;ll do our best to
+                accommodate you.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -259,25 +374,57 @@ export function ScheduleSummarySection() {
           <SectionHeader />
           <div
             className="rounded-lg px-8 py-14 text-center"
-            style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+            style={{
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+            }}
           >
             <p
               className="mb-3"
-              style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-2xl)", color: "var(--color-gold)", fontWeight: 400 }}
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "var(--text-2xl)",
+                color: "var(--color-gold)",
+                fontWeight: 400,
+              }}
             >
               We&apos;ll miss you
             </p>
-            <p className="mb-6 text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              Thank you for letting us know. You will always be with us in spirit.
+            <p
+              className="mb-6 text-sm leading-relaxed"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              Thank you for letting us know. You will always be with us in
+              spirit.
             </p>
-            <div className="mx-auto h-px w-16" style={{ backgroundColor: "var(--color-border-gold)" }} />
-            <p className="mt-6 text-xs" style={{ color: "var(--color-text-dim)" }}>
-              Changed your mind?{" "}
-              <Link
-                href="/rsvp"                style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
-              >
-                Update your RSVP
-              </Link>
+            <div
+              className="mx-auto h-px w-16"
+              style={{ backgroundColor: "var(--color-border-gold)" }}
+            />
+            <p
+              className="mt-6 text-xs leading-relaxed"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              {rsvpOpen ? (
+                <>
+                  Changed your mind?{" "}
+                  <Link
+                    href="/rsvp"
+                    style={{
+                      color: "var(--color-gold-dim)",
+                      textDecoration: "underline",
+                      textUnderlineOffset: "3px",
+                    }}
+                  >
+                    Update your RSVP
+                  </Link>
+                </>
+              ) : (
+                <>
+                  Changed your mind? Email <ContactLinks /> and we&apos;ll see
+                  what we can do.
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -289,7 +436,9 @@ export function ScheduleSummarySection() {
   const attendeesByEvent: Record<string, string[]> = {};
   for (const ev of events) {
     attendeesByEvent[ev.id] = invitees
-      .filter((inv) => (inv.attendingEvents ?? []).some((ae) => ae.id === ev.id))
+      .filter((inv) =>
+        (inv.attendingEvents ?? []).some((ae) => ae.id === ev.id),
+      )
       .map((inv) => inv.name);
   }
 
@@ -327,11 +476,35 @@ export function ScheduleSummarySection() {
                 backgroundColor: "transparent",
               }}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" strokeWidth="1.5" />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{ flexShrink: 0 }}
+              >
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="17"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
                 <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M8 2v4M16 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M8 13h4m-4 4h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path
+                  d="M8 2v4M16 2v4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M8 13h4m-4 4h8"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
               Add to Calendar
             </button>
@@ -343,13 +516,29 @@ export function ScheduleSummarySection() {
           attendeesByEvent={attendeesByEvent}
           isSingle={invitees.length === 1}
         />
-        <p className="mt-6 text-center text-xs" style={{ color: "var(--color-text-dim)" }}>
-          Need to make changes?{" "}
-          <Link
-            href="/rsvp"            style={{ color: "var(--color-gold-dim)", textDecoration: "underline", textUnderlineOffset: "3px" }}
-          >
-            Update your RSVP
-          </Link>
+        <p
+          className="mt-6 text-center text-xs leading-relaxed"
+          style={{ color: "var(--color-text-dim)" }}
+        >
+          {rsvpOpen ? (
+            <>
+              Need to make changes?{" "}
+              <Link
+                href="/rsvp"
+                style={{
+                  color: "var(--color-gold-dim)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: "3px",
+                }}
+              >
+                Update your RSVP
+              </Link>
+            </>
+          ) : (
+            <>
+              Need to make changes? Email <ContactLinks />.
+            </>
+          )}
         </p>
       </div>
     </section>
