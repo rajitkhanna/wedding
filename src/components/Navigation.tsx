@@ -6,7 +6,7 @@ import Link from "next/link";
 import { db } from "@/lib/instant/db";
 
 const NAV_LINKS = [
-  { href: "/rsvp", label: "RSVP" },
+  { href: "/schedule", label: "Schedule" },
   { href: "/gallery", label: "Gallery" },
   { href: "/registry", label: "Registry" },
   { href: "/travel", label: "Travel" },
@@ -237,24 +237,22 @@ export function Navigation() {
           }}
         >
           <div className="px-6 py-4 flex flex-col gap-1">
-            {[{ href: "/#schedule", label: "Schedule" }, ...NAV_LINKS].map(
-              (link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleHashLinkClick(e, link.href)}
-                  className="py-3 text-sm tracking-widest uppercase font-light border-b"
-                  style={{
-                    color: isActive(link.href)
-                      ? "var(--color-gold)"
-                      : "var(--color-text-muted)",
-                    borderColor: "var(--color-border)",
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ),
-            )}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleHashLinkClick(e, link.href)}
+                className="py-3 text-sm tracking-widest uppercase font-light border-b"
+                style={{
+                  color: isActive(link.href)
+                    ? "var(--color-gold)"
+                    : "var(--color-text-muted)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
             {isAdmin && (
               <Link
                 href="/admin"

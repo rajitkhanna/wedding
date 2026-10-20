@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { lookup } from "@instantdb/react";
 import { db } from "@/lib/instant/db";
 import { useLotusBackground } from "@/lib/useLotusBackground";
@@ -12,6 +12,7 @@ import {
 } from "@/lib/rsvp/rsvpDeadline";
 import { buildDateRange, DAY_DISPLAY_SHORT } from "@/lib/schedule/dateRange";
 import { HIDDEN_EVENT_IDS } from "@/lib/schedule/hiddenEvents";
+import { AttireLink } from "@/components/AttireLink";
 
 function ContactLinks() {
   const linkStyle = {
@@ -482,6 +483,10 @@ function RSVPForm({
         ))}
       </div>
 
+      <div className="mt-6 flex justify-center">
+        <AttireLink tone="dark" />
+      </div>
+
       {!rsvpLocked && (
         <div
           className="mt-10 rounded-lg px-6 py-5"
@@ -573,6 +578,9 @@ export default function RSVPPage() {
   );
 
   const guest = guestData?.guests?.[0];
+
+  // RSVPs are closed — the form is retired, so send guests to their schedule.
+  if (!isRsvpOpen()) redirect("/schedule");
 
   const invitees = [...(guest?.invitees ?? [])].sort(
     (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),

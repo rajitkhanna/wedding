@@ -5,7 +5,7 @@ import { useLotusBackground } from "@/lib/useLotusBackground";
 import { buildDateRange } from "@/lib/schedule/dateRange";
 
 const NAV_LINKS = [
-  { href: "/rsvp", label: "RSVP" },
+  { href: "/schedule", label: "Schedule" },
   { href: "/#faq", label: "FAQ" },
 ];
 

@@ -14,6 +14,7 @@ export function Accordion({ items }: AccordionProps) {
       {items.map((item, index) => (
         <AccordionItem
           key={item.q}
+          id={item.id}
           question={item.q}
           answer={item.a}
           link={item.link}

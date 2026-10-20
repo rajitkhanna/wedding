@@ -28,9 +28,13 @@ export function HeroSection() {
   const files = data?.$files ?? [];
 
   const { data: guestData } = db.useQuery(
-    user ? { guests: { invitedEvents: {}, $: { where: { email: user.email! } } } } : null,
+    user
+      ? { guests: { invitedEvents: {}, $: { where: { email: user.email! } } } }
+      : null,
   );
-  const invitedDays = (guestData?.guests?.[0]?.invitedEvents ?? []).map((e: any) => e.day as string);
+  const invitedDays = (guestData?.guests?.[0]?.invitedEvents ?? []).map(
+    (e: any) => e.day as string,
+  );
   const dateRange = buildDateRange(invitedDays) ?? "Nov 27 to 29, 2026";
 
   const heroSlides = useMemo(() => {
@@ -46,17 +50,19 @@ export function HeroSection() {
   const slides =
     heroSlides.length > 0
       ? heroSlides
-      : isLoading ? [] : HERO_IMAGE_ORDER.map((pattern) => {
-          const filename = pattern.replace("hero/", "");
-          const ext =
-            filename === "prom-2019" ||
-            filename === "proposal-after-showing-ring"
-              ? "jpeg"
-              : "jpg";
-          const localFile =
-            filename === "colonnade-smiling-cover" ? "hero" : filename;
-          return { src: `/${localFile}.${ext}`, pattern };
-        });
+      : isLoading
+        ? []
+        : HERO_IMAGE_ORDER.map((pattern) => {
+            const filename = pattern.replace("hero/", "");
+            const ext =
+              filename === "prom-2019" ||
+              filename === "proposal-after-showing-ring"
+                ? "jpeg"
+                : "jpg";
+            const localFile =
+              filename === "colonnade-smiling-cover" ? "hero" : filename;
+            return { src: `/${localFile}.${ext}`, pattern };
+          });
 
   const looped = [...slides, ...slides];
 
@@ -122,7 +128,7 @@ export function HeroSection() {
           <div className="mt-8">
             <button
               type="button"
-              onClick={() => router.push("/rsvp")}
+              onClick={() => router.push("/schedule")}
               className="inline-block cursor-pointer px-10 py-3 text-xs tracking-[0.25em] uppercase transition-all hover:opacity-80"
               style={{
                 border: "1px solid var(--color-gold)",
@@ -131,7 +137,7 @@ export function HeroSection() {
                 boxShadow: "0 10px 28px var(--color-shadow-soft)",
               }}
             >
-              RSVP
+              Schedule
             </button>
           </div>
         </div>

@@ -53,7 +53,6 @@ export default function Home() {
   useEffect(() => {
     if (!window.location.hash) return;
     const id = window.location.hash.slice(1);
-    window.history.replaceState(null, "", window.location.pathname + window.location.search);
 
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
