@@ -248,7 +248,7 @@ export function EventFlipCard({
                     <ShirtIcon />
                   </span>
                   <span
-                    className="uppercase"
+                    className="whitespace-nowrap uppercase"
                     style={{
                       color: "var(--color-text-dim)",
                       letterSpacing: "0.14em",
@@ -311,7 +311,7 @@ export function EventFlipCard({
             {!isSingle && names.length > 0 && (
               <p className="text-xs leading-relaxed">
                 <span
-                  className="uppercase"
+                  className="whitespace-nowrap uppercase"
                   style={{
                     color: "var(--color-text-dim)",
                     letterSpacing: "0.14em",
