@@ -13,15 +13,19 @@ const db = init({
 export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   try {
-    const { guestName, contactEmail, events, guestCode } = (await req.json()) as {
-      guestName: string;
-      contactEmail: string;
-      events: RSVPEvent[];
-      guestCode?: string;
-    };
+    const { guestName, contactEmail, events, guestCode } =
+      (await req.json()) as {
+        guestName: string;
+        contactEmail: string;
+        events: RSVPEvent[];
+        guestCode?: string;
+      };
 
     if (!contactEmail || !events?.length) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Fetch images fresh (signed URLs) from InstantDB
@@ -32,15 +36,21 @@ export async function POST(req: NextRequest) {
       allFiles.find((f) => f.path === "hero/colonnade-smiling-cover.jpg") ??
       allFiles.find((f) => f.event === "hero");
     const secondFile =
-      allFiles.find((f) => f.path === "story/03-engagement-8.jpg") ??
-      heroFile;
+      allFiles.find((f) => f.path === "story/03-engagement-8.jpg") ?? heroFile;
 
-    const heroImageUrl = heroFile ? cld(heroFile.url, { width: 600, quality: 85 }) : "";
-    const secondImageUrl = secondFile ? cld(secondFile.url, { width: 600, quality: 85 }) : "";
+    const heroImageUrl = heroFile
+      ? cld(heroFile.url, { width: 600, quality: 85 })
+      : "";
+    const secondImageUrl = secondFile
+      ? cld(secondFile.url, { width: 600, quality: 85 })
+      : "";
 
     const { error } = await resend.emails.send({
       from: process.env.EMAIL_FROM ?? "Meghana & Rajit <hi@meghanarajit.com>",
-      to: [contactEmail],
+      to: contactEmail
+        .split(/[,;\s]+/)
+        .map((a) => a.trim())
+        .filter(Boolean),
       subject: "Your RSVP is confirmed — Meghana & Rajit",
       react: React.createElement(RSVPConfirmation, {
         guestName,
@@ -59,6 +69,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[rsvp-confirm]", err);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to send email" },
+      { status: 500 },
+    );
   }
 }
