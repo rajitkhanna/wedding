@@ -101,7 +101,8 @@ export function RegistrySection() {
               </div>
             );
 
-            if (option.copyValue) {
+            // Copy-only card (no link target), e.g. Zelle email.
+            if (option.copyValue && !option.url.startsWith("http")) {
               return (
                 <button
                   key={option.name}
