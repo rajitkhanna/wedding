@@ -242,8 +242,8 @@ export function EventFlipCard({
             style={{ borderColor: "var(--color-border)", color: metaColor }}
           >
             {event.dressCode && (
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs">
-                <span className="flex items-center gap-1.5">
+              <div className="flex flex-col gap-1 text-xs">
+                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                   <span style={{ color: "var(--color-gold-dim)" }}>
                     <ShirtIcon />
                   </span>
@@ -260,19 +260,11 @@ export function EventFlipCard({
                   {event.dressCode}
                 </span>
                 {attireHint && (
-                  <>
-                    <span
-                      aria-hidden
-                      style={{ color: "var(--color-border-gold)" }}
-                    >
-                      ·
-                    </span>
-                    <AttireLink
-                      label={attireHint.label}
-                      showIcon={false}
-                      className="inline-flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
-                    />
-                  </>
+                  <AttireLink
+                    label={attireHint.label}
+                    showIcon={false}
+                    className="inline-flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
+                  />
                 )}
               </div>
             )}
