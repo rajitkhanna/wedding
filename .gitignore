@@ -41,3 +41,20 @@ instant.perms.ts
 
 # local photos — only specific carousel photos are committed; the rest are ignored
 # See public/photos/.gitignore for per-file rules
+
+# Manual phone overrides (PII)
+scripts/rsvp-phone-overrides.json
+.tmp-rsvp/
+
+# Local build/tooling artifacts
+.open-next/
+.wrangler/
+.playwright-cli/
+.claude/
+
+# Guest data (PII) — never commit
+*.xlsx
+Guest List*.csv
+RSVP List*.csv
+guest_names.csv
+wedding-guests.csv
