@@ -41,7 +41,7 @@ const DAY_DATES: Record<string, string> = {
   sunday: "20261129",
 };
 
-/** Day number + month for the day rail, e.g. { day: "27", month: "Nov" }. */
+/** Day number + month for day markers, e.g. { day: "27", month: "Nov" }. */
 const DAY_PARTS: Record<string, { day: string; month: string }> = {
   thursday: { day: "26", month: "Nov" },
   friday: { day: "27", month: "Nov" },
@@ -244,7 +244,8 @@ function SectionHeader({
   );
 }
 
-/** Vertical day picker on desktop, horizontally scrollable strip on mobile. */
+/* ─── Tabbed variant (home page) ─────────────────────────────────────────── */
+
 function DayRail({
   days,
   activeDay,
@@ -410,14 +411,16 @@ function DayRail({
   );
 }
 
-function EventTimeline({
+function EventList({
   events,
   attendeesByEvent,
   isSingle,
+  offset = 0,
 }: {
   events: EventShape[];
   attendeesByEvent: Record<string, string[]>;
   isSingle: boolean;
+  offset?: number;
 }) {
   if (!events.length) {
     return (
@@ -430,7 +433,6 @@ function EventTimeline({
         }}
       >
         <p
-          className="text-sm"
           style={{
             fontFamily: "var(--font-display)",
             fontSize: "var(--text-lg)",
@@ -445,7 +447,6 @@ function EventTimeline({
 
   return (
     <div className="relative">
-      {/* Rail */}
       <span
         aria-hidden
         className="absolute top-3 bottom-3 left-[3px] w-px"
@@ -456,7 +457,9 @@ function EventTimeline({
           <div
             key={event.id}
             className="schedule-rise relative pl-7 sm:pl-8"
-            style={{ animationDelay: `${i * 80}ms` }}
+            style={{
+              animationDelay: `${Math.min(offset + i, 8) * 70}ms`,
+            }}
           >
             {i < events.length - 1 && (
               <span
@@ -521,7 +524,7 @@ function TabbedSchedule({
 
       <div className="min-w-0">
         <div key={activeDay}>
-          <EventTimeline
+          <EventList
             events={activeEvents}
             attendeesByEvent={attendeesByEvent}
             isSingle={isSingle}
@@ -531,6 +534,85 @@ function TabbedSchedule({
     </div>
   );
 }
+
+/* ─── Continuous variant (schedule page) ─────────────────────────────────── */
+
+function ContinuousSchedule({
+  days,
+  byDay,
+  attendeesByEvent,
+  isSingle,
+}: {
+  days: string[];
+  byDay: Record<string, EventShape[]>;
+  attendeesByEvent: Record<string, string[]>;
+  isSingle: boolean;
+}) {
+  if (!days.length) return null;
+
+  return (
+    <div className="flex flex-col gap-12 sm:gap-14">
+      {days.map((day, dayIndex) => {
+        const parts = DAY_PARTS[day];
+        const dayEvents = byDay[day] ?? [];
+        return (
+          <section
+            key={day}
+            aria-labelledby={`day-${day}`}
+            className="grid gap-5 lg:grid-cols-[8.5rem_minmax(0,1fr)] lg:gap-10"
+          >
+            <div className="flex items-baseline gap-4 lg:sticky lg:top-24 lg:block lg:self-start">
+              <span
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "3.25rem",
+                  lineHeight: 0.85,
+                  color: "var(--color-gold)",
+                }}
+              >
+                {parts?.day ?? "—"}
+              </span>
+              <div className="lg:mt-3">
+                <h3
+                  id={`day-${day}`}
+                  className="text-[0.72rem] uppercase"
+                  style={{
+                    color: "var(--color-text)",
+                    letterSpacing: "0.24em",
+                  }}
+                >
+                  {dayLabel(day)}
+                </h3>
+                <p
+                  className="mt-1 text-[0.65rem]"
+                  style={{ color: "var(--color-text-dim)" }}
+                >
+                  {parts?.month ?? ""}
+                  <span aria-hidden className="mx-1.5">
+                    ·
+                  </span>
+                  {dayEvents.length}{" "}
+                  {dayEvents.length === 1 ? "event" : "events"}
+                </p>
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <EventList
+                events={dayEvents}
+                attendeesByEvent={attendeesByEvent}
+                isSingle={isSingle}
+                offset={dayIndex * 2}
+              />
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Shared empty / locked states ───────────────────────────────────────── */
 
 function LockedSchedule({
   rsvpOpen,
@@ -604,7 +686,12 @@ function LockedSchedule({
   );
 }
 
-export function ScheduleSummarySection() {
+export function ScheduleSummarySection({
+  variant = "tabs",
+}: {
+  /** `tabs` = home page picker, `timeline` = one continuous scroll. */
+  variant?: "tabs" | "timeline";
+}) {
   const { user } = db.useAuth();
 
   const { isLoading, data } = db.useQuery(
@@ -642,8 +729,7 @@ export function ScheduleSummarySection() {
     nonInformationalEvents.length > 0 &&
     invitees.every((inv) => (inv.attendingEvents ?? []).length === 0);
 
-  const eventDays = events.map((ev) => ev.day);
-  const dateRange = buildDateRange(eventDays);
+  const dateRange = buildDateRange(events.map((ev) => ev.day));
 
   if (!hasRsvpd) {
     return (
@@ -789,7 +875,7 @@ export function ScheduleSummarySection() {
               style={{
                 border: "1px solid var(--color-border-gold)",
                 color: "var(--color-gold-dim)",
-                backgroundColor: "transparent",
+                backgroundColor: "var(--color-surface)",
                 letterSpacing: "0.16em",
               }}
             >
@@ -799,15 +885,24 @@ export function ScheduleSummarySection() {
           )}
         </SectionHeader>
 
-        <TabbedSchedule
-          days={days}
-          byDay={byDay}
-          attendeesByEvent={attendeesByEvent}
-          isSingle={invitees.length === 1}
-        />
+        {variant === "timeline" ? (
+          <ContinuousSchedule
+            days={days}
+            byDay={byDay}
+            attendeesByEvent={attendeesByEvent}
+            isSingle={invitees.length === 1}
+          />
+        ) : (
+          <TabbedSchedule
+            days={days}
+            byDay={byDay}
+            attendeesByEvent={attendeesByEvent}
+            isSingle={invitees.length === 1}
+          />
+        )}
 
         <p
-          className="mt-10 text-center text-xs leading-relaxed"
+          className="mt-12 text-center text-xs leading-relaxed"
           style={{ color: "var(--color-text-dim)" }}
         >
           {rsvpOpen ? (

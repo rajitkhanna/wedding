@@ -23,7 +23,7 @@ export default function SchedulePage() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <ScheduleSummarySection />
+      <ScheduleSummarySection variant="timeline" />
     </div>
   );
 }

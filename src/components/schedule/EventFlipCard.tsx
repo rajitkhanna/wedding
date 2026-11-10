@@ -28,6 +28,40 @@ function attireHintFor(dressCode?: string): { label: string } | null {
   return null;
 }
 
+type AgendaRow = { time: string; label: string };
+
+/**
+ * Description text doubles as the event's running order when a line looks like
+ * "6:00 PM · Cocktail hour" (or the older "6:00pm - 7:00pm: Cocktail Hour").
+ * Those lines are rendered as an agenda list instead of paragraph text, so a
+ * card never shows a second timetable inline.
+ */
+function parseDescription(description?: string): {
+  intro: string[];
+  agenda: AgendaRow[];
+} {
+  const intro: string[] = [];
+  const agenda: AgendaRow[] = [];
+  const agendaRe =
+    /^(\d{1,2}(?::\d{2})?\s*(?:AM|PM))\s*(?:(?:[–—-])\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM))?\s*(?:·|:)\s*(.+)$/i;
+
+  for (const raw of (description ?? "").split(/\\n|\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    const match = line.match(agendaRe);
+    if (match) {
+      agenda.push({
+        time: match[1].toUpperCase().replace(/\s+/g, " "),
+        label: match[2].trim(),
+      });
+    } else {
+      intro.push(line);
+    }
+  }
+
+  return { intro, agenda };
+}
+
 function ClockIcon() {
   return (
     <svg
@@ -98,6 +132,7 @@ export function EventFlipCard({
   isSingle: boolean;
 }) {
   const attireHint = attireHintFor(event.dressCode);
+  const { intro, agenda } = parseDescription(event.description);
   const metaColor = "var(--color-text-muted)";
 
   return (
@@ -144,9 +179,9 @@ export function EventFlipCard({
           {event.title}
         </h3>
 
-        {event.description && (
+        {intro.length > 0 && (
           <div className="mt-2 flex flex-col gap-0.5">
-            {event.description.split("\\n").map((line, i) => (
+            {intro.map((line, i) => (
               <p
                 key={i}
                 className="text-xs leading-relaxed"
@@ -158,12 +193,52 @@ export function EventFlipCard({
           </div>
         )}
 
+        {/* Running order (parsed out of the description) */}
+        {agenda.length > 0 && (
+          <div
+            className="mt-4 flex flex-col gap-1.5 border-t pt-3.5"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <p
+              className="text-[0.58rem] uppercase"
+              style={{
+                color: "var(--color-text-dim)",
+                letterSpacing: "0.22em",
+              }}
+            >
+              Running order
+            </p>
+            {agenda.map((row) => (
+              <div
+                key={row.time + row.label}
+                className="flex items-baseline gap-3"
+              >
+                <span
+                  className="w-[4.6rem] shrink-0 text-[0.65rem] uppercase tabular-nums"
+                  style={{
+                    color: "var(--color-gold-dim)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  {row.time}
+                </span>
+                <span
+                  className="text-xs leading-relaxed"
+                  style={{ color: metaColor }}
+                >
+                  {row.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Details */}
         {(event.dressCode ||
           event.location ||
           (!isSingle && names.length > 0)) && (
           <div
-            className="mt-5 flex flex-col gap-2 border-t pt-4"
+            className="mt-4 flex flex-col gap-2 border-t pt-3.5"
             style={{ borderColor: "var(--color-border)", color: metaColor }}
           >
             {event.dressCode && (
