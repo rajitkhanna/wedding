@@ -37,11 +37,14 @@ export function RegistrySection() {
           </h2>
           <p
             className="mt-2 text-base leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.75)", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
+            style={{
+              color: "rgba(255,255,255,0.75)",
+              textShadow: "0 1px 4px rgba(0,0,0,0.8)",
+            }}
           >
             We are so blessed and grateful for all of your love and well wishes.
-            If you do wish to celebrate with a gift, a contribution to our
-            Newly Wed Fund would be appreciated.{" "}
+            If you do wish to celebrate with a gift, a contribution to our Newly
+            Wed Fund would be appreciated.{" "}
           </p>
           <div
             className="mx-auto mt-6 h-px w-24"
@@ -120,28 +123,38 @@ export function RegistrySection() {
             }
 
             return (
-              <a
-                key={option.name}
-                href={option.url}
-                target={option.url.startsWith("http") ? "_blank" : undefined}
-                rel={
-                  option.url.startsWith("http")
-                    ? "noopener noreferrer"
-                    : undefined
-                }
-                className="group block rounded-lg px-8 py-7 transition-all"
-                style={sharedStyle}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "var(--color-gold)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "var(--color-border-gold)";
-                }}
-              >
-                {inner}
-              </a>
+              <div key={option.name} className="flex flex-col gap-2">
+                {/* Same tab: lets iOS/Android deep-link into the Venmo app. */}
+                <a
+                  href={option.url}
+                  className="group block rounded-lg px-8 py-7 transition-all"
+                  style={sharedStyle}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                      "var(--color-gold)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                      "var(--color-border-gold)";
+                  }}
+                >
+                  {inner}
+                </a>
+                {option.copyValue ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCopy(option.copyValue!, `${option.name}-copy`)
+                    }
+                    className="self-end pr-1 font-mono text-xs tracking-wide transition-colors hover:text-[var(--color-gold)]"
+                    style={{ color: "var(--color-text-muted)" }}
+                  >
+                    {copied === `${option.name}-copy`
+                      ? "Copied"
+                      : `Copy ${option.copyValue}`}
+                  </button>
+                ) : null}
+              </div>
             );
           })}
         </div>
