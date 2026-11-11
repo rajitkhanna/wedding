@@ -35,9 +35,9 @@ export const ceremonyGuides: CeremonyGuideData[] = [
     description:
       "A Hindu Brahmin ceremony with ancient Vedic rituals. Rituals include Kashi Yatra, Jeelakarra Bellam, Talambralu (showering rice on the couple), and Saptapadi (seven steps). A priest conducts in Telugu and Sanskrit.",
     details: [
-      "Ceremony: 10:00 AM – 11:30 AM, Abigail Adams Ballroom",
-      "Breakfast buffet at 8:00 AM (all guests welcome)",
-      "Lunch at 12:00 PM, wraps up ~2:00 PM",
+      "Ceremony: 10:00 AM – 1:00 PM, Abigail Adams Ballroom",
+      "Breakfast buffet at 8:00 AM in the Rose Kennedy Ballroom",
+      "Lunch at 1:00 PM in the Rose Kennedy Ballroom",
     ],
     bullets: [
       "Arrive by 9:45 AM — ceremony starts promptly at 10:00 AM",

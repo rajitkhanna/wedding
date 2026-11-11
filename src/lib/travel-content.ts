@@ -7,9 +7,10 @@ export const venues = {
     address: "510 Atlantic Ave, Boston, MA 02210",
     mapsUrl: "https://maps.google.com/?q=InterContinental+Boston+510+Atlantic+Ave",
     events: [
-      "Welcome Dinner (Fri)",
-      "Sangeet & Reception (Sat)",
-      "Telugu Wedding (Sun)",
+      "Haldi, Mehndi & Cocktail (Fri, Abigail Adams)",
+      "Sangeet & Reception (Sat, Rose Kennedy)",
+      "Breakfast & Lunch (Sun, Rose Kennedy)",
+      "Telugu Ceremony (Sun, Abigail Adams)",
     ],
     preferred: true,
   },
@@ -17,16 +18,16 @@ export const venues = {
     name: "Westborough Gurudwara Sahib",
     address: "168 Flanders Rd, Westborough, MA 01581",
     mapsUrl: "https://maps.google.com/maps?q=168+Flanders+Rd,+Westborough,+MA+01581",
-    events: ["Sikh Ceremony (Sat morning)"],
+    events: ["Anand Karaj (Sat, 11:00 AM)"],
     preferred: false,
   },
 } as const;
 
 export const shuttleInfo = {
   day: "Saturday",
-  route: "Westborough Gurudwara → InterContinental Boston",
-  departureTime: "TBD",
-  note: "No need to drive — we've got you covered.",
+  route: "InterContinental Boston ↔ Westborough Gurudwara Sahib",
+  departureTime: "7:45 AM",
+  note: "Bus boards at 7:30 AM. Return shuttle after lunch — no need to drive.",
 };
 
 export const airports = [

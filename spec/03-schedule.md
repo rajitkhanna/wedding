@@ -85,18 +85,20 @@ All events at InterContinental Boston unless noted.
 
 | Day | Time | Event | Room | Groups |
 |-----|------|-------|------|--------|
-| Friday 11/27 | 4:00 PM | Afternoon Tea / Welcome Reception | Pre-Function Abigail Adams | wedding-party, family |
-| Friday 11/27 | 6:30 PM | Welcome Dinner | Abigail Adams Ballroom | all |
-| Saturday 11/28 | TBD AM | Sikh Ceremony (Anand Karaj) | Westborough Gurudwara | all |
-| Saturday 11/28 | 4:00 PM | Afternoon Tea | Pre-Function Abigail Adams | wedding-party, family |
-| Saturday 11/28 | 6:00 PM | Cocktail Reception | Rose Kennedy Ballroom | all |
+| Friday 11/27 | 4:00 PM | Tea & Snacks | Abigail Adams Pre-Function | wedding-party, family |
+| Friday 11/27 | 6:30 PM | Haldi, Mehndi & Cocktail | Abigail Adams Ballroom | all |
+| Saturday 11/28 | 7:45 AM | Shuttle to Gurudwara (arrives 8:45) | Departs InterContinental | all |
+| Saturday 11/28 | 8:00 AM | Breakfast | Westborough Gurudwara Sahib | all |
+| Saturday 11/28 | 11:00 AM | Anand Karaj | Westborough Gurudwara Sahib | all |
+| Saturday 11/28 | 4:00 PM | Tea & Snacks | Rose Kennedy Foyer | all |
+| Saturday 11/28 | 6:00 PM | Cocktail Reception | Rose Kennedy Foyer | all |
 | Saturday 11/28 | 7:00 PM | Sangeet & Reception | Rose Kennedy Ballroom | all |
 | Sunday 11/29 | 8:00 AM | Breakfast Buffet | Rose Kennedy Ballroom | all |
 | Sunday 11/29 | 10:00 AM | Telugu Wedding Ceremony | Abigail Adams Ballroom | all |
-| Sunday 11/29 | 12:00 PM | Lunch | Rose Kennedy Ballroom | all |
+| Sunday 11/29 | 1:00 PM | Lunch | Rose Kennedy Ballroom | all |
 
 Notes:
-- Saturday Sikh ceremony time TBD (confirm with Gurudwara)
+- Saturday shuttle boards 7:30 AM, departs 7:45 AM, arrives 8:45 AM
 
 ---
 

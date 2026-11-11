@@ -7,7 +7,8 @@ interface VenueCardProps {
 
 export function VenueCard({ name, address, mapsUrl, events }: VenueCardProps) {
   const mapAvailable = !!mapsUrl && mapsUrl !== "TBD";
-  const addressAvailable = !address.startsWith("TBD") && !address.startsWith("Address will");
+  const addressAvailable =
+    !address.startsWith("TBD") && !address.startsWith("Address will");
 
   return (
     <div
@@ -31,10 +32,29 @@ export function VenueCard({ name, address, mapsUrl, events }: VenueCardProps) {
       {/* Address */}
       <p
         className="mt-4 text-sm font-light"
-        style={{ color: addressAvailable ? "var(--color-text-muted)" : "var(--color-text-dim)" }}
+        style={{
+          color: addressAvailable
+            ? "var(--color-text-muted)"
+            : "var(--color-text-dim)",
+        }}
       >
         {address}
       </p>
+
+      {/* Events */}
+      {events.length > 0 && (
+        <ul className="mt-4 flex flex-col gap-1.5">
+          {events.map((event) => (
+            <li
+              key={event}
+              className="text-xs font-light"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              {event}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* Map link */}
       <div className="mt-4">
@@ -49,10 +69,7 @@ export function VenueCard({ name, address, mapsUrl, events }: VenueCardProps) {
             View on Map →
           </a>
         ) : (
-          <span
-            className="text-sm"
-            style={{ color: "var(--color-text-dim)" }}
-          >
+          <span className="text-sm" style={{ color: "var(--color-text-dim)" }}>
             Map link coming soon
           </span>
         )}
