@@ -22,6 +22,7 @@ await db.transact([
   db.tx.scheduleEvents["8b29e751-ff07-4ceb-9cc8-1f29370c50ea"].update({
     startTime: "4:00 PM",
     endTime: "6:00 PM",
+    location: "Abigail Adams Pre-Function (Foyer), InterContinental Boston, 510 Atlantic Ave, Boston MA",
   }),
 ]);
 
