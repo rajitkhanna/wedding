@@ -30,6 +30,14 @@ function attireHintFor(dressCode?: string): { label: string } | null {
 
 type AgendaRow = { time: string; label: string };
 
+/** Deep link from a schedule card to its FAQ answer (anchor id on the home page). */
+const EVENT_FAQ_LINKS: Record<string, { label: string; href: string }> = {
+  "b468eda8-61fb-49cb-8831-2fc8328e13ee": {
+    label: "What happens during the Telugu ceremony?",
+    href: "/#telugu-ceremony",
+  },
+};
+
 /**
  * Description text doubles as the event's running order when a line looks like
  * "6:00 PM · Cocktail hour" (or the older "6:00pm - 7:00pm: Cocktail Hour").
@@ -132,6 +140,7 @@ export function EventFlipCard({
   isSingle: boolean;
 }) {
   const attireHint = attireHintFor(event.dressCode);
+  const faqLink = EVENT_FAQ_LINKS[event.id];
   const { intro, agenda } = parseDescription(event.description);
   const metaColor = "var(--color-text-muted)";
 
@@ -191,6 +200,21 @@ export function EventFlipCard({
               </p>
             ))}
           </div>
+        )}
+
+        {faqLink && (
+          <a
+            href={faqLink.href}
+            className="mt-2 inline-flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
+            style={{
+              color: "var(--color-gold)",
+              textDecoration: "underline",
+              textDecorationColor: "var(--color-border-gold)",
+              textUnderlineOffset: "3px",
+            }}
+          >
+            {faqLink.label} →
+          </a>
         )}
 
         {/* Running order (parsed out of the description) */}
