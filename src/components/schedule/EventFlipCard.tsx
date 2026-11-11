@@ -30,11 +30,15 @@ function attireHintFor(dressCode?: string): { label: string } | null {
 
 type AgendaRow = { time: string; label: string };
 
-/** Deep link from a schedule card to its FAQ answer (anchor id on the home page). */
-const EVENT_FAQ_LINKS: Record<string, { label: string; href: string }> = {
+/** Optional deep link shown on a schedule card (FAQ anchor or hosted PDF). */
+const EVENT_LINKS: Record<
+  string,
+  { label: string; href: string; external?: boolean }
+> = {
   "b468eda8-61fb-49cb-8831-2fc8328e13ee": {
-    label: "What happens during the Telugu ceremony?",
-    href: "/#telugu-ceremony",
+    label: "Full ceremony program (PDF)",
+    href: "/Telugu-Wedding-Ceremony.pdf",
+    external: true,
   },
 };
 
@@ -140,7 +144,7 @@ export function EventFlipCard({
   isSingle: boolean;
 }) {
   const attireHint = attireHintFor(event.dressCode);
-  const faqLink = EVENT_FAQ_LINKS[event.id];
+  const eventLink = EVENT_LINKS[event.id];
   const { intro, agenda } = parseDescription(event.description);
   const metaColor = "var(--color-text-muted)";
 
@@ -202,9 +206,11 @@ export function EventFlipCard({
           </div>
         )}
 
-        {faqLink && (
+        {eventLink && (
           <a
-            href={faqLink.href}
+            href={eventLink.href}
+            target={eventLink.external ? "_blank" : undefined}
+            rel={eventLink.external ? "noopener noreferrer" : undefined}
             className="mt-2 inline-flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
             style={{
               color: "var(--color-gold)",
@@ -213,7 +219,7 @@ export function EventFlipCard({
               textUnderlineOffset: "3px",
             }}
           >
-            {faqLink.label} →
+            {eventLink.label} →
           </a>
         )}
 
