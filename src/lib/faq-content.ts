@@ -86,6 +86,15 @@ export const faqItems: FAQItem[] = [
     a: "We'd love to see you at all of the events. We will have the family-specific events before the wedding weekend.",
   },
   {
+    id: "telugu-ceremony",
+    q: "What happens during the Telugu wedding ceremony?",
+    a: "Guests are seated at 9:40 AM. The ceremony begins at 10:00 AM with Edurukolu (welcoming the groom), followed by the groom's entry, Ganapathi and Navagraha pooja, and the bride's entry. Kanyadanam, Jeelakarra Bellam (the muhurtam at 11:15 AM), Mangalsutra Dharana, Talambralu, Saptapadi, and Arundhati Nakshatram follow. Lunch is served at 1:00 PM in the Rose Kennedy Ballroom.",
+    link: {
+      label: "Full ceremony program (PDF)",
+      href: "/Telugu-Wedding-Ceremony.pdf",
+    },
+  },
+  {
     id: "food",
     q: "Will there be vegetarian options?",
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
