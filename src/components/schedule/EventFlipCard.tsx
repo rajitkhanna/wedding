@@ -40,6 +40,11 @@ const EVENT_LINKS: Record<
     href: "/Telugu-Wedding-Ceremony.pdf",
     external: true,
   },
+  "08e6e69c-86c0-4aef-b51b-b97010dad56e": {
+    label: "Guest guide to the Anand Karaj (PDF)",
+    href: "/Guest-Guide-Anand-Karaj.pdf",
+    external: true,
+  },
 };
 
 /**

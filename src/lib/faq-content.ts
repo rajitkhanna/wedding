@@ -95,6 +95,15 @@ export const faqItems: FAQItem[] = [
     },
   },
   {
+    id: "anand-karaj",
+    q: "What happens during the Anand Karaj, and how should I prepare?",
+    a: "The Anand Karaj — “blissful union” — is the Sikh wedding ceremony, held in the presence of the Guru Granth Sahib. Guests cover their heads and remove their shoes before entering the hall, sit on the floor, and stay seated while the couple circles the Guru Granth Sahib four times (Laavan). A langar (community meal) follows. Full dress guidance and the order of the ceremony are in the guest guide.",
+    link: {
+      label: "Guest guide to the Anand Karaj (PDF)",
+      href: "/Guest-Guide-Anand-Karaj.pdf",
+    },
+  },
+  {
     id: "food",
     q: "Will there be vegetarian options?",
     a: "Yes — full vegetarian options will be available at all meals across both South Indian and Punjabi cuisines.",
