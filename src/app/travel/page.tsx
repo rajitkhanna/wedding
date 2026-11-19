@@ -156,13 +156,28 @@ export default function TravelPage() {
                 <span className="text-xl leading-none" role="img" aria-hidden="true">
                   {item.icon}
                 </span>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
                     {item.label}
                   </p>
                   <p className="mt-0.5 text-sm font-light" style={{ color: "var(--color-text-muted)" }}>
                     {item.detail}
                   </p>
+                  {"link" in item && item.link ? (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium"
+                      style={{
+                        border: "1px solid var(--color-border-gold)",
+                        color: "var(--color-gold)",
+                      }}
+                    >
+                      {item.linkLabel || "View details"}
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  ) : null}
                 </div>
               </div>
             ))}
