@@ -101,7 +101,7 @@ export const gettingAround = [
     icon: "🅿️",
     label: "Parking",
     detail:
-      "Valet or self-parking at the hotel (~$50/day) - or park for $12 flat at the Post Office Square garage right across the street. Hotel comp rooms include free overnight parking for 1 car.",
+      "Valet or self-parking at the hotel (~$50/day) - or park for $12 flat at the Post Office Square garage right across the street.",
     link: "https://www.posquare.com/rates-hours/",
     linkLabel: "Garage rates & hours",
   },
