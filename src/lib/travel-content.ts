@@ -25,9 +25,9 @@ export const venues = {
 
 export const shuttleInfo = {
   day: "Saturday",
-  route: "InterContinental Boston ↔ Westborough Gurudwara Sahib",
+  route: "InterContinental Boston â Westborough Gurudwara Sahib",
   departureTime: "7:45 AM",
-  note: "Bus boards at 7:30 AM. Return shuttle after lunch — no need to drive.",
+  note: "Bus boards at 7:30 AM. Return shuttle after lunch â no need to drive.",
 };
 
 export const airports = [
@@ -58,7 +58,7 @@ export const hotels = [
   {
     name: "InterContinental Boston",
     distance: null,
-    note: "Most events are held here — staying at the IC means you're steps from everything.\nBook your room with the special room block link below for a discounted rate.\nImportant: on the booking site, select up to 2 guests only — even if more than 2 guests plan to occupy the room. Selecting more than two will trigger extra charges.",
+    note: "Most events are held here â staying at the IC means you're steps from everything.\nBook your room with the special room block link below for a discounted rate.\nImportant: on the booking site, select up to 2 guests only â even if more than 2 guests plan to occupy the room. Selecting more than two will trigger extra charges.",
     bookingUrl: "https://www.ihg.com/intercontinental/hotels/us/en/find-hotels/select-roomrate?fromRedirect=true&qSrt=sBR&qIta=99801505&icdv=99801505&qSlH=bosha&qCiD=27&qCiMy=102026&qCoD=29&qCoMy=102026&qGrpCd=ram&setPMCookies=true&qSHBrC=IC&qDest=510%20Atlantic%20Avenue,%20Boston,%20MA,%20US&showApp=true&adjustMonth=false&srb_u=1",
     preferred: true,
   },
@@ -87,42 +87,43 @@ export const hotels = [
 
 export const gettingAround = [
   {
-    icon: "🚕",
+    icon: "ð",
     label: "Rideshare",
     detail: "Uber and Lyft are widely available throughout Boston.",
   },
   {
-    icon: "🚇",
+    icon: "ð",
     label: "The T (MBTA)",
     detail:
       "South Station (Red Line & Silver Line) is a 5-minute walk from InterContinental Boston.",
   },
   {
-    icon: "🅿️",
+    icon: "ð¿ï¸",
     label: "Parking",
-    detail: "Valet and self-parking available at InterContinental Boston.",
+    detail:
+      "Valet and self-parking available at InterContinental Boston (~$50/day). Cheaper option: the Post Office Square garage right in front of the hotel. Hotel guests in comp rooms get complimentary overnight parking for 1 car.",
   },
 ] as const;
 
 export const bostonFavorites = [
   {
     name: "Coming soon",
-    description: "Our favorite Boston spots — check back closer to the date.",
+    description: "Our favorite Boston spots â check back closer to the date.",
     placeholder: true,
   },
   {
     name: "Coming soon",
-    description: "Our favorite Boston spots — check back closer to the date.",
+    description: "Our favorite Boston spots â check back closer to the date.",
     placeholder: true,
   },
   {
     name: "Coming soon",
-    description: "Our favorite Boston spots — check back closer to the date.",
+    description: "Our favorite Boston spots â check back closer to the date.",
     placeholder: true,
   },
   {
     name: "Coming soon",
-    description: "Our favorite Boston spots — check back closer to the date.",
+    description: "Our favorite Boston spots â check back closer to the date.",
     placeholder: true,
   },
 ] as const;
