@@ -98,7 +98,7 @@ export const gettingAround = [
       "South Station (Red Line & Silver Line) is a 5-minute walk from InterContinental Boston.",
   },
   {
-    icon: "🔿",
+    icon: "🅿️",
     label: "Parking",
     detail:
       "Valet or self-parking at the hotel (~$50/day) - or park for $12 flat at the Post Office Square garage right across the street. Hotel comp rooms include free overnight parking for 1 car.",
