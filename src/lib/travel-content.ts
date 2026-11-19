@@ -25,7 +25,7 @@ export const venues = {
 
 export const shuttleInfo = {
   day: "Saturday",
-  route: "InterContinental Boston Ã¢ÂÂ Westborough Gurudwara Sahib",
+  route: "InterContinental Boston ↔ Westborough Gurudwara Sahib",
   departureTime: "7:45 AM",
   note: "Bus boards at 7:30 AM. Return shuttle after lunch — no need to drive.",
 };
