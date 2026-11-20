@@ -37,7 +37,7 @@ const updates: Record<string, unknown>[] = [
     endTime: "11:30 PM",
     location: `Abigail Adams Ballroom, ${IC}`,
     locationUrl: IC_URL,
-    description: "6:30 PM · Cocktail hour and haldi · 8:30 PM · Dinner buffet",
+    description: "6:30 PM · Cocktail hour\n8:30 PM · Dinner buffet",
   },
   {
     id: "08e6e69c-86c0-4aef-b51b-b97010dad56e",
