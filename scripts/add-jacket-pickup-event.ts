@@ -41,7 +41,7 @@ const EVENT = {
   location: GW,
   locationUrl: GW_URL,
   description:
-    "Grab your jacket from our wedding planner as soon as the bus drops off at the Gurudwara. Takes a minute — no need to miss breakfast.",
+    "The wedding planner will distribute jackets outside the Gurudwara right after the bus drops off.",
   informational: true,
   sortOrder: 10,
 };
